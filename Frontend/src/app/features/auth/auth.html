@@ -1,0 +1,282 @@
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="brand" href="#" aria-label="TrustRent home">
+      <img
+        class="brand__logo"
+        alt="TrustRent logo"
+        src="https://lh3.googleusercontent.com/aida/AEtjO1VfWQm9VvF26CBaUJ0H4H7D42pLD4zIvmJ1qxyt_8Y905fDsBzX9wZc_ieERImB69YraGTwDJvsenMVVT0-vBB-i03lVmpazyxnnBwKc-dI1HJIJFQC-vH-MbftGDcf37R1mPm3qEYnOMTW7A2P8j_OOzGfsIQLGA22li8j2mDIeiqs7vHLv1QO9fKhPKEMC2OeYrzxwLNKLiWygQltpLOPFLeIO2O6mETIZ7WkU8ZBeAwqK5ei9i-lXdAT"
+      />
+      <span class="brand__title">TrustRent</span>
+      <span class="brand__badge">Institutional</span>
+    </a>
+
+    <div class="topbar__meta">
+      <span class="status-pill">
+        <span class="status-pill__icon">lock</span>
+        256-Bit Escrow Encrypted
+      </span>
+      <a class="topbar__link" href="#">
+        <span class="status-pill__icon">arrow_back</span>
+        Back to Explore Rentals
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="auth-page">
+  <div class="auth-shell">
+    <section class="auth-shell__content">
+      <div class="status-row">
+        <span class="status-badge">
+          <span class="status-badge__icon">verified</span>
+          Institutional Verification Standard
+        </span>
+        <span class="status-live">
+          <span class="status-live__dot"></span>
+          Gateway v4.2 Status: Active
+        </span>
+      </div>
+
+      <div class="page-heading">
+        <h1>{{ authHeading }}</h1>
+        <p>{{ authDescription }}</p>
+      </div>
+
+      <div class="auth-controls" aria-label="Authentication page selector">
+        <button
+          *ngFor="let mode of authModes"
+          type="button"
+          class="mode-button"
+          [class.is-active]="mode.key === authMode"
+          (click)="setMode(mode.key)"
+        >
+          {{ mode.label }}
+        </button>
+      </div>
+
+      <div class="role-selector" aria-label="Choose account role">
+        <label class="role-selector__label">Select Credential Tier</label>
+        <div class="role-selector__options">
+          <button
+            *ngFor="let role of roles"
+            type="button"
+            class="role-option"
+            [class.is-active]="role.key === selectedRole"
+            (click)="selectRole(role.key)"
+          >
+            <span class="role-option__header">
+              <span class="material-symbols">{{ role.icon }}</span>
+              <span>{{ role.label }}</span>
+            </span>
+            <span class="role-option__subtext">{{ role.subtitle }}</span>
+          </button>
+        </div>
+      </div>
+
+      <form class="auth-form" (submit)="onSubmit()">
+        <ng-container *ngIf="authMode === 'sign-in'">
+          <div class="field-group">
+            <label for="email">Work or Personal Email</label>
+            <div class="input-shell">
+              <span class="input-shell__icon">mail</span>
+              <input id="email" type="email" placeholder="identity@institutional.domain" required />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-group__header">
+              <label for="password">Security Passcode</label>
+              <button class="text-link" type="button" (click)="setMode('reset')">Forgot password?</button>
+            </div>
+            <div class="input-shell input-shell--password">
+              <span class="input-shell__icon">encrypted</span>
+              <input
+                id="password"
+                [type]="showPassword ? 'text' : 'password'"
+                placeholder="••••••••••••••••"
+                required
+              />
+              <button
+                class="password-toggle"
+                type="button"
+                (click)="togglePasswordVisibility()"
+                [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+              >
+                <span class="material-symbols">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="checkbox-row">
+            <label class="checkbox-label">
+              <input type="checkbox" />
+              <span>Keep me signed in</span>
+            </label>
+            <button class="text-link" type="button" (click)="setMode('register')">Create account</button>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="authMode === 'register'">
+          <div class="field-group">
+            <label for="full-name">Full Name</label>
+            <div class="input-shell">
+              <span class="input-shell__icon">person</span>
+              <input id="full-name" type="text" placeholder="Jordan Mitchell" required />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="register-email">Business or Personal Email</label>
+            <div class="input-shell">
+              <span class="input-shell__icon">mail</span>
+              <input id="register-email" type="email" placeholder="jordan@trustrent.example" required />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="register-password">Create password</label>
+            <div class="input-shell input-shell--password">
+              <span class="input-shell__icon">lock</span>
+              <input
+                id="register-password"
+                [type]="showPassword ? 'text' : 'password'"
+                placeholder="At least 12 characters"
+                required
+              />
+              <button
+                class="password-toggle"
+                type="button"
+                (click)="togglePasswordVisibility()"
+                [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+              >
+                <span class="material-symbols">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="confirm-password">Confirm password</label>
+            <div class="input-shell input-shell--password">
+              <span class="input-shell__icon">done</span>
+              <input
+                id="confirm-password"
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                placeholder="Repeat your password"
+                required
+              />
+              <button
+                class="password-toggle"
+                type="button"
+                (click)="toggleConfirmPasswordVisibility()"
+                [attr.aria-label]="showConfirmPassword ? 'Hide confirmation password' : 'Show confirmation password'"
+              >
+                <span class="material-symbols">{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="checkbox-row">
+            <label class="checkbox-label">
+              <input type="checkbox" required />
+              <span>I agree to the TrustRent terms.</span>
+            </label>
+            <button class="text-link" type="button" (click)="setMode('sign-in')">Already have an account?</button>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="authMode === 'reset'">
+          <div class="field-group">
+            <label for="reset-email">Account email</label>
+            <div class="input-shell">
+              <span class="input-shell__icon">mail</span>
+              <input id="reset-email" type="email" placeholder="identity@institutional.domain" required />
+            </div>
+          </div>
+
+          <div class="field-group field-group--compact">
+            <label for="reset-role">Linked credential tier</label>
+            <div class="input-shell input-shell--select">
+              <span class="input-shell__icon">badge</span>
+              <select id="reset-role" [value]="selectedRole">
+                <option value="tenant">Tenant</option>
+                <option value="landlord">Landlord</option>
+                <option value="auditor">Auditor</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="checkbox-row">
+            <span class="supporting-text">We will email a secure link to re-establish access.</span>
+            <button class="text-link" type="button" (click)="setMode('sign-in')">Back to sign in</button>
+          </div>
+        </ng-container>
+
+        <button class="primary-button" type="submit">{{ ctaText }}</button>
+      </form>
+    </section>
+
+    <aside class="auth-shell__aside">
+      <div class="aside-content">
+        <div class="side-header">
+          <span class="side-header__badge">TrustRent Escrow</span>
+          <h2>Zero-Fraud Rental Ecosystem</h2>
+        </div>
+
+        <p class="aside-copy">
+          Every lease, property credential, and transactional deposit executed via TrustRent is cryptographically
+          reconciled against certified municipal tax assessors.
+        </p>
+
+        <div class="trust-list">
+          <article *ngFor="let item of trustHighlights" class="trust-card">
+            <div class="trust-card__icon">
+              <span class="material-symbols">{{ item.icon }}</span>
+            </div>
+            <div>
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.description }}</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="testimonial">
+          <div class="testimonial__stars" aria-label="5 star rating">
+            <span>star</span><span>star</span><span>star</span><span>star</span><span>star</span>
+            <strong>Deed Matched</strong>
+          </div>
+          <p>
+            “TrustRent saved me from a $4,800 wire scam in Austin. Knowing the landlord was deed-verified through
+            Travis County records gave me complete peace of mind before transferring funds.”
+          </p>
+          <div class="testimonial__meta">
+            <div class="avatar">ER</div>
+            <div>
+              <strong>Elena Rostova</strong>
+              <span>Verified Tenant • Downtown Loft</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="compliance-row">
+          <span><span class="material-symbols">verified</span> SOC2 Type II</span>
+          <span><span class="material-symbols">lock</span> NIST 800-63B Identity</span>
+          <span><span class="material-symbols">database</span> CAD Registry Synced</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__meta">
+      <span class="material-symbols">verified_user</span>
+      <span>Institutional Identity &amp; Title Verification Gateway</span>
+    </div>
+    <div class="footer__links">
+      <a href="#">Privacy Architecture</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Security Verification</a>
+    </div>
+  </div>
+</footer>
