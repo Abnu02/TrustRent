@@ -9,8 +9,14 @@ public interface IPropertyService
         CreatePropertyRequest request,
         CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<PropertyDto>> GetByLandlordAsync(
+    Task<PagedResult<PropertyDto>> GetByLandlordAsync(
         Guid landlordId,
+        GetMyPropertiesQuery query,
+        CancellationToken cancellationToken);
+
+    Task<PropertyDto?> GetByIdAsync(
+        Guid landlordId,
+        Guid propertyId,
         CancellationToken cancellationToken);
 
     Task<PropertyDto?> UpdatePropertyAsync(

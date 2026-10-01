@@ -1,10 +1,13 @@
+using Microsoft.Extensions.Logging;
 using TrustRent.Application.Properties.DTOs;
 using TrustRent.Application.Properties.Interfaces;
 using TrustRent.Domain.Entities;
 
 namespace TrustRent.Application.Properties.Services;
 
-public sealed class PropertyService(IPropertyRepository propertyRepository) : IPropertyService
+public sealed class PropertyService(
+    IPropertyRepository propertyRepository,
+    ILogger<PropertyService> logger) : IPropertyService
 {
     public async Task<PropertyDto> CreatePropertyAsync(
         Guid landlordId,
@@ -16,7 +19,7 @@ public sealed class PropertyService(IPropertyRepository propertyRepository) : IP
             LandlordId = landlordId,
             Title = request.Title,
             Description = request.Description,
-            PropertyType = request.PropertyType,
+            PropertyType = request.PropertyType!.Value,
             Rent = request.Rent,
             Deposit = request.Deposit,
             Location = request.Location,
@@ -28,12 +31,33 @@ public sealed class PropertyService(IPropertyRepository propertyRepository) : IP
         return ToDto(property);
     }
 
-    public async Task<IReadOnlyList<PropertyDto>> GetByLandlordAsync(
+    public Task<PagedResult<PropertyDto>> GetByLandlordAsync(
         Guid landlordId,
+        GetMyPropertiesQuery query,
         CancellationToken cancellationToken)
     {
-        var properties = await propertyRepository.GetByLandlordAsync(landlordId, cancellationToken);
-        return properties.Select(ToDto).ToArray();
+        return propertyRepository.GetByLandlordAsync(landlordId, query, cancellationToken);
+    }
+
+    public async Task<PropertyDto?> GetByIdAsync(
+        Guid landlordId,
+        Guid propertyId,
+        CancellationToken cancellationToken)
+    {
+        var property = await propertyRepository.GetByIdForUpdateAsync(propertyId, cancellationToken);
+        if (property is null)
+        {
+            logger.LogWarning("PropertyNotFound {PropertyId}", propertyId);
+            return null;
+        }
+
+        if (property.LandlordId != landlordId)
+        {
+            logger.LogWarning("PropertyOwnershipDenied {LandlordId} {PropertyId}", landlordId, propertyId);
+            return null;
+        }
+
+        return ToDto(property);
     }
 
     public async Task<PropertyDto?> UpdatePropertyAsync(
@@ -43,14 +67,21 @@ public sealed class PropertyService(IPropertyRepository propertyRepository) : IP
         CancellationToken cancellationToken)
     {
         var property = await propertyRepository.GetByIdAsync(propertyId, cancellationToken);
-        if (property is null || property.LandlordId != landlordId)
+        if (property is null)
         {
+            logger.LogWarning("PropertyNotFound {PropertyId}", propertyId);
+            return null;
+        }
+
+        if (property.LandlordId != landlordId)
+        {
+            logger.LogWarning("PropertyOwnershipDenied {LandlordId} {PropertyId}", landlordId, propertyId);
             return null;
         }
 
         property.Title = request.Title;
         property.Description = request.Description;
-        property.PropertyType = request.PropertyType;
+        property.PropertyType = request.PropertyType!.Value;
         property.Rent = request.Rent;
         property.Deposit = request.Deposit;
         property.Location = request.Location;
