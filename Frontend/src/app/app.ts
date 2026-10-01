@@ -28,7 +28,7 @@ export class App implements OnInit {
   isRegisterModalOpen = signal<boolean>(false);
 
   // Stepper state in Create Property Modal (1: Details, 2: Pricing, 3: Deed & Ownership, 4: Audit)
-  currentStep = signal<number>(3);
+  currentStep = signal<number>(1);
 
   // Loading & Toast signals
   isLoading = signal<boolean>(false);
@@ -187,7 +187,7 @@ export class App implements OnInit {
   // MODAL & DRAWER TRIGGERS
   // ==========================================
   openCreateModal() {
-    this.currentStep.set(3);
+    this.currentStep.set(1);
     this.isCreateModalOpen.set(true);
   }
 

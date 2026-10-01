@@ -18,5 +18,6 @@ public class Property
     public bool IsVerified { get; set; } = false;
     public DateTime? VerifiedAt { get; set; }
     public string? VerifiedBy { get; set; }
+    public string? RejectionReason { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

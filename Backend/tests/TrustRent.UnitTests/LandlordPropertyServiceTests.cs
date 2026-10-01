@@ -1,33 +1,53 @@
 using Moq;
 using TrustRent.Application.Common;
 using TrustRent.Application.DTOs;
-using TrustRent.Application.Exceptions;
-using TrustRent.Application.Services;
+using TrustRent.Application.Properties.Commands;
+using TrustRent.Application.Properties.Queries;
 using TrustRent.Domain.Entities;
 using TrustRent.Domain.Enums;
-using TrustRent.Domain.Repositories;
 
 namespace TrustRent.UnitTests;
 
-public class LandlordPropertyServiceTests
+public class LandlordCqrsTests
 {
-    private readonly Mock<IPropertyRepository> _propertyRepoMock;
-    private readonly Mock<IUserRepository> _userRepoMock;
-    private readonly LandlordPropertyService _service;
+    private readonly Mock<ITrustRentDataStore> _dataStoreMock;
+    private readonly List<Property> _properties;
+    private readonly List<User> _users;
+    private readonly Guid _landlordId;
 
-    public LandlordPropertyServiceTests()
+    public LandlordCqrsTests()
     {
-        _propertyRepoMock = new Mock<IPropertyRepository>();
-        _userRepoMock = new Mock<IUserRepository>();
-        _service = new LandlordPropertyService(_propertyRepoMock.Object, _userRepoMock.Object);
+        _landlordId = Guid.NewGuid();
+        _dataStoreMock = new Mock<ITrustRentDataStore>();
+
+        _users =
+        [
+            new User
+            {
+                Id = _landlordId,
+                FullName = "Abreham Bekele",
+                Email = "abreham@example.com",
+                PhoneNumber = "0912345678",
+                Role = "Landlord",
+                IsVerified = true
+            }
+        ];
+
+        _properties = [];
+
+        _dataStoreMock.Setup(d => d.Users).Returns(_users);
+        _dataStoreMock.Setup(d => d.Properties).Returns(_properties);
+        _dataStoreMock.Setup(d => d.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
     }
 
     [Fact]
-    public async Task CreateProperty_ShouldInitializeAsPendingAndUnverified()
+    public async Task CreatePropertyCommand_ShouldInitializeAsPendingAndUnverified()
     {
         // Arrange
-        var landlordId = Guid.NewGuid();
-        var request = new CreatePropertyRequest(
+        var handler = new CreatePropertyCommandHandler(_dataStoreMock.Object);
+        var command = new CreatePropertyCommand(
+            LandlordId: _landlordId,
             Title: "Modern 2 Bedroom Apartment",
             Description: "Clean and spacious near Bole.",
             PropertyType: "Apartment",
@@ -38,34 +58,28 @@ public class LandlordPropertyServiceTests
             Bathrooms: 2
         );
 
-        _propertyRepoMock
-            .Setup(r => r.AddAsync(It.IsAny<Property>()))
-            .ReturnsAsync((Property p) => p);
-
         // Act
-        var result = await _service.CreatePropertyAsync(landlordId, request);
+        var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal("Pending", result.Status);
-        Assert.False(result.IsVerified);
-        Assert.Equal("Modern 2 Bedroom Apartment", result.Title);
-        _propertyRepoMock.Verify(r => r.AddAsync(It.Is<Property>(p =>
-            p.LandlordId == landlordId &&
-            p.Status == PropertyStatus.Pending &&
-            !p.IsVerified &&
-            p.Rent == 25000m
-        )), Times.Once);
+        Assert.True(result.IsSuccess);
+        Assert.Equal("Pending", result.Value.Status);
+        Assert.False(result.Value.IsVerified);
+        Assert.Equal("Modern 2 Bedroom Apartment", result.Value.Title);
+        Assert.Single(_properties);
+        Assert.Equal(_landlordId, _properties[0].LandlordId);
+        Assert.Equal(PropertyStatus.Pending, _properties[0].Status);
     }
 
     [Theory]
     [InlineData(0)]
     [InlineData(-500)]
-    public async Task CreateProperty_InvalidRent_ThrowsPropertyValidationException(decimal invalidRent)
+    public async Task CreatePropertyCommand_InvalidRent_ReturnsFailure(decimal invalidRent)
     {
         // Arrange
-        var landlordId = Guid.NewGuid();
-        var request = new CreatePropertyRequest(
+        var handler = new CreatePropertyCommandHandler(_dataStoreMock.Object);
+        var command = new CreatePropertyCommand(
+            LandlordId: _landlordId,
             Title: "Luxury Villa",
             Description: "Beautiful home",
             PropertyType: "Villa",
@@ -76,19 +90,54 @@ public class LandlordPropertyServiceTests
             Bathrooms: 3
         );
 
-        // Act & Assert
-        await Assert.ThrowsAsync<PropertyValidationException>(() => _service.CreatePropertyAsync(landlordId, request));
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal("validation_error", result.Error.Code);
     }
 
     [Fact]
-    public async Task UpdateProperty_UnauthorizedLandlord_ThrowsUnauthorizedPropertyAccessException()
+    public async Task SubmitPropertyForVerificationCommand_UpdatesStatusToPending()
     {
         // Arrange
-        var realOwnerId = Guid.NewGuid();
+        var propertyId = Guid.NewGuid();
+        _properties.Add(new Property
+        {
+            Id = propertyId,
+            LandlordId = _landlordId,
+            Title = "Draft Apartment",
+            Description = "Pending details",
+            PropertyType = "Apartment",
+            Rent = 20000m,
+            Deposit = 40000m,
+            Location = "Bole",
+            Status = PropertyStatus.Rejected,
+            IsVerified = false
+        });
+
+        var handler = new SubmitPropertyForVerificationCommandHandler(_dataStoreMock.Object);
+        var command = new SubmitPropertyForVerificationCommand(propertyId, _landlordId);
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal("Pending", result.Value.Status);
+        Assert.Equal(PropertyStatus.Pending, _properties[0].Status);
+    }
+
+    [Fact]
+    public async Task UpdatePropertyCommand_UnauthorizedLandlord_ReturnsFailure()
+    {
+        // Arrange
+        var realOwnerId = _landlordId;
         var attackerId = Guid.NewGuid();
         var propertyId = Guid.NewGuid();
 
-        var existingProperty = new Property
+        _properties.Add(new Property
         {
             Id = propertyId,
             LandlordId = realOwnerId,
@@ -100,11 +149,12 @@ public class LandlordPropertyServiceTests
             Location = "CMC",
             Bedrooms = 2,
             Bathrooms = 1
-        };
+        });
 
-        _propertyRepoMock.Setup(r => r.GetByIdAsync(propertyId)).ReturnsAsync(existingProperty);
-
-        var updateRequest = new UpdatePropertyRequest(
+        var handler = new UpdatePropertyCommandHandler(_dataStoreMock.Object);
+        var command = new UpdatePropertyCommand(
+            PropertyId: propertyId,
+            LandlordId: attackerId,
             Title: "Hacked Apartment",
             Description: "Changed",
             PropertyType: "Apartment",
@@ -115,29 +165,47 @@ public class LandlordPropertyServiceTests
             Bathrooms: 1
         );
 
-        // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedPropertyAccessException>(() =>
-            _service.UpdatePropertyAsync(attackerId, propertyId, updateRequest));
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal("unauthorized", result.Error.Code);
     }
 
     [Fact]
-    public async Task GetMyPropertiesPagedAsync_ReturnsPagedResponse()
+    public async Task GetLandlordPropertiesQuery_ReturnsPagedResponseWithCorrectTotal()
     {
         // Arrange
-        var landlordId = Guid.NewGuid();
-        var pagedRequest = new PagedRequest(Page: 1, PageSize: 2);
-        var fakeProperties = new List<Property>
+        for (int i = 1; i <= 5; i++)
         {
-            new() { Id = Guid.NewGuid(), LandlordId = landlordId, Title = "Prop 1", Description = "", PropertyType = "Apartment", Rent = 20000m, Deposit = 40000m, Location = "Bole", Bedrooms = 2, Bathrooms = 1 },
-            new() { Id = Guid.NewGuid(), LandlordId = landlordId, Title = "Prop 2", Description = "", PropertyType = "Villa", Rent = 40000m, Deposit = 80000m, Location = "Sarbet", Bedrooms = 3, Bathrooms = 2 }
-        };
+            _properties.Add(new Property
+            {
+                Id = Guid.NewGuid(),
+                LandlordId = _landlordId,
+                Title = $"Prop {i}",
+                Description = "Desc",
+                PropertyType = "Apartment",
+                Rent = 20000m * i,
+                Deposit = 40000m * i,
+                Location = "Bole",
+                Bedrooms = 2,
+                Bathrooms = 1,
+                Status = PropertyStatus.Approved,
+                IsVerified = true,
+                CreatedAt = DateTime.UtcNow.AddMinutes(i)
+            });
+        }
 
-        _propertyRepoMock
-            .Setup(r => r.GetByLandlordIdPagedAsync(landlordId, 1, 2, null, null, null, false))
-            .ReturnsAsync((fakeProperties, 5)); // 5 total items
+        var handler = new GetLandlordPropertiesQueryHandler(_dataStoreMock.Object);
+        var query = new GetLandlordPropertiesQuery(
+            LandlordId: _landlordId,
+            Page: 1,
+            PageSize: 2
+        );
 
         // Act
-        var result = await _service.GetMyPropertiesPagedAsync(landlordId, pagedRequest, null, null, null, false);
+        var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
         Assert.NotNull(result);
@@ -146,5 +214,38 @@ public class LandlordPropertyServiceTests
         Assert.Equal(3, result.TotalPages); // 5 items / 2 per page = 3 pages
         Assert.True(result.HasNextPage);
         Assert.False(result.HasPreviousPage);
+    }
+
+    [Fact]
+    public async Task ApprovePropertyCommand_MarksPropertyAsApprovedAndLive()
+    {
+        // Arrange
+        var propertyId = Guid.NewGuid();
+        _properties.Add(new Property
+        {
+            Id = propertyId,
+            LandlordId = _landlordId,
+            Title = "Awaiting Property",
+            Description = "Desc",
+            PropertyType = "Villa",
+            Rent = 35000m,
+            Deposit = 70000m,
+            Location = "Sarbet",
+            Status = PropertyStatus.Pending,
+            IsVerified = false
+        });
+
+        var handler = new ApprovePropertyCommandHandler(_dataStoreMock.Object);
+        var command = new ApprovePropertyCommand(propertyId, "Licensed Auditor");
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal("Approved", result.Value.Status);
+        Assert.True(result.Value.IsVerified);
+        Assert.Equal(PropertyStatus.Approved, _properties[0].Status);
+        Assert.True(_properties[0].IsVerified);
     }
 }

@@ -1,8 +1,11 @@
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TrustRent.Application.Auth.Commands;
+using TrustRent.Application.Auth.Queries;
 using TrustRent.Application.DTOs;
-using TrustRent.Domain.Enums;
-using TrustRent.Domain.Repositories;
+using TrustRent.Application.Properties.Commands;
+using TrustRent.Application.Properties.Queries;
 
 namespace TrustRent.Api.Controllers;
 
@@ -10,102 +13,76 @@ namespace TrustRent.Api.Controllers;
 [Route("api/v1/admin")]
 [Tags("Admin")]
 [Produces("application/json")]
-public class AdminController(
-    IPropertyRepository propertyRepository,
-    IUserRepository userRepository) : ControllerBase
+public class AdminController(IMediator mediator) : ControllerBase
 {
     // ==========================================
-    // PROPERTY VERIFICATION
+    // PROPERTY VERIFICATION (CQRS)
     // ==========================================
 
     [HttpGet("properties/pending")]
     [ProducesResponseType(typeof(IEnumerable<MyPropertyResponse>), StatusCodes.Status200OK)]
     [EndpointSummary("Admin views all properties awaiting verification")]
-    public async Task<IActionResult> GetPendingProperties()
+    public async Task<IActionResult> GetPendingProperties(CancellationToken ct = default)
     {
-        var pending = await propertyRepository.GetPendingAsync();
-        var response = pending.Select(p => new MyPropertyResponse(
-            p.Id,
-            p.Title,
-            p.Rent,
-            p.Deposit,
-            p.Location,
-            p.PropertyType,
-            p.Bedrooms,
-            p.Bathrooms,
-            p.Status.ToString(),
-            p.IsVerified,
-            p.CreatedAt
-        ));
-        return Ok(response);
+        var result = await mediator.Send(new GetPendingPropertiesQuery(), ct);
+        return Ok(result);
     }
 
     [HttpPut("properties/{id:guid}/approve")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointSummary("Admin approves and verifies a property listing")]
-    public async Task<IActionResult> ApproveProperty([FromRoute] Guid id)
+    public async Task<IActionResult> ApproveProperty([FromRoute] Guid id, CancellationToken ct = default)
     {
-        var property = await propertyRepository.GetByIdAsync(id);
-        if (property == null)
-        {
-            return NotFound(new { message = $"Property with ID '{id}' was not found." });
-        }
+        var result = await mediator.Send(new ApprovePropertyCommand(id), ct);
 
-        property.Status = PropertyStatus.Approved;
-        property.IsVerified = true;
-        property.VerifiedAt = DateTime.UtcNow;
-        property.VerifiedBy = "Admin";
-
-        await propertyRepository.UpdateAsync(property);
-
-        return Ok(new
-        {
-            message = $"Property '{property.Title}' has been approved and is now publicly verified!",
-            property.Id,
-            Status = property.Status.ToString(),
-            property.IsVerified,
-            property.VerifiedAt
-        });
+        return result.Match<IActionResult>(
+            approved => Ok(new
+            {
+                message = $"Property '{approved.Title}' has been approved and is now publicly verified!",
+                approved.Id,
+                approved.Status,
+                approved.IsVerified,
+                VerifiedAt = DateTime.UtcNow
+            }),
+            error => NotFound(new { message = error.Message })
+        );
     }
 
     [HttpPut("properties/{id:guid}/reject")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointSummary("Admin rejects a property listing")]
-    public async Task<IActionResult> RejectProperty([FromRoute] Guid id)
+    public async Task<IActionResult> RejectProperty(
+        [FromRoute] Guid id,
+        [FromQuery] string? reason = null,
+        CancellationToken ct = default)
     {
-        var property = await propertyRepository.GetByIdAsync(id);
-        if (property == null)
-        {
-            return NotFound(new { message = $"Property with ID '{id}' was not found." });
-        }
+        var result = await mediator.Send(new RejectPropertyCommand(id, reason), ct);
 
-        property.Status = PropertyStatus.Rejected;
-        property.IsVerified = false;
-
-        await propertyRepository.UpdateAsync(property);
-
-        return Ok(new
-        {
-            message = $"Property '{property.Title}' has been rejected.",
-            property.Id,
-            Status = property.Status.ToString(),
-            property.IsVerified
-        });
+        return result.Match<IActionResult>(
+            rejected => Ok(new
+            {
+                message = $"Property '{rejected.Title}' has been rejected.",
+                rejected.Id,
+                rejected.Status,
+                rejected.IsVerified
+            }),
+            error => NotFound(new { message = error.Message })
+        );
     }
 
     // ==========================================
-    // LANDLORD VERIFICATION
+    // LANDLORD VERIFICATION (CQRS)
     // ==========================================
 
     [HttpGet("landlords/pending")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [EndpointSummary("Admin views all landlords awaiting identity verification")]
-    public async Task<IActionResult> GetPendingLandlords()
+    public async Task<IActionResult> GetPendingLandlords(CancellationToken ct = default)
     {
-        var pending = await userRepository.GetPendingLandlordsAsync();
-        return Ok(pending.Select(u => new
+        var landlords = await mediator.Send(new GetPendingLandlordsQuery(), ct);
+        return Ok(landlords.Select(u => new
         {
             u.Id,
             u.FullName,
@@ -121,45 +98,37 @@ public class AdminController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointSummary("Admin approves a landlord identity verification")]
-    public async Task<IActionResult> VerifyLandlord([FromRoute] Guid id)
+    public async Task<IActionResult> VerifyLandlord([FromRoute] Guid id, CancellationToken ct = default)
     {
-        var user = await userRepository.GetByIdAsync(id);
-        if (user == null || user.Role != "Landlord")
-        {
-            return NotFound(new { message = $"Landlord with ID '{id}' was not found." });
-        }
+        var result = await mediator.Send(new VerifyLandlordCommand(id), ct);
 
-        user.IsVerified = true;
-        await userRepository.UpdateAsync(user);
-
-        return Ok(new
-        {
-            message = $"Landlord '{user.FullName}' has been verified successfully.",
-            user.Id,
-            user.IsVerified
-        });
+        return result.Match<IActionResult>(
+            userId => Ok(new
+            {
+                message = "Landlord has been verified successfully.",
+                Id = userId,
+                IsVerified = true
+            }),
+            error => NotFound(new { message = error.Message })
+        );
     }
 
     [HttpPut("landlords/{id:guid}/reject")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointSummary("Admin rejects a landlord identity verification")]
-    public async Task<IActionResult> RejectLandlord([FromRoute] Guid id)
+    public async Task<IActionResult> RejectLandlord([FromRoute] Guid id, CancellationToken ct = default)
     {
-        var user = await userRepository.GetByIdAsync(id);
-        if (user == null || user.Role != "Landlord")
-        {
-            return NotFound(new { message = $"Landlord with ID '{id}' was not found." });
-        }
+        var result = await mediator.Send(new RejectLandlordCommand(id), ct);
 
-        user.IsVerified = false;
-        await userRepository.UpdateAsync(user);
-
-        return Ok(new
-        {
-            message = $"Landlord '{user.FullName}' identity verification was rejected.",
-            user.Id,
-            user.IsVerified
-        });
+        return result.Match<IActionResult>(
+            userId => Ok(new
+            {
+                message = "Landlord identity verification was rejected.",
+                Id = userId,
+                IsVerified = false
+            }),
+            error => NotFound(new { message = error.Message })
+        );
     }
 }

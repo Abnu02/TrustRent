@@ -1,10 +1,11 @@
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TrustRent.Application.Auth.Commands;
 using TrustRent.Application.Common;
 using TrustRent.Application.DTOs;
-using TrustRent.Application.Exceptions;
-using TrustRent.Application.Interfaces;
-using TrustRent.Domain.Repositories;
+using TrustRent.Application.Properties.Commands;
+using TrustRent.Application.Properties.Queries;
 
 namespace TrustRent.Api.Controllers;
 
@@ -12,9 +13,7 @@ namespace TrustRent.Api.Controllers;
 [Route("api/v1/properties")]
 [Tags("Properties")]
 [Produces("application/json")]
-public class PropertiesController(
-    ILandlordPropertyService propertyService,
-    IPropertyRepository propertyRepository) : ControllerBase
+public class PropertiesController(IMediator mediator) : ControllerBase
 {
     private Guid GetCurrentLandlordId()
     {
@@ -35,57 +34,126 @@ public class PropertiesController(
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [EndpointSummary("Register a new Landlord profile")]
-    public async Task<IActionResult> RegisterLandlord([FromBody] RegisterLandlordRequest request)
+    public async Task<IActionResult> RegisterLandlord(
+        [FromBody] RegisterLandlordRequest request,
+        CancellationToken ct)
     {
-        try
-        {
-            var user = await propertyService.RegisterLandlordAsync(request);
-            return StatusCode(StatusCodes.Status201Created, new
+        var command = new RegisterLandlordCommand(
+            request.FullName,
+            request.Email,
+            request.PhoneNumber,
+            request.Password
+        );
+
+        var result = await mediator.Send(command, ct);
+
+        return result.Match<IActionResult>(
+            user => StatusCode(StatusCodes.Status201Created, new
             {
                 user.Id,
                 user.FullName,
                 user.Email,
-                user.PhoneNumber,
                 user.Role,
-                user.IsVerified,
                 message = "Landlord registered successfully. You can now create property listings."
-            });
-        }
-        catch (PropertyValidationException ex)
-        {
-            return BadRequest(new ProblemDetails
+            }),
+            error => BadRequest(new ProblemDetails
             {
-                Title = "Validation Error",
-                Detail = ex.Message,
-                Status = StatusCodes.Status400BadRequest
-            });
-        }
+                Title = error.Code == "conflict" ? "Conflict" : "Validation Error",
+                Detail = error.Message,
+                Status = error.Code == "conflict" ? StatusCodes.Status409Conflict : StatusCodes.Status400BadRequest
+            })
+        );
     }
 
     /// <summary>
-    /// Step 2 & 3: Landlord creates a new property and submits it for Admin verification.
+    /// Step 2: Landlord creates a new property.
     /// </summary>
     [HttpPost]
     [ProducesResponseType(typeof(PropertyCreatedResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [EndpointSummary("Landlord creates and submits a property for verification")]
-    public async Task<IActionResult> CreateProperty([FromBody] CreatePropertyRequest request)
+    public async Task<IActionResult> CreateProperty(
+        [FromBody] CreatePropertyRequest request,
+        CancellationToken ct)
     {
-        try
-        {
-            var landlordId = GetCurrentLandlordId();
-            var result = await propertyService.CreatePropertyAsync(landlordId, request);
-            return CreatedAtAction(nameof(GetPropertyById), new { id = result.Id }, result);
-        }
-        catch (PropertyValidationException ex)
-        {
-            return BadRequest(new ProblemDetails
+        var landlordId = GetCurrentLandlordId();
+        var command = new CreatePropertyCommand(
+            landlordId,
+            request.Title,
+            request.Description,
+            request.PropertyType,
+            request.Rent,
+            request.Deposit,
+            request.Location,
+            request.Bedrooms,
+            request.Bathrooms
+        );
+
+        var result = await mediator.Send(command, ct);
+
+        return result.Match<IActionResult>(
+            created => CreatedAtAction(nameof(GetPropertyById), new { id = created.Id }, created),
+            error => error.Code switch
             {
-                Title = "Invalid Property Data",
-                Detail = ex.Message,
-                Status = StatusCodes.Status400BadRequest
-            });
-        }
+                "landlord_not_found" => NotFound(new ProblemDetails
+                {
+                    Title = "Landlord Not Found",
+                    Detail = error.Message,
+                    Status = StatusCodes.Status404NotFound
+                }),
+                _ => BadRequest(new ProblemDetails
+                {
+                    Title = "Validation Error",
+                    Detail = error.Message,
+                    Status = StatusCodes.Status400BadRequest
+                })
+            }
+        );
+    }
+
+    /// <summary>
+    /// Step 3: Landlord submits an existing property for verification.
+    /// </summary>
+    [HttpPost("{id:guid}/submit-verification")]
+    [ProducesResponseType(typeof(PropertyCreatedResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [EndpointSummary("Submit an existing property listing for auditor verification")]
+    public async Task<IActionResult> SubmitForVerification(
+        [FromRoute] Guid id,
+        CancellationToken ct)
+    {
+        var landlordId = GetCurrentLandlordId();
+        var command = new SubmitPropertyForVerificationCommand(id, landlordId);
+
+        var result = await mediator.Send(command, ct);
+
+        return result.Match<IActionResult>(
+            updated => Ok(updated),
+            error => error.Code switch
+            {
+                "property_not_found" => NotFound(new ProblemDetails
+                {
+                    Title = "Property Not Found",
+                    Detail = error.Message,
+                    Status = StatusCodes.Status404NotFound
+                }),
+                "unauthorized" => StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails
+                {
+                    Title = "Access Forbidden",
+                    Detail = error.Message,
+                    Status = StatusCodes.Status403Forbidden
+                }),
+                _ => BadRequest(new ProblemDetails
+                {
+                    Title = "Invalid Status",
+                    Detail = error.Message,
+                    Status = StatusCodes.Status400BadRequest
+                })
+            }
+        );
     }
 
     /// <summary>
@@ -100,20 +168,21 @@ public class PropertiesController(
         [FromQuery] string? status = null,
         [FromQuery] string? search = null,
         [FromQuery] string? sortBy = "createdAt",
-        [FromQuery] bool sortDescending = true)
+        [FromQuery] bool sortDescending = true,
+        CancellationToken ct = default)
     {
         var landlordId = GetCurrentLandlordId();
-        var pagedRequest = new PagedRequest(page, pageSize);
-
-        var pagedResponse = await propertyService.GetMyPropertiesPagedAsync(
+        var query = new GetLandlordPropertiesQuery(
             landlordId,
-            pagedRequest,
+            page,
+            pageSize,
             status,
             search,
             sortBy,
             sortDescending
         );
 
+        var pagedResponse = await mediator.Send(query, ct);
         return Ok(pagedResponse);
     }
 
@@ -123,10 +192,11 @@ public class PropertiesController(
     [HttpGet("my/stats")]
     [ProducesResponseType(typeof(LandlordStatsDto), StatusCodes.Status200OK)]
     [EndpointSummary("Get landlord portfolio statistics and verification metrics")]
-    public async Task<IActionResult> GetMyStats()
+    public async Task<IActionResult> GetMyStats(CancellationToken ct = default)
     {
         var landlordId = GetCurrentLandlordId();
-        var stats = await propertyService.GetLandlordStatsAsync(landlordId);
+        var query = new GetLandlordStatsQuery(landlordId);
+        var stats = await mediator.Send(query, ct);
         return Ok(stats);
     }
 
@@ -137,20 +207,22 @@ public class PropertiesController(
     [ProducesResponseType(typeof(PropertyDetailResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [EndpointSummary("Get property details with verified landlord contact")]
-    public async Task<IActionResult> GetPropertyById([FromRoute] Guid id)
+    public async Task<IActionResult> GetPropertyById(
+        [FromRoute] Guid id,
+        CancellationToken ct = default)
     {
-        var property = await propertyService.GetPropertyByIdAsync(id);
-        if (property == null)
-        {
-            return NotFound(new ProblemDetails
+        var query = new GetPropertyByIdQuery(id);
+        var result = await mediator.Send(query, ct);
+
+        return result.Match<IActionResult>(
+            property => Ok(property),
+            error => NotFound(new ProblemDetails
             {
                 Title = "Property Not Found",
-                Detail = $"Property with ID '{id}' was not found in the system.",
+                Detail = error.Message,
                 Status = StatusCodes.Status404NotFound
-            });
-        }
-
-        return Ok(property);
+            })
+        );
     }
 
     /// <summary>
@@ -162,40 +234,50 @@ public class PropertiesController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [EndpointSummary("Landlord updates a property listing")]
-    public async Task<IActionResult> UpdateProperty([FromRoute] Guid id, [FromBody] UpdatePropertyRequest request)
+    public async Task<IActionResult> UpdateProperty(
+        [FromRoute] Guid id,
+        [FromBody] UpdatePropertyRequest request,
+        CancellationToken ct = default)
     {
-        try
-        {
-            var landlordId = GetCurrentLandlordId();
-            var updated = await propertyService.UpdatePropertyAsync(landlordId, id, request);
-            return Ok(updated);
-        }
-        catch (UnauthorizedPropertyAccessException ex)
-        {
-            return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails
+        var landlordId = GetCurrentLandlordId();
+        var command = new UpdatePropertyCommand(
+            id,
+            landlordId,
+            request.Title,
+            request.Description,
+            request.PropertyType,
+            request.Rent,
+            request.Deposit,
+            request.Location,
+            request.Bedrooms,
+            request.Bathrooms
+        );
+
+        var result = await mediator.Send(command, ct);
+
+        return result.Match<IActionResult>(
+            updated => Ok(updated),
+            error => error.Code switch
             {
-                Title = "Access Forbidden",
-                Detail = ex.Message,
-                Status = StatusCodes.Status403Forbidden
-            });
-        }
-        catch (PropertyNotFoundException ex)
-        {
-            return NotFound(new ProblemDetails
-            {
-                Title = "Property Not Found",
-                Detail = ex.Message,
-                Status = StatusCodes.Status404NotFound
-            });
-        }
-        catch (PropertyValidationException ex)
-        {
-            return BadRequest(new ProblemDetails
-            {
-                Title = "Validation Error",
-                Detail = ex.Message,
-                Status = StatusCodes.Status400BadRequest
-            });
-        }
+                "unauthorized" => StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails
+                {
+                    Title = "Access Forbidden",
+                    Detail = error.Message,
+                    Status = StatusCodes.Status403Forbidden
+                }),
+                "property_not_found" => NotFound(new ProblemDetails
+                {
+                    Title = "Property Not Found",
+                    Detail = error.Message,
+                    Status = StatusCodes.Status404NotFound
+                }),
+                _ => BadRequest(new ProblemDetails
+                {
+                    Title = "Validation Error",
+                    Detail = error.Message,
+                    Status = StatusCodes.Status400BadRequest
+                })
+            }
+        );
     }
 }

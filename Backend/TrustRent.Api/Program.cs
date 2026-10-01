@@ -1,10 +1,15 @@
 using Scalar.AspNetCore;
+using TrustRent.Application.Properties.Commands;
 using TrustRent.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. REGISTER SERVICES
 builder.Services.AddControllers();
+
+// MediatR Pipeline Configuration for CQRS (Commands & Queries)
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(CreatePropertyCommand).Assembly));
 
 // Add Infrastructure & Application Services (Clean Architecture)
 builder.Services.AddInfrastructureServices();
