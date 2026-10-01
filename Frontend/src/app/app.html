@@ -627,51 +627,47 @@
             </span>
           </div>
 
-          <!-- Title Input -->
+          <!-- Title Input (Backend DTO: Title) -->
           <div class="space-y-1">
-            <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Listing Headline / Title</label>
+            <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Listing Headline / Title *</label>
             <input type="text" [(ngModel)]="newProperty.title" name="title" required
                    class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary outline-none transition-all border border-surface-container"
                    placeholder="e.g. Modern 2-Bedroom Condo in Bole Medhanialem"/>
           </div>
 
-          <!-- Location Inputs Grid -->
+          <!-- Description Textarea (Backend DTO: Description) -->
+          <div class="space-y-1">
+            <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Property Description (Features & Terms) *</label>
+            <textarea [(ngModel)]="newProperty.description" name="description" rows="3" required
+                      class="w-full p-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-sm focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary outline-none transition-all border border-surface-container"
+                      placeholder="Describe the property, nearby landmarks, backup water, standby generator, security, etc."></textarea>
+          </div>
+
+          <!-- Location (Backend DTO: Location) -->
           <div class="grid grid-cols-12 gap-space-md">
             <div class="col-span-8 space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="street_addr">Street Address / Landmark</label>
+              <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="location_input">Location (Subcity, City / Area) *</label>
               <div class="relative">
-                <input type="text" [(ngModel)]="streetAddress" name="streetAddress" id="street_addr"
+                <input type="text" [(ngModel)]="newProperty.location" name="location" id="location_input" required
+                       placeholder="e.g. Bole, Addis Ababa"
                        class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary outline-none transition-all border border-surface-container"/>
                 <span class="material-symbols-outlined absolute right-3 top-3 text-secondary text-lg">pin_drop</span>
               </div>
             </div>
             <div class="col-span-4 space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="unit_apt">Unit / Apt / Floor</label>
-              <input type="text" [(ngModel)]="unitApt" name="unitApt" id="unit_apt"
-                     class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary outline-none transition-all border border-surface-container"/>
-            </div>
-
-            <div class="col-span-4 space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="city_val">City</label>
-              <input type="text" [(ngModel)]="city" name="city" id="city_val" readonly
-                     class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest font-semibold border border-surface-container"/>
-            </div>
-            <div class="col-span-4 space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="subcity_val">Subcity (Kifle Ketema)</label>
-              <select [(ngModel)]="subcity" name="subcity" id="subcity_val"
-                      class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary outline-none transition-all border border-surface-container">
-                <option value="Bole">Bole</option>
-                <option value="Kirkos">Kirkos (Kazanchis / Meskel Sq)</option>
-                <option value="Yeka">Yeka (CMC / Megenagna)</option>
-                <option value="Nifas Silk-Lafto">Nifas Silk-Lafto (Sarbet / Lebu)</option>
-                <option value="Lideta">Lideta</option>
-                <option value="Arada">Arada (Piazza / 4 Kilo)</option>
+              <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Quick Subcity Preset</label>
+              <select (change)="onSubcitySelect($event)" 
+                      class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-sm border border-surface-container focus:ring-2 focus:ring-primary">
+                <option value="">Choose Subcity...</option>
+                <option value="Bole, Addis Ababa">Bole, Addis Ababa</option>
+                <option value="Kazanchis, Addis Ababa">Kazanchis, Addis Ababa</option>
+                <option value="CMC, Addis Ababa">CMC, Addis Ababa</option>
+                <option value="Sarbet, Addis Ababa">Sarbet, Addis Ababa</option>
+                <option value="Old Airport, Addis Ababa">Old Airport, Addis Ababa</option>
+                <option value="Gerji, Addis Ababa">Gerji, Addis Ababa</option>
+                <option value="Bole Medhanialem, Addis Ababa">Bole Medhanialem, Addis Ababa</option>
+                <option value="Yeka, Addis Ababa">Yeka, Addis Ababa</option>
               </select>
-            </div>
-            <div class="col-span-4 space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="neighborhood_val">Neighborhood / Submarket</label>
-              <input type="text" [(ngModel)]="neighborhood" name="neighborhood" id="neighborhood_val"
-                     class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary outline-none transition-all border border-surface-container"/>
             </div>
           </div>
 
@@ -837,6 +833,18 @@
             <div class="text-right">
               <span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-secondary font-bold">
                 <span class="material-symbols-outlined text-xs">bolt</span> Review Turnaround: &sim; 4.2 hrs
+              </span>
+            </div>
+          </div>
+
+          <!-- Backend Contract Alignment Notice -->
+          <div class="p-3 bg-secondary-container/20 rounded-lg border border-secondary/30 text-xs text-on-surface flex items-start gap-2">
+            <span class="material-symbols-outlined text-secondary text-base flex-shrink-0">info</span>
+            <div>
+              <span class="font-bold text-secondary block">Backend Contract Alignment:</span>
+              <span>
+                Document records and photographic evidence are simulated verification assets for the Auditor. The listing is sent and registered in the backend with the exact 8 DTO fields:
+                <strong>Title, Description, PropertyType, Rent (ETB), Deposit (ETB), Location, Bedrooms, and Bathrooms</strong>.
               </span>
             </div>
           </div>

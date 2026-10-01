@@ -215,12 +215,41 @@ export class App implements OnInit {
     this.currentStep.set(step);
   }
 
+  onSubcitySelect(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    if (select && select.value) {
+      this.newProperty.location = select.value;
+    }
+  }
+
   // ==========================================
   // LANDLORD WORKFLOW: CREATE & SUBMIT PROPERTY
+  // Sends STRICTLY the 8 fields defined in backend CreatePropertyRequest:
+  // (Title, Description, PropertyType, Rent, Deposit, Location, Bedrooms, Bathrooms)
   // ==========================================
   onSubmitProperty() {
-    if (!this.newProperty.title || !this.newProperty.rent || this.newProperty.rent <= 0) {
-      this.showToast('Please provide a valid property title and monthly rent in ETB.', 'error');
+    if (!this.newProperty.title || !this.newProperty.title.trim()) {
+      this.showToast('Please provide a property title.', 'error');
+      return;
+    }
+
+    if (!this.newProperty.description || !this.newProperty.description.trim()) {
+      this.showToast('Please provide a property description.', 'error');
+      return;
+    }
+
+    if (!this.newProperty.location || !this.newProperty.location.trim()) {
+      this.showToast('Please provide a location (e.g. Bole, Addis Ababa).', 'error');
+      return;
+    }
+
+    if (!this.newProperty.rent || this.newProperty.rent <= 0) {
+      this.showToast('Monthly rent must be greater than 0 ETB.', 'error');
+      return;
+    }
+
+    if (this.newProperty.deposit < 0) {
+      this.showToast('Deposit amount cannot be negative.', 'error');
       return;
     }
 
@@ -229,17 +258,39 @@ export class App implements OnInit {
       return;
     }
 
-    // Format full location with Ethiopian neighborhood details
-    this.newProperty.location = `${this.subcity}, Addis Ababa (${this.streetAddress})`;
+    // STRICTLY send ONLY the 8 fields defined in the backend CreatePropertyRequest record:
+    const payload: CreatePropertyDto = {
+      title: this.newProperty.title.trim(),
+      description: this.newProperty.description.trim(),
+      propertyType: this.newProperty.propertyType || 'Apartment',
+      rent: Number(this.newProperty.rent),
+      deposit: Number(this.newProperty.deposit),
+      location: this.newProperty.location.trim(),
+      bedrooms: Number(this.newProperty.bedrooms) > 0 ? Number(this.newProperty.bedrooms) : 1,
+      bathrooms: Number(this.newProperty.bathrooms) > 0 ? Number(this.newProperty.bathrooms) : 1
+    };
 
     this.isLoading.set(true);
-    this.landlordService.createProperty(this.newProperty).subscribe({
+    this.landlordService.createProperty(payload).subscribe({
       next: (response) => {
         this.isLoading.set(false);
         this.closeCreateModal();
-        this.showToast(`Property "${response.title}" submitted! Status: PENDING Auditor Review.`, 'success');
+        this.showToast(`Property "${response.title}" submitted to backend! Status: PENDING Auditor Review.`, 'success');
         
+        // Reset form
+        this.newProperty = {
+          title: '',
+          description: '',
+          propertyType: 'Condominium',
+          rent: 25000,
+          deposit: 50000,
+          location: 'Bole, Addis Ababa',
+          bedrooms: 2,
+          bathrooms: 2
+        };
+
         // Reset to first page & refresh properties & KPI counters
+        this.statusFilter.set('All');
         this.page.set(1);
         this.loadProperties();
         this.loadStats();
