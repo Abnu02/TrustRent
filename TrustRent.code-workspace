@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "Backend/TrustRent.Api"
+		},
+		{
+			"path": "Backend/TrustRent.Application"
+		},
+		{
+			"path": "Backend/TrustRent.Domain"
+		},
+		{
+			"path": "Backend/TrustRent.Infrastructure"
+		},
+		{
+			"path": "Frontend/src"
+		},
+	],
+	"settings": {}
+}
