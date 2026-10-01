@@ -1,0 +1,243 @@
+<app-tenant-navbar />
+
+<main class="tenant-page">
+
+  <!-- Welcome -->
+  <section class="welcome-card">
+
+    <div class="welcome-icon">
+      ✓
+    </div>
+
+    <div class="welcome-content">
+      <span class="eyebrow">
+        Verified Tenant
+      </span>
+
+      <h1>
+        Welcome back, Alex
+      </h1>
+
+      <p>
+        Discover verified rental properties that match
+        your preferences.
+      </p>
+    </div>
+
+    <div class="welcome-stats">
+
+      <div class="stat">
+        <strong>{{ filteredProperties().length }}</strong>
+        <span>Available</span>
+      </div>
+
+      <div class="stat">
+        <strong>{{ properties().length }}</strong>
+        <span>Verified</span>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- Filters -->
+  <section class="filter-panel">
+
+    <div class="filter-heading">
+      <div>
+        <span class="eyebrow">
+          Property Search
+        </span>
+
+        <h2>
+          Find your next home
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="reset-button"
+        (click)="resetFilters()">
+
+        Reset filters
+
+      </button>
+    </div>
+
+
+    <div class="filters-grid">
+
+      <!-- Location -->
+      <div class="filter-group location-filter">
+
+        <label>
+          Location
+        </label>
+
+        <div class="input-wrapper">
+
+          <span class="input-icon">⌖</span>
+
+          <input
+            type="text"
+            placeholder="Bole, Sarbet, CMC..."
+            [value]="location()"
+            (input)="setLocation($any($event.target).value)"
+          />
+
+        </div>
+
+      </div>
+
+
+      <!-- Bedrooms -->
+      <div class="filter-group">
+
+        <label>
+          Bedrooms
+        </label>
+
+        <div class="bedroom-options">
+
+          <button
+            type="button"
+            [class.active]="selectedBedrooms() === null"
+            (click)="setBedrooms(null)">
+
+            Any
+
+          </button>
+
+          @for (bedroom of bedroomOptions; track bedroom) {
+
+            <button
+              type="button"
+              [class.active]="selectedBedrooms() === bedroom"
+              (click)="setBedrooms(bedroom)">
+
+              {{ bedroom }}
+
+            </button>
+
+          }
+
+        </div>
+
+      </div>
+
+
+      <!-- Price -->
+      <div class="filter-group price-filter">
+
+        <div class="price-label">
+          <label>
+            Monthly rent
+          </label>
+
+          <strong>
+            {{ minRent() | number }} -
+            {{ maxRent() | number }} ETB
+          </strong>
+        </div>
+
+        <div class="price-inputs">
+
+          <input
+            type="number"
+            min="0"
+            [value]="minRent()"
+            (input)="setMinRent(+$any($event.target).value)"
+          />
+
+          <span>to</span>
+
+          <input
+            type="number"
+            min="0"
+            [value]="maxRent()"
+            (input)="setMaxRent(+$any($event.target).value)"
+          />
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- Results -->
+  <section class="properties-section">
+
+    <div class="section-header">
+
+      <div>
+        <span class="eyebrow">
+          Verified Inventory
+        </span>
+
+        <h2>
+          Verified available residences
+        </h2>
+      </div>
+
+      <span class="result-count">
+        {{ filteredProperties().length }}
+        properties
+      </span>
+
+    </div>
+
+
+    @if (filteredProperties().length > 0) {
+
+      <div class="property-grid">
+
+        @for (
+          property of filteredProperties();
+          track property.id
+        ) {
+
+          <app-property-card
+            [property]="property"
+            (viewDetails)="viewProperty($event)"
+          />
+
+        }
+
+      </div>
+
+    } @else {
+
+      <div class="empty-state">
+
+        <div class="empty-icon">
+          ⌂
+        </div>
+
+        <h3>
+          No properties found
+        </h3>
+
+        <p>
+          Try changing your location, bedroom,
+          or price filters.
+        </p>
+
+        <button
+          type="button"
+          (click)="resetFilters()">
+
+          Clear filters
+
+        </button>
+
+      </div>
+
+    }
+
+  </section>
+
+</main>

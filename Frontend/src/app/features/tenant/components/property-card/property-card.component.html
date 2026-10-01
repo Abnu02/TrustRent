@@ -1,0 +1,92 @@
+<article class="property-card">
+
+  <div class="image-container">
+
+    <img
+      [src]="property.imageUrl"
+      [alt]="property.title"
+      loading="lazy"
+    />
+
+    <div class="verified-badge">
+      <span>✓</span>
+      Platform Verified
+    </div>
+
+    <div class="property-type">
+      {{ property.propertyType }}
+    </div>
+
+  </div>
+
+
+  <div class="card-content">
+
+    <div class="price">
+      {{ property.rent | number }}
+      <span>ETB / month</span>
+    </div>
+
+    <h3>
+      {{ property.title }}
+    </h3>
+
+    <p class="location">
+      <span>⌖</span>
+      {{ property.location }}
+    </p>
+
+
+    <div class="property-meta">
+
+      <div>
+        <strong>{{ property.bedrooms }}</strong>
+        <span>Bedrooms</span>
+      </div>
+
+      <div>
+        <strong>{{ property.bathrooms }}</strong>
+        <span>Bathrooms</span>
+      </div>
+
+      <div>
+        <strong>{{ property.deposit | number }}</strong>
+        <span>Deposit</span>
+      </div>
+
+    </div>
+
+
+    <div class="card-footer">
+
+      <div class="trust">
+
+        <span class="trust-icon">
+          ✓
+        </span>
+
+        <div>
+          <strong>Verified Property</strong>
+          <small>
+            Platform reviewed
+          </small>
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="details-button"
+        (click)="viewDetails.emit(property.id)">
+
+        View details
+        <span>→</span>
+
+      </button>
+
+    </div>
+
+  </div>
+
+</article>

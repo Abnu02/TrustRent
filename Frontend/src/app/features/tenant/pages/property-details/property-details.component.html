@@ -1,0 +1,204 @@
+<app-tenant-navbar />
+
+@if (property(); as property) {
+
+  <main class="details-page">
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="goBack()">
+
+      ← Back to properties
+
+    </button>
+
+
+    <section class="hero">
+
+      <div class="hero-image">
+
+        <img
+          [src]="property.imageUrl"
+          [alt]="property.title"
+        />
+
+        <div class="verified-badge">
+          ✓ Platform Verified
+        </div>
+
+      </div>
+
+
+      <div class="hero-content">
+
+        <span class="property-type">
+          {{ property.propertyType }}
+        </span>
+
+        <h1>
+          {{ property.title }}
+        </h1>
+
+        <p class="location">
+          ⌖ {{ property.location }}
+        </p>
+
+        <div class="price">
+          {{ property.rent | number }}
+          <span>ETB / month</span>
+        </div>
+
+        <div class="property-stats">
+
+          <div>
+            <strong>{{ property.bedrooms }}</strong>
+            <span>Bedrooms</span>
+          </div>
+
+          <div>
+            <strong>{{ property.bathrooms }}</strong>
+            <span>Bathrooms</span>
+          </div>
+
+          <div>
+            <strong>{{ property.deposit | number }}</strong>
+            <span>Deposit</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="content-grid">
+
+      <div class="main-content">
+
+        <article class="content-card">
+
+          <h2>About this property</h2>
+
+          <p>
+            {{ property.description }}
+          </p>
+
+        </article>
+
+
+        <article class="content-card">
+
+          <h2>Property information</h2>
+
+          <div class="info-grid">
+
+            <div>
+              <span>Property type</span>
+              <strong>{{ property.propertyType }}</strong>
+            </div>
+
+            <div>
+              <span>Bedrooms</span>
+              <strong>{{ property.bedrooms }}</strong>
+            </div>
+
+            <div>
+              <span>Bathrooms</span>
+              <strong>{{ property.bathrooms }}</strong>
+            </div>
+
+            <div>
+              <span>Monthly rent</span>
+              <strong>
+                {{ property.rent | number }} ETB
+              </strong>
+            </div>
+
+            <div>
+              <span>Deposit</span>
+              <strong>
+                {{ property.deposit | number }} ETB
+              </strong>
+            </div>
+
+            <div>
+              <span>Status</span>
+              <strong class="approved">
+                ✓ {{ property.status }}
+              </strong>
+            </div>
+
+          </div>
+
+        </article>
+
+      </div>
+
+
+      <aside>
+
+        <article class="landlord-card">
+
+          <div class="landlord-title">
+
+            <div class="landlord-avatar">
+              {{ property.landlord.fullName.charAt(0) }}
+            </div>
+
+            <div>
+              <span>Verified landlord</span>
+
+              <h3>
+                {{ property.landlord.fullName }}
+              </h3>
+
+              @if (property.landlord.isVerified) {
+
+                <small>
+                  ✓ Identity verified
+                </small>
+
+              }
+
+            </div>
+
+          </div>
+
+
+          <div class="contact-info">
+
+            <a
+              [href]="'tel:' + property.landlord.phoneNumber">
+
+              ☎
+              {{ property.landlord.phoneNumber }}
+
+            </a>
+
+            <a
+              [href]="'mailto:' + property.landlord.email">
+
+              ✉
+              {{ property.landlord.email }}
+
+            </a>
+
+          </div>
+
+
+          <p class="contact-note">
+            The landlord contact information is provided
+            for direct rental communication.
+          </p>
+
+        </article>
+
+      </aside>
+
+    </section>
+
+  </main>
+
+}
