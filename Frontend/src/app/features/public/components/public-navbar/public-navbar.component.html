@@ -1,0 +1,150 @@
+<header class="public-navbar">
+
+  <div class="navbar-container">
+
+    <!-- LOGO -->
+    <a
+      routerLink="/"
+      class="brand"
+      (click)="closeMobileMenu()"
+    >
+      <div class="brand-icon">
+        <span class="material-symbols-outlined">
+          verified_user
+        </span>
+      </div>
+
+      <div class="brand-text">
+        <span class="brand-name">
+          TrustRent
+        </span>
+
+        <span class="brand-subtitle">
+          VERIFIED RENTALS
+        </span>
+      </div>
+    </a>
+
+
+    <!-- DESKTOP NAVIGATION -->
+    <nav class="desktop-nav">
+
+      <a
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Home
+      </a>
+
+      <a href="#about">
+        About
+      </a>
+
+      <a href="#services">
+        Services
+      </a>
+
+      <a href="#verification">
+        How Verification Works
+      </a>
+
+      <a href="#rented-properties">
+        Rented Properties
+      </a>
+
+      <a href="#contact">
+        Contact
+      </a>
+
+    </nav>
+
+
+    <!-- SIGN IN -->
+    <div class="navbar-actions">
+
+      <a
+        routerLink="/login"
+        class="sign-in-button"
+      >
+        Sign In
+      </a>
+
+    </div>
+
+
+    <!-- MOBILE BUTTON -->
+    <button
+      type="button"
+      class="mobile-menu-button"
+      (click)="toggleMobileMenu()"
+      aria-label="Toggle navigation"
+    >
+      <span class="material-symbols-outlined">
+        {{ mobileMenuOpen() ? 'close' : 'menu' }}
+      </span>
+    </button>
+
+  </div>
+
+
+  <!-- MOBILE NAVIGATION -->
+  @if (mobileMenuOpen()) {
+
+    <div class="mobile-nav">
+
+      <a
+        routerLink="/"
+        (click)="closeMobileMenu()"
+      >
+        Home
+      </a>
+
+      <a
+        href="#about"
+        (click)="closeMobileMenu()"
+      >
+        About
+      </a>
+
+      <a
+        href="#services"
+        (click)="closeMobileMenu()"
+      >
+        Services
+      </a>
+
+      <a
+        href="#verification"
+        (click)="closeMobileMenu()"
+      >
+        How Verification Works
+      </a>
+
+      <a
+        href="#rented-properties"
+        (click)="closeMobileMenu()"
+      >
+        Rented Properties
+      </a>
+
+      <a
+        href="#contact"
+        (click)="closeMobileMenu()"
+      >
+        Contact
+      </a>
+
+      <a
+        routerLink="/login"
+        class="mobile-sign-in"
+        (click)="closeMobileMenu()"
+      >
+        Sign In
+      </a>
+
+    </div>
+
+  }
+
+</header>
