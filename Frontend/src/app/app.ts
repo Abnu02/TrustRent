@@ -18,18 +18,25 @@ export class App implements OnInit {
   protected readonly landlordService = inject(LandlordService);
   private http = inject(HttpClient);
 
-  // Active view tab: 'create' | 'my-properties' | 'register'
-  activeTab = signal<'create' | 'my-properties' | 'register'>('my-properties');
+  // Navigation & Role states
+  activeNav = signal<string>('landlord-portal');
+  activeRole = signal<'Tenant' | 'Landlord' | 'Auditor'>('Landlord');
 
-  // Loading state
+  // Modal & Drawer visibility signals
+  isCreateModalOpen = signal<boolean>(false);
+  isDrawerOpen = signal<boolean>(false);
+  isRegisterModalOpen = signal<boolean>(false);
+
+  // Stepper state in Create Property Modal (1: Details, 2: Pricing, 3: Deed & Ownership, 4: Audit)
+  currentStep = signal<number>(3);
+
+  // Loading & Toast signals
   isLoading = signal<boolean>(false);
-
-  // Notification Toast
   toastMessage = signal<string | null>(null);
   toastType = signal<'success' | 'error'>('success');
 
   // ==========================================
-  // PAGINATION, FILTERING & SEARCH SIGNALS (Module 6 & 8)
+  // PAGINATION, FILTERING & SEARCH SIGNALS (TMS Modules 6 & 8)
   // ==========================================
   page = signal<number>(1);
   pageSize = signal<number>(6);
@@ -49,18 +56,33 @@ export class App implements OnInit {
   hasPrev = computed(() => this.pagedData()?.hasPreviousPage ?? false);
   hasNext = computed(() => this.pagedData()?.hasNextPage ?? false);
 
-  // Form Models
+  // ==========================================
+  // FORM MODELS (Ethiopian Context & Strict Verifications)
+  // ==========================================
   newProperty: CreatePropertyDto = {
-    title: 'Modern 2 Bedroom Apartment',
-    description: 'Clean and spacious apartment near Bole Edna Mall with 24/7 water backup reservoir.',
-    propertyType: 'Apartment',
-    rent: 25000,
-    deposit: 50000,
+    title: 'Luxury 2-Bedroom Condo in Bole Medhanialem',
+    description: 'Modern luxury condominium with standby generator, 24/7 backup water tanker, and high security.',
+    propertyType: 'Condominium',
+    rent: 28000,
+    deposit: 56000,
     location: 'Bole, Addis Ababa',
     bedrooms: 2,
     bathrooms: 2
   };
 
+  // Form Specs
+  streetAddress = 'Cameroon St, Near Edna Mall';
+  unitApt = 'Unit 402, 4th Floor';
+  city = 'Addis Ababa';
+  subcity = 'Bole';
+  neighborhood = 'Bole Medhanialem / Brass';
+  squareFootage = 1150;
+  yearBuilt = 2022;
+  leaseTerm = '12 Months';
+  availableDate = 'Nov 1, 2026';
+  legalAttest = signal<boolean>(true);
+
+  // Registration Form Model
   registerForm = {
     fullName: 'Abreham Bekele',
     email: 'abreham@example.com',
@@ -68,17 +90,42 @@ export class App implements OnInit {
     password: 'password123'
   };
 
+  // Real estate photography collection
+  readonly propertyImages: string[] = [
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuC4GkmJp0yFpbR4rjoIj7oS0S_Yipj6HdRYF2rKLT0aOYQa-2y8n1jo2isQg1N7GgkAz19DC6eNeRpxPA034jSX2Wxp0GS-1at7OGONUqSQAJ5Nkvy65T3iWw9DM27lCyziprCbBG-HxzX5vWPSVuAAZwXWyrpN9loma9cGwki4xjvWEtcXdiKv5qauS_jHu0biwXnS8lajCmlTsX0FX4tFTeHcUofcT_fjZv2ICndHPzbV-RrUa7a6dQ',
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuDh6oks2Ck2JK_ab1J_jSw2QqzNK4Y3G6B6bhteFqOd0Lby7pkv3jDzDO2hEYuEaAS9NUKmNchOz_5ZWNMRwNzeow_B0vGp-X0LOit5KmyoH5ib-hHVMwBXwvJgje9PGgiG5EZUhVmfUBhRQiFlLgmtDQZ2CnAaM-2Piya1xqoiLDRyuZYVaPgP2hEzhJ6PYODh6ctmUjUEtU3XsFOjqPOCoCESzfeObbXN-0zO5Rs_06_Qi2AJKROfkQ',
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuA_4sZ4g_XM-fZg6un6WmAnQelKSPTkUMiXG1hgyYN7poVSKcLIUgLK5rmNA1G7vBa0AOM0xPmBbO5_0OfsGOOaRwZ9D4Vr_e-9HwhZrZjXVVxIXwCOwuZMotoclMLp4DwJ8e-wFgjiqbZzspTB7RhPzCIaOFCUzpqm4s8PDN_EZlno_PW8AbYkzb6QkuQyYBy6yIbBZJn2ZiI2EC9thLsJvCcpok1aJAIPnVdF91OeKMnISEZzBqXUCg',
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuDRxoAkRBCgv45Al5xvA_LWlhQusmTbdovqa1MSWRcgUAZIqup0rSTrW5f70Hy3WtSvuCHB8h3Np-QyuggTkltiEtuhU88CQKQaeuX6MRKSg9PH32hcxHCrkJAgAAlte3h-JtMR51mcdM9cxkD9wuEJd-JNcxZG-_YHuDI1MQxg_qwPXTScAh7htlssefpN9BEqkiCyT7KrtIb52eao6r5ghHa9c68W00BoAsciunKlsSmVogeM_1s9KA',
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuCYsNd7lo-QyEpcF0-cNzDoK2wKue7YYe8ZCFRnVUE9PhZiekHPd4msj12WncNjJTXnjNKnz2ojYeIqxIlCWLJqsYBdtD4iFRJ693A-zUM5BjRiWiMTXIoU37h5tXy1wq1FpE-ym2sQIGUzXI5Yt2CyQddD80bqqIfxMexns8-fia1_jQavNgvm8XQnz3K3U5Z80cl7SOMmk2YCvv9L-yMbiKME-pDKB0dwrSGPUfs8dJ1xqg0UtpVPHw',
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuC-G2lKeenGn0ON6EtT31ve5DIv-oyFTd0-Je8JNWRSwArcmCGGAEWWbmXxa4Y_ym0z6q5LMUad0xEAt9sW_u6llrHCwmLJGY4etYwan3qR4Mi_1CXULUfblnd52fyFcdhEU5g2spV7GKFosyaU9crGL0zKUi0GmoPEoouTF89CTl9ld6tiDxqiPy7SXg7ln0iJ6q-8yCfxEyfnrXkh5yb7GyHOI3ZRk2JVFTPJbTPIBlopB6AWuZD-fQ'
+  ];
+
   ngOnInit() {
     this.loadProperties();
     this.loadStats();
   }
 
+  getPropertyImage(index: number): string {
+    return this.propertyImages[index % this.propertyImages.length];
+  }
+
+  getMockViews(index: number): number {
+    return 180 + (index * 73) % 240;
+  }
+
+  getMockInquiries(index: number): number {
+    return 6 + (index * 4) % 19;
+  }
+
   showToast(message: string, type: 'success' | 'error' = 'success') {
     this.toastMessage.set(message);
     this.toastType.set(type);
-    setTimeout(() => this.toastMessage.set(null), 4500);
+    setTimeout(() => this.toastMessage.set(null), 5000);
   }
 
+  // ==========================================
+  // DATA FETCHING & PAGINATION (TMS Pattern)
+  // ==========================================
   loadProperties() {
     this.isLoading.set(true);
     this.landlordService.getMyPropertiesPaged(
@@ -107,9 +154,6 @@ export class App implements OnInit {
     });
   }
 
-  // ==========================================
-  // PAGINATION CONTROLS
-  // ==========================================
   onPageChange(newPage: number) {
     if (newPage >= 1 && newPage <= this.totalPages()) {
       this.page.set(newPage);
@@ -119,7 +163,7 @@ export class App implements OnInit {
 
   onStatusFilterChange(status: string) {
     this.statusFilter.set(status);
-    this.page.set(1); // Reset to first page
+    this.page.set(1);
     this.loadProperties();
   }
 
@@ -140,25 +184,65 @@ export class App implements OnInit {
   }
 
   // ==========================================
-  // LANDLORD WORKFLOW ACTIONS
+  // MODAL & DRAWER TRIGGERS
+  // ==========================================
+  openCreateModal() {
+    this.currentStep.set(3);
+    this.isCreateModalOpen.set(true);
+  }
+
+  closeCreateModal() {
+    this.isCreateModalOpen.set(false);
+  }
+
+  openDrawer() {
+    this.isDrawerOpen.set(true);
+  }
+
+  closeDrawer() {
+    this.isDrawerOpen.set(false);
+  }
+
+  openRegisterModal() {
+    this.isRegisterModalOpen.set(true);
+  }
+
+  closeRegisterModal() {
+    this.isRegisterModalOpen.set(false);
+  }
+
+  setStep(step: number) {
+    this.currentStep.set(step);
+  }
+
+  // ==========================================
+  // LANDLORD WORKFLOW: CREATE & SUBMIT PROPERTY
   // ==========================================
   onSubmitProperty() {
-    if (!this.newProperty.title || !this.newProperty.location || this.newProperty.rent <= 0) {
-      this.showToast('Please fill all required fields with valid values.', 'error');
+    if (!this.newProperty.title || !this.newProperty.rent || this.newProperty.rent <= 0) {
+      this.showToast('Please provide a valid property title and monthly rent in ETB.', 'error');
       return;
     }
+
+    if (!this.legalAttest()) {
+      this.showToast('You must certify ownership & legal deed credentials before submitting.', 'error');
+      return;
+    }
+
+    // Format full location with Ethiopian neighborhood details
+    this.newProperty.location = `${this.subcity}, Addis Ababa (${this.streetAddress})`;
 
     this.isLoading.set(true);
     this.landlordService.createProperty(this.newProperty).subscribe({
       next: (response) => {
         this.isLoading.set(false);
-        this.showToast(`Property "${response.title}" submitted! Status: PENDING Admin review.`, 'success');
+        this.closeCreateModal();
+        this.showToast(`Property "${response.title}" submitted! Status: PENDING Auditor Review.`, 'success');
         
-        // Refresh list & stats, then switch to My Listings
+        // Reset to first page & refresh properties & KPI counters
         this.page.set(1);
         this.loadProperties();
         this.loadStats();
-        this.activeTab.set('my-properties');
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -167,6 +251,9 @@ export class App implements OnInit {
     });
   }
 
+  // ==========================================
+  // LANDLORD ONBOARDING: REGISTER
+  // ==========================================
   onRegisterLandlord() {
     if (!this.registerForm.fullName || !this.registerForm.email || !this.registerForm.phoneNumber) {
       this.showToast('Please fill out all registration fields.', 'error');
@@ -190,10 +277,10 @@ export class App implements OnInit {
           role: 'Landlord',
           isVerified: res.isVerified
         });
-        this.showToast(`Landlord ${res.fullName} registered! Proceed to create your property.`, 'success');
+        this.closeRegisterModal();
+        this.showToast(`Welcome ${res.fullName}! Landlord profile active.`, 'success');
         this.loadProperties();
         this.loadStats();
-        this.activeTab.set('create');
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -204,13 +291,16 @@ export class App implements OnInit {
 
   // Demo Helper: Simulates Admin approval so judges see status flip live!
   simulateAdminApprove(propertyId: string) {
+    this.isLoading.set(true);
     this.http.put(`http://localhost:5151/api/v1/admin/properties/${propertyId}/approve`, {}).subscribe({
       next: () => {
-        this.showToast('Admin approved listing! Status is now VERIFIED & LIVE.', 'success');
+        this.isLoading.set(false);
+        this.showToast('Auditor verification complete! Listing is now APPROVED & LIVE on TrustRent.', 'success');
         this.loadProperties();
         this.loadStats();
       },
       error: () => {
+        this.isLoading.set(false);
         this.showToast('Failed to approve property.', 'error');
       }
     });
