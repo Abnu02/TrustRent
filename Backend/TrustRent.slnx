@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="TrustRent.Api/TrustRent.Api.csproj" />
+  <Project Path="TrustRent.Application/TrustRent.Application.csproj" />
+  <Project Path="TrustRent.Domain/TrustRent.Domain.csproj" />
+</Solution>
