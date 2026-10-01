@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TrustRent.Application\TrustRent.Application.csproj" />
+    <ProjectReference Include="..\TrustRent.Domain\TrustRent.Domain.csproj" />
   </ItemGroup>
 
 </Project>

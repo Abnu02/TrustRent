@@ -1,0 +1,52 @@
+<section class="page-heading">
+  <div>
+    <span class="eyebrow">Verification</span>
+    <h1>Landlord reviews</h1>
+    <p>Confirm identity and property ownership.</p>
+  </div>
+  <span class="queue-count"><app-admin-icon name="clock" /> 7 awaiting review</span>
+</section>
+
+<section class="panel">
+  <div class="panel__heading">
+    <div><h2>Verification queue</h2><span>3 recent submissions</span></div>
+    <label class="search">
+      <app-admin-icon name="search" />
+      <input
+        type="search"
+        placeholder="Search landlords"
+        aria-label="Search landlords"
+        [value]="searchQuery"
+        (input)="setSearchQuery($event)"
+      />
+    </label>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Landlord</th><th>Submitted</th><th>Identity</th><th>Ownership</th><th>Liveness</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        @for (submission of filteredSubmissions; track submission.email) {
+          <tr>
+            <td><div class="person"><span class="avatar">{{ submission.initials }}</span><span><strong>{{ submission.name }}</strong><small>{{ submission.email }}</small></span></div></td>
+            <td>{{ submission.submitted }}</td>
+            <td><span class="check-cell" [class.check-cell--warning]="submission.identity === 'Expired ID'">{{ submission.identity }}</span></td>
+            <td><span class="check-cell" [class.check-cell--warning]="submission.deed === 'Unmatched grantor'">{{ submission.deed }}</span></td>
+            <td><span [class.text-good]="submission.liveness !== 'Mismatch'" [class.text-bad]="submission.liveness === 'Mismatch'">{{ submission.liveness }}</span></td>
+            <td><span class="state" [class.state--verified]="submission.state === 'Verified'" [class.state--rejected]="submission.state === 'Rejected'">{{ submission.state }}</span></td>
+            <td>
+              @if (submission.state === 'Pending') {
+                <div class="actions">
+                  <button class="approve" type="button" (click)="updateStatus(submission, 'Verified')" [disabled]="submission.identity === 'Expired ID' || submission.deed === 'Unmatched grantor'">Verify</button>
+                  <button class="reject" type="button" (click)="updateStatus(submission, 'Rejected')" [attr.aria-label]="'Reject ' + submission.name"><app-admin-icon name="close" /></button>
+                </div>
+              } @else {
+                <span class="action-result">{{ submission.state === 'Verified' ? 'Review complete' : 'Rejected' }}</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="panel__footer">Showing {{ filteredSubmissions.length }} of {{ submissions.length }} recent landlords</div>
+</section>

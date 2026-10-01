@@ -1,0 +1,76 @@
+@baseUrl = http://localhost:5151
+@adminToken = replace-with-admin-jwt
+@landlordToken = replace-with-landlord-jwt
+@propertyId = replace-with-property-guid
+
+### Get property review queue
+GET {{baseUrl}}/api/v1/admin/properties
+Authorization: Bearer {{adminToken}}
+
+### Get property review summary
+GET {{baseUrl}}/api/v1/admin/properties/summary
+Authorization: Bearer {{adminToken}}
+
+### Get recent property audit events
+GET {{baseUrl}}/api/v1/admin/audit-log
+Authorization: Bearer {{adminToken}}
+
+### Get property detail
+GET {{baseUrl}}/api/v1/admin/properties/{{propertyId}}
+Authorization: Bearer {{adminToken}}
+
+### Property detail not found
+GET {{baseUrl}}/api/v1/admin/properties/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{adminToken}}
+
+### Approve property
+PATCH {{baseUrl}}/api/v1/admin/properties/{{propertyId}}/review
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "Approved",
+  "reviewNote": "Ownership record matches the listing."
+}
+
+### Reject property
+PATCH {{baseUrl}}/api/v1/admin/properties/{{propertyId}}/review
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "Rejected",
+  "reviewNote": "The submitted ownership documents do not match."
+}
+
+### Request documents
+PATCH {{baseUrl}}/api/v1/admin/properties/{{propertyId}}/review
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "DocumentsRequested",
+  "reviewNote": "Please provide the current county deed."
+}
+
+### Submit a property listing
+POST {{baseUrl}}/api/v1/properties
+Authorization: Bearer {{landlordToken}}
+Content-Type: application/json
+
+{
+  "address": "5402 Avenue F",
+  "city": "Austin",
+  "state": "TX",
+  "postalCode": "78751",
+  "bedrooms": 2,
+  "bathrooms": 1,
+  "squareFeet": 1020,
+  "monthlyRent": 2300,
+  "description": "Two-bedroom rental in Hyde Park.",
+  "deedFileNumber": "TR-2023-A5402",
+  "recordedOwner": "Marcus L. Vance",
+  "parcelId": "TCAD-0219080402",
+  "utilityStatus": "Active",
+  "photoUrls": []
+}

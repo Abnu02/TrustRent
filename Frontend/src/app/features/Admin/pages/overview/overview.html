@@ -1,0 +1,65 @@
+<section class="page-heading">
+  <div>
+    <span class="eyebrow">Operations</span>
+    <h1>Overview</h1>
+    <p>Review activity across TrustRent.</p>
+  </div>
+  <a class="primary-link" routerLink="/admin/properties">
+    Review queue <app-admin-icon name="arrow" />
+  </a>
+</section>
+
+@if (!loading && !errorMessage) {
+  <section class="metrics" aria-label="Admin metrics">
+    @for (metric of metrics; track metric.label) {
+      <article class="metric-card">
+        <div class="metric-card__top">
+          <span>{{ metric.label }}</span>
+          <span class="metric-icon"><app-admin-icon [name]="metric.icon" /></span>
+        </div>
+        <strong>{{ summary[metric.key] }}</strong>
+        <span class="metric-card__change">Total</span>
+      </article>
+    }
+  </section>
+}
+
+<section class="panel queue-panel">
+  <div class="panel__heading">
+    <div>
+      <h2>Needs review</h2>
+      <span>Latest property submissions</span>
+    </div>
+    <a routerLink="/admin/properties">View property queue <app-admin-icon name="arrow" /></a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Property</th><th>Submitted by</th><th>Received</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        @if (loading) {
+          <tr><td colspan="5">Loading property reviews…</td></tr>
+        } @else if (errorMessage) {
+          <tr><td class="error-message" colspan="5">{{ errorMessage }}</td></tr>
+        } @else if (queue.length === 0) {
+          <tr><td colspan="5">No properties have been submitted yet.</td></tr>
+        } @else {
+        @for (item of queue; track item.id) {
+          <tr>
+            <td class="strong">{{ item.address }}</td>
+            <td>{{ item.ownerName }}</td>
+            <td>{{ item.submittedAt | date: 'medium' }}</td>
+            <td><span class="status" [class.status--pending]="item.reviewStatus === 'Pending'">{{ item.reviewStatus }}</span></td>
+            <td>
+              <a class="row-link" [routerLink]="['/admin/properties', item.id]" [attr.aria-label]="'Review ' + item.address">
+                <app-admin-icon name="chevron" />
+              </a>
+            </td>
+          </tr>
+        }
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

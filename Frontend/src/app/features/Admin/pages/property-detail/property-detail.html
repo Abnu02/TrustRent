@@ -1,0 +1,80 @@
+<a class="back-link" routerLink="/admin/properties"><app-admin-icon name="arrow" /> Back to properties</a>
+
+@if (loading) {
+  <div class="state-message">Loading property details…</div>
+} @else if (errorMessage && !property) {
+  <div class="state-message state-message--error" role="alert">{{ errorMessage }}</div>
+} @else if (property) {
+  <section class="page-heading">
+    <div>
+      <span class="eyebrow">Property review · {{ property.deedFileNumber }}</span>
+      <h1>{{ property.address }}</h1>
+      <p>{{ property.city }}, {{ property.state }} {{ property.postalCode }}</p>
+    </div>
+    <span class="status">{{ property.reviewStatus }}</span>
+  </section>
+
+  @if (errorMessage) { <p class="message message--error" role="alert">{{ errorMessage }}</p> }
+  @if (decisionMessage) { <p class="message" role="status">{{ decisionMessage }}</p> }
+
+  <div class="detail-grid">
+    <div class="main-column">
+      <section class="panel">
+        <h2>Listing details</h2>
+        <div class="facts">
+          <div><span>Monthly rent</span><strong>${{ property.monthlyRent | number: '1.0-0' }}</strong></div>
+          <div><span>Bedrooms</span><strong>{{ property.bedrooms }}</strong></div>
+          <div><span>Bathrooms</span><strong>{{ property.bathrooms }}</strong></div>
+          <div><span>Area</span><strong>{{ property.squareFeet | number }} sq ft</strong></div>
+        </div>
+        <p class="description">{{ property.description || 'No description provided.' }}</p>
+      </section>
+
+      <section class="panel">
+        <h2>Ownership verification</h2>
+        <dl class="verification">
+          <div><dt>Recorded owner</dt><dd>{{ property.recordedOwner }}</dd></div>
+          <div><dt>Parcel ID</dt><dd>{{ property.parcelId }}</dd></div>
+          <div><dt>Deed file</dt><dd>{{ property.deedFileNumber }}</dd></div>
+          <div><dt>Utility status</dt><dd>{{ property.utilityStatus || 'Not provided' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="panel">
+        <h2>Property photos</h2>
+        @if (property.photoUrls.length) {
+          <div class="photos">
+            @for (photo of property.photoUrls; track photo) {
+              <a [href]="photo" target="_blank" rel="noopener noreferrer"><img [src]="photo" alt="Submitted property photo" loading="lazy" /></a>
+            }
+          </div>
+        } @else {
+          <p class="muted">No photos provided.</p>
+        }
+      </section>
+    </div>
+
+    <aside class="side-column">
+      <section class="panel">
+        <h2>Submitted by</h2>
+        <strong class="owner-name">{{ property.ownerName }}</strong>
+        <a class="owner-email" [href]="'mailto:' + property.ownerEmail">{{ property.ownerEmail }}</a>
+        <div class="meta-row"><span>Submitted</span><strong>{{ property.submittedAt | date: 'medium' }}</strong></div>
+        @if (property.reviewedAt) { <div class="meta-row"><span>Reviewed</span><strong>{{ property.reviewedAt | date: 'medium' }}</strong></div> }
+        @if (property.reviewNote) { <div class="review-note"><span>Review note</span>{{ property.reviewNote }}</div> }
+      </section>
+
+      <section class="panel decision-panel">
+        <h2>Review decision</h2>
+        @if (property.reviewStatus === 'Pending' || property.reviewStatus === 'DocumentsRequested') {
+          <button class="decision decision--approve" type="button" [disabled]="saving" (click)="decide('Approved')"><app-admin-icon name="check" /> Approve listing</button>
+          <button class="decision decision--request" type="button" [disabled]="saving" (click)="decide('DocumentsRequested')">Request documents</button>
+          <button class="decision decision--reject" type="button" [disabled]="saving" (click)="decide('Rejected')"><app-admin-icon name="close" /> Reject listing</button>
+        } @else {
+          <p class="muted">This listing has been {{ property.reviewStatus.toLocaleLowerCase() }}.</p>
+          <button class="decision decision--request" type="button" [disabled]="saving" (click)="decide('DocumentsRequested')">Reopen with document request</button>
+        }
+      </section>
+    </aside>
+  </div>
+}

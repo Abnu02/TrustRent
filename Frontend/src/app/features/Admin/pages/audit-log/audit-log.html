@@ -1,0 +1,33 @@
+<section class="page-heading">
+  <div>
+    <span class="eyebrow">Operations</span>
+    <h1>Audit log</h1>
+    <p>Recent decisions and verification activity.</p>
+  </div>
+  <span class="record-count"><app-admin-icon name="audit" /> {{ entries.length }} recent events</span>
+</section>
+
+<section class="panel">
+  <div class="panel__heading">
+    <div><h2>Activity</h2><span>Latest changes across reviews</span></div>
+    <span class="recent-label"><app-admin-icon name="clock" /> Recent activity</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Activity</th><th>Subject</th><th>Actor</th><th>Time</th><th>Reference</th></tr></thead>
+      <tbody>
+        @for (entry of entries; track entry.reference) {
+          <tr>
+            <td><span class="event" [class.event--approved]="entry.kind === 'approved'" [class.event--flagged]="entry.kind === 'flagged'">
+              <app-admin-icon [name]="entry.kind === 'approved' ? 'check' : entry.kind === 'flagged' ? 'close' : 'document'" />
+            </span>{{ entry.action }}</td>
+            <td class="strong">{{ entry.subject }}</td>
+            <td>{{ entry.actor }}</td>
+            <td>{{ entry.time }}</td>
+            <td class="reference">{{ entry.reference }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
