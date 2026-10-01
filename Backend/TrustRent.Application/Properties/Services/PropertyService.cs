@@ -98,8 +98,13 @@ public sealed class PropertyService(
         {
             Id = property.Id,
             Title = property.Title,
+            Description = property.Description,
+            PropertyType = property.PropertyType,
             Rent = property.Rent,
+            Deposit = property.Deposit,
             Location = property.Location,
+            Bedrooms = property.Bedrooms,
+            Bathrooms = property.Bathrooms,
             Status = property.Status,
             IsVerified = property.IsVerified
         };

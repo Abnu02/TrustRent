@@ -1,0 +1,22 @@
+@if (loading) {
+  <div class="details-skeleton" aria-label="Loading property details" aria-busy="true"><span></span><span></span><span></span></div>
+} @else if (errorMessage) {
+  <section class="page-error" role="alert"><span class="material-symbols-outlined" aria-hidden="true">error</span><div><strong>Property details are unavailable</strong><p>{{ errorMessage }}</p></div><a class="button button-outline" routerLink="/landlord/properties">Back to properties</a></section>
+} @else if (property) {
+  <div class="details-heading">
+    <div><div class="breadcrumbs"><a routerLink="/landlord/properties"><span class="material-symbols-outlined" aria-hidden="true">real_estate_agent</span>My Properties</a><span>/</span><span>Property Details</span></div><h1>{{ property.title }}</h1><p class="details-location"><span class="material-symbols-outlined" aria-hidden="true">location_on</span>{{ property.location }}</p></div>
+    <div class="details-actions"><a class="button button-outline" routerLink="/landlord/properties"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>Back to Properties</a><a class="button button-primary" [routerLink]="['/landlord/properties', property.id, 'edit']"><span class="material-symbols-outlined" aria-hidden="true">edit</span>Edit Property</a></div>
+  </div>
+  <section class="details-status"><span class="status-label">LISTING STATUS</span><app-property-state [status]="property.status" [isVerified]="property.isVerified" /></section>
+  <div class="details-grid">
+    <section class="spec-panel"><div class="details-section-title"><span class="material-symbols-outlined" aria-hidden="true">tune</span><h2>Key Specifications</h2></div><dl class="spec-grid">
+      <div><dt>Property Type</dt><dd><span class="material-symbols-outlined" aria-hidden="true">apartment</span>{{ property.propertyType }}</dd></div>
+      <div><dt>Location</dt><dd><span class="material-symbols-outlined" aria-hidden="true">location_on</span>{{ property.location }}</dd></div>
+      <div><dt>Monthly Rent</dt><dd>{{ property.rent | number }} <small>ETB / month</small></dd></div>
+      <div><dt>Deposit</dt><dd>{{ property.deposit | number }} <small>ETB</small></dd></div>
+      <div><dt>Bedrooms</dt><dd><span class="material-symbols-outlined" aria-hidden="true">bed</span>{{ property.bedrooms }}</dd></div>
+      <div><dt>Bathrooms</dt><dd><span class="material-symbols-outlined" aria-hidden="true">shower</span>{{ property.bathrooms }}</dd></div>
+    </dl></section>
+    <section class="description-panel"><div class="details-section-title"><span class="material-symbols-outlined" aria-hidden="true">notes</span><h2>Description</h2></div><p>{{ property.description }}</p></section>
+  </div>
+}

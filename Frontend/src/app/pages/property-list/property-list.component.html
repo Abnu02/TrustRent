@@ -1,0 +1,28 @@
+<div class="page-heading">
+  <div><p class="page-kicker">YOUR LISTINGS</p><h1>My Properties</h1><p class="page-subtitle">View and manage your rental properties.</p></div>
+  <a class="button button-primary" routerLink="/landlord/properties/new"><span class="material-symbols-outlined" aria-hidden="true">add</span>Add Property</a>
+</div>
+
+<form class="property-toolbar" [formGroup]="filters" aria-label="Search and filter properties">
+  <label class="search-control"><span class="material-symbols-outlined" aria-hidden="true">search</span><input type="search" formControlName="search" maxlength="100" placeholder="Search properties" aria-label="Search properties"></label>
+  <label class="filter-control"><span>Status</span><select formControlName="status"><option value="">All</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option></select></label>
+  <label class="filter-control"><span>Type</span><select formControlName="propertyType"><option value="">All</option><option value="Apartment">Apartment</option><option value="House">House</option><option value="Studio">Studio</option></select></label>
+  <label class="filter-control sort-control"><span>Sort</span><select formControlName="sort"><option value="title-asc">Title A–Z</option><option value="title-desc">Title Z–A</option><option value="location-asc">Location A–Z</option><option value="location-desc">Location Z–A</option><option value="rent-asc">Rent: Low to High</option><option value="rent-desc">Rent: High to Low</option></select></label>
+</form>
+
+@if (loading) {
+  <div class="list-skeleton" aria-label="Loading properties" aria-busy="true"><span></span><span></span><span></span><span></span></div>
+} @else if (errorMessage) {
+  <section class="list-error" role="alert"><span class="material-symbols-outlined" aria-hidden="true">error</span><div><strong>Properties could not be loaded</strong><p>{{ errorMessage }}</p></div><button type="button" class="button button-outline" (click)="retry()">Try again</button></section>
+} @else if (properties.length === 0) {
+  <section class="list-empty"><span class="material-symbols-outlined" aria-hidden="true">home_work</span><strong>{{ filters.controls.search.value || filters.controls.status.value || filters.controls.propertyType.value ? 'No matching properties' : 'No properties yet' }}</strong><p>{{ filters.controls.search.value || filters.controls.status.value || filters.controls.propertyType.value ? 'Change your search or filters and try again.' : 'Add your first rental property to get started.' }}</p>@if (!filters.controls.search.value && !filters.controls.status.value && !filters.controls.propertyType.value) { <a class="button button-primary" routerLink="/landlord/properties/new">Add Property</a> }</section>
+} @else {
+  <section class="property-list-panel">
+    <div class="table-scroll"><table class="property-table"><thead><tr><th>Property</th><th>Location</th><th>Rent (ETB)</th><th>Status</th><th>Verification</th><th>Actions</th></tr></thead><tbody>
+      @for (property of properties; track property.id) {
+        <tr><td data-label="Property"><a class="property-title-link" [routerLink]="['/landlord/properties', property.id]">{{ property.title }}</a><span class="property-type">{{ property.propertyType }} · {{ property.bedrooms }} bed</span></td><td data-label="Location">{{ property.location }}</td><td data-label="Rent">{{ property.rent | number }} ETB</td><td data-label="Status"><app-property-state [status]="property.status" [isVerified]="property.isVerified" /></td><td data-label="Verification">{{ property.isVerified ? 'Verified' : 'Not Verified' }}</td><td data-label="Actions"><div class="row-actions"><a class="inline-link" [routerLink]="['/landlord/properties', property.id]">View</a><a class="inline-link" [routerLink]="['/landlord/properties', property.id, 'edit']">Edit</a></div></td></tr>
+      }
+    </tbody></table></div>
+    <footer class="list-pagination"><span>Showing {{ firstItem }}–{{ lastItem }} of {{ totalCount }} properties</span><div><button type="button" class="button button-outline page-arrow" aria-label="Previous page" [disabled]="page <= 1" (click)="goToPage(page - 1)"><span class="material-symbols-outlined" aria-hidden="true">chevron_left</span></button><span>Page {{ page }} of {{ totalPages }}</span><button type="button" class="button button-outline page-arrow" aria-label="Next page" [disabled]="page >= totalPages" (click)="goToPage(page + 1)"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></button></div></footer>
+  </section>
+}
