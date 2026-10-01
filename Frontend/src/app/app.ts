@@ -70,17 +70,6 @@ export class App implements OnInit {
     bathrooms: 2
   };
 
-  // Form Specs
-  streetAddress = 'Cameroon St, Near Edna Mall';
-  unitApt = 'Unit 402, 4th Floor';
-  city = 'Addis Ababa';
-  subcity = 'Bole';
-  neighborhood = 'Bole Medhanialem / Brass';
-  squareFootage = 1150;
-  yearBuilt = 2022;
-  leaseTerm = '12 Months';
-  availableDate = 'Nov 1, 2026';
-  legalAttest = signal<boolean>(true);
 
   // Registration Form Model
   registerForm = {
@@ -211,10 +200,6 @@ export class App implements OnInit {
     this.isRegisterModalOpen.set(false);
   }
 
-  setStep(step: number) {
-    this.currentStep.set(step);
-  }
-
   onSubcitySelect(event: Event) {
     const select = event.target as HTMLSelectElement;
     if (select && select.value) {
@@ -250,11 +235,6 @@ export class App implements OnInit {
 
     if (this.newProperty.deposit < 0) {
       this.showToast('Deposit amount cannot be negative.', 'error');
-      return;
-    }
-
-    if (!this.legalAttest()) {
-      this.showToast('You must certify ownership & legal deed credentials before submitting.', 'error');
       return;
     }
 

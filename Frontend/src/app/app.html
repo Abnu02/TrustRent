@@ -520,23 +520,21 @@
     <div class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-sm transition-opacity duration-300" 
          (click)="closeCreateModal()"></div>
 
-    <!-- Modal Card Core Window (Engineered to match screen viewport) -->
-    <div class="relative w-full max-w-4xl lg:max-w-5xl bg-surface-container-lowest rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-10 animate-in fade-in zoom-in-95 duration-200 border border-surface-container">
+    <!-- Modal Card Core Window (Streamlined to 8 CreatePropertyDto fields) -->
+    <div class="relative w-full max-w-2xl bg-surface-container-lowest rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-10 animate-in fade-in zoom-in-95 duration-200 border border-surface-container">
       
-      <!-- ------------------------------------------------------------------- -->
-      <!-- MODAL HEADER                                                        -->
-      <!-- ------------------------------------------------------------------- -->
-      <div class="px-space-xl pt-space-lg pb-space-md bg-surface-container-lowest flex-shrink-0 z-20 shadow-sm border-b border-surface-container">
+      <!-- MODAL HEADER -->
+      <div class="px-space-xl py-space-md bg-surface-container-lowest flex-shrink-0 z-20 shadow-sm border-b border-surface-container">
         <div class="flex items-start justify-between gap-space-md">
           <div class="space-y-1">
             <div class="flex items-center gap-2">
-              <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-surface-container text-on-surface">
-                <span class="material-symbols-outlined text-sm font-bold">pending_actions</span>
+              <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary text-on-primary">
+                <span class="material-symbols-outlined text-sm font-bold">add_home</span>
               </span>
-              <span class="font-label-sm text-label-sm tracking-wider uppercase text-on-surface-variant font-bold">Auditor Verification Pipeline</span>
+              <span class="font-label-sm text-label-sm tracking-wider uppercase text-on-surface-variant font-bold">Landlord Portal</span>
             </div>
-            <h2 class="font-headline-md text-headline-md text-on-surface tracking-tight font-bold">Submit New Property for Verification</h2>
-            <p class="font-body-md text-body-md text-on-surface-variant">Every rental listing undergoes automated deed matching and licensed auditor review before going live.</p>
+            <h2 class="font-headline-md text-headline-md text-on-surface tracking-tight font-bold">Create Property</h2>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">Fill in the 8 property details below to create your listing.</p>
           </div>
           <button type="button" aria-label="Close modal" 
                   class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors cursor-pointer" 
@@ -544,513 +542,142 @@
             <span class="material-symbols-outlined text-xl">close</span>
           </button>
         </div>
-
-        <!-- 4-Step Progress Stepper Ribbon -->
-        <div class="mt-space-md pt-space-xs">
-          <div class="grid grid-cols-4 gap-space-sm sm:gap-space-md">
-            
-            <!-- Step 1 -->
-            <div (click)="setStep(1)" class="flex items-center gap-space-xs cursor-pointer p-1 rounded-lg"
-                 [ngClass]="currentStep() === 1 ? 'bg-surface-container-low' : ''">
-              <div class="w-7 h-7 rounded-full flex items-center justify-center font-label-sm text-label-sm font-bold shadow-sm"
-                   [ngClass]="currentStep() === 1 ? 'bg-primary text-on-primary ring-2 ring-primary/20' : (currentStep() > 1 ? 'bg-secondary text-on-secondary' : 'bg-surface-container-highest text-on-surface-variant')">
-                {{ currentStep() > 1 ? '✓' : '1' }}
-              </div>
-              <div class="min-w-0">
-                <div class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider">Step 01</div>
-                <div class="font-label-md text-label-md truncate font-semibold"
-                     [ngClass]="currentStep() === 1 ? 'text-on-surface font-bold' : 'text-on-surface-variant'">Property Details</div>
-              </div>
-            </div>
-
-            <!-- Step 2 -->
-            <div (click)="setStep(2)" class="flex items-center gap-space-xs cursor-pointer p-1 rounded-lg"
-                 [ngClass]="currentStep() === 2 ? 'bg-surface-container-low' : ''">
-              <div class="w-7 h-7 rounded-full flex items-center justify-center font-label-sm text-label-sm font-bold shadow-sm"
-                   [ngClass]="currentStep() === 2 ? 'bg-primary text-on-primary ring-2 ring-primary/20' : (currentStep() > 2 ? 'bg-secondary text-on-secondary' : 'bg-surface-container-highest text-on-surface-variant')">
-                {{ currentStep() > 2 ? '✓' : '2' }}
-              </div>
-              <div class="min-w-0">
-                <div class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider">Step 02</div>
-                <div class="font-label-md text-label-md truncate font-semibold"
-                     [ngClass]="currentStep() === 2 ? 'text-on-surface font-bold' : 'text-on-surface-variant'">Pricing &amp; Terms</div>
-              </div>
-            </div>
-
-            <!-- Step 3 -->
-            <div (click)="setStep(3)" class="flex items-center gap-space-xs cursor-pointer p-1 rounded-lg"
-                 [ngClass]="currentStep() === 3 ? 'bg-surface-container-low' : ''">
-              <div class="w-7 h-7 rounded-full flex items-center justify-center font-label-sm text-label-sm font-bold shadow-sm"
-                   [ngClass]="currentStep() === 3 ? 'bg-primary text-on-primary ring-2 ring-primary/20' : (currentStep() > 3 ? 'bg-secondary text-on-secondary' : 'bg-surface-container-highest text-on-surface-variant')">
-                {{ currentStep() > 3 ? '✓' : '3' }}
-              </div>
-              <div class="min-w-0">
-                <div class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider">Step 03</div>
-                <div class="font-label-md text-label-md truncate font-semibold"
-                     [ngClass]="currentStep() === 3 ? 'text-on-surface font-bold' : 'text-on-surface-variant'">Deed &amp; Ownership</div>
-              </div>
-            </div>
-
-            <!-- Step 4 -->
-            <div (click)="setStep(4)" class="flex items-center gap-space-xs cursor-pointer p-1 rounded-lg"
-                 [ngClass]="currentStep() === 4 ? 'bg-surface-container-low' : ''">
-              <div class="w-7 h-7 rounded-full flex items-center justify-center font-label-sm text-label-sm font-bold shadow-sm"
-                   [ngClass]="currentStep() === 4 ? 'bg-primary text-on-primary ring-2 ring-primary/20' : 'bg-surface-container-highest text-on-surface-variant'">
-                4
-              </div>
-              <div class="min-w-0">
-                <div class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider">Step 04</div>
-                <div class="font-label-md text-label-md truncate font-semibold"
-                     [ngClass]="currentStep() === 4 ? 'text-on-surface font-bold' : 'text-on-surface-variant'">Audit &amp; Review</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Progress track indicator -->
-          <div class="w-full bg-surface-container-high h-1 rounded-full mt-2.5 overflow-hidden">
-            <div class="bg-secondary h-full rounded-full transition-all duration-300"
-                 [style.width.%]="currentStep() * 25"></div>
-          </div>
-        </div>
       </div>
 
-      <!-- ------------------------------------------------------------------- -->
-      <!-- MODAL SCROLLABLE FORM BODY (Single smooth scroll area)             -->
-      <!-- ------------------------------------------------------------------- -->
-      <form class="px-space-xl py-space-lg space-y-space-lg flex-1 overflow-y-auto min-h-0 bg-surface" 
+      <!-- MODAL SCROLLABLE FORM BODY -->
+      <form class="px-space-xl py-space-lg space-y-space-md flex-1 overflow-y-auto min-h-0 bg-surface" 
             (submit)="onSubmitProperty(); $event.preventDefault();">
         
-        <!-- SECTION A: Property Identification & Architectural Specs -->
-        <section class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm space-y-space-md border border-surface-container">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-space-xs">
-              <span class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface">
-                <span class="material-symbols-outlined text-lg">domain</span>
-              </span>
-              <div>
-                <h3 class="font-title-md text-title-md text-on-surface font-bold">Section A: Property Identification &amp; Specs</h3>
-                <p class="font-body-sm text-body-sm text-on-surface-variant">Validated against Addis Ababa Cadastral &amp; Land Administration Registry</p>
-              </div>
-            </div>
-            <span class="px-space-xs py-1 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 font-label-sm text-label-sm font-semibold flex items-center gap-1">
-              <span class="material-symbols-outlined text-[14px]">hourglass_top</span> Pending Geocoding &amp; Audit
-            </span>
-          </div>
+        <!-- 1. Title -->
+        <div class="space-y-1">
+          <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Title *</label>
+          <input type="text" [(ngModel)]="newProperty.title" name="title" required
+                 class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary outline-none transition-all border border-surface-container"
+                 placeholder="e.g. Modern 2-Bedroom Condo in Bole Medhanialem"/>
+        </div>
 
-          <!-- Title Input (Backend DTO: Title) -->
+        <!-- 2. Description -->
+        <div class="space-y-1">
+          <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Description *</label>
+          <textarea [(ngModel)]="newProperty.description" name="description" rows="3" required
+                    class="w-full p-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-sm focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary outline-none transition-all border border-surface-container"
+                    placeholder="Describe the property, nearby landmarks, backup water, standby generator, security, etc."></textarea>
+        </div>
+
+        <!-- 3. Property Type -->
+        <div class="space-y-2">
+          <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Property Type *</label>
+          <div class="grid grid-cols-4 gap-space-sm">
+            <button type="button" (click)="newProperty.propertyType = 'Condominium'"
+                    [class]="newProperty.propertyType === 'Condominium' ? 'bg-primary text-on-primary shadow-sm font-bold' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'"
+                    class="p-space-sm rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors border border-surface-container">
+              <span class="material-symbols-outlined text-sm">apartment</span>
+              <span class="font-label-md text-label-md">Condominium</span>
+            </button>
+            <button type="button" (click)="newProperty.propertyType = 'Apartment'"
+                    [class]="newProperty.propertyType === 'Apartment' ? 'bg-primary text-on-primary shadow-sm font-bold' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'"
+                    class="p-space-sm rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors border border-surface-container">
+              <span class="material-symbols-outlined text-sm">domain</span>
+              <span class="font-label-md text-label-md">Apartment</span>
+            </button>
+            <button type="button" (click)="newProperty.propertyType = 'Villa'"
+                    [class]="newProperty.propertyType === 'Villa' ? 'bg-primary text-on-primary shadow-sm font-bold' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'"
+                    class="p-space-sm rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors border border-surface-container">
+              <span class="material-symbols-outlined text-sm">holiday_village</span>
+              <span class="font-label-md text-label-md">Villa</span>
+            </button>
+            <button type="button" (click)="newProperty.propertyType = 'Studio'"
+                    [class]="newProperty.propertyType === 'Studio' ? 'bg-primary text-on-primary shadow-sm font-bold' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'"
+                    class="p-space-sm rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors border border-surface-container">
+              <span class="material-symbols-outlined text-sm">single_bed</span>
+              <span class="font-label-md text-label-md">Studio</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. Location -->
+        <div class="grid grid-cols-12 gap-space-md">
+          <div class="col-span-8 space-y-1">
+            <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="location_input">Location *</label>
+            <div class="relative">
+              <input type="text" [(ngModel)]="newProperty.location" name="location" id="location_input" required
+                     placeholder="e.g. Bole, Addis Ababa"
+                     class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary outline-none transition-all border border-surface-container"/>
+              <span class="material-symbols-outlined absolute right-3 top-3 text-secondary text-lg">pin_drop</span>
+            </div>
+          </div>
+          <div class="col-span-4 space-y-1">
+            <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Preset</label>
+            <select (change)="onSubcitySelect($event)" 
+                    class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-sm border border-surface-container focus:ring-2 focus:ring-primary">
+              <option value="">Choose Subcity...</option>
+              <option value="Bole, Addis Ababa">Bole</option>
+              <option value="Kazanchis, Addis Ababa">Kazanchis</option>
+              <option value="CMC, Addis Ababa">CMC</option>
+              <option value="Sarbet, Addis Ababa">Sarbet</option>
+              <option value="Old Airport, Addis Ababa">Old Airport</option>
+              <option value="Gerji, Addis Ababa">Gerji</option>
+              <option value="Bole Medhanialem, Addis Ababa">Bole Medhanialem</option>
+              <option value="Yeka, Addis Ababa">Yeka</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 5. Rent & 6. Deposit -->
+        <div class="grid grid-cols-2 gap-space-md">
           <div class="space-y-1">
-            <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Listing Headline / Title *</label>
-            <input type="text" [(ngModel)]="newProperty.title" name="title" required
-                   class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary outline-none transition-all border border-surface-container"
-                   placeholder="e.g. Modern 2-Bedroom Condo in Bole Medhanialem"/>
+            <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="monthly_rent">Rent (ETB) *</label>
+            <div class="relative">
+              <input type="number" min="1" [(ngModel)]="newProperty.rent" name="rent" id="monthly_rent" required
+                     class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-title-md text-title-md font-bold focus:ring-2 focus:ring-primary outline-none border border-surface-container"/>
+              <span class="font-label-sm text-label-sm text-on-surface-variant absolute right-3 top-3 font-semibold">ETB</span>
+            </div>
           </div>
 
-          <!-- Description Textarea (Backend DTO: Description) -->
           <div class="space-y-1">
-            <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Property Description (Features & Terms) *</label>
-            <textarea [(ngModel)]="newProperty.description" name="description" rows="3" required
-                      class="w-full p-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-sm focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary outline-none transition-all border border-surface-container"
-                      placeholder="Describe the property, nearby landmarks, backup water, standby generator, security, etc."></textarea>
-          </div>
-
-          <!-- Location (Backend DTO: Location) -->
-          <div class="grid grid-cols-12 gap-space-md">
-            <div class="col-span-8 space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="location_input">Location (Subcity, City / Area) *</label>
-              <div class="relative">
-                <input type="text" [(ngModel)]="newProperty.location" name="location" id="location_input" required
-                       placeholder="e.g. Bole, Addis Ababa"
-                       class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary outline-none transition-all border border-surface-container"/>
-                <span class="material-symbols-outlined absolute right-3 top-3 text-secondary text-lg">pin_drop</span>
-              </div>
-            </div>
-            <div class="col-span-4 space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Quick Subcity Preset</label>
-              <select (change)="onSubcitySelect($event)" 
-                      class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-body-md text-sm border border-surface-container focus:ring-2 focus:ring-primary">
-                <option value="">Choose Subcity...</option>
-                <option value="Bole, Addis Ababa">Bole, Addis Ababa</option>
-                <option value="Kazanchis, Addis Ababa">Kazanchis, Addis Ababa</option>
-                <option value="CMC, Addis Ababa">CMC, Addis Ababa</option>
-                <option value="Sarbet, Addis Ababa">Sarbet, Addis Ababa</option>
-                <option value="Old Airport, Addis Ababa">Old Airport, Addis Ababa</option>
-                <option value="Gerji, Addis Ababa">Gerji, Addis Ababa</option>
-                <option value="Bole Medhanialem, Addis Ababa">Bole Medhanialem, Addis Ababa</option>
-                <option value="Yeka, Addis Ababa">Yeka, Addis Ababa</option>
-              </select>
+            <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="security_deposit">Deposit (ETB) *</label>
+            <div class="relative">
+              <input type="number" min="0" [(ngModel)]="newProperty.deposit" name="deposit" id="security_deposit" required
+                     class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-title-md text-title-md font-bold focus:ring-2 focus:ring-primary outline-none border border-surface-container"/>
+              <span class="font-label-sm text-label-sm text-on-surface-variant absolute right-3 top-3 font-semibold">ETB</span>
             </div>
           </div>
+        </div>
 
-          <!-- Property Type Selector -->
-          <div class="space-y-2">
-            <span class="block font-label-sm text-label-sm text-on-surface font-semibold">Property Typology</span>
-            <div class="grid grid-cols-4 gap-space-sm">
-              <button type="button" (click)="newProperty.propertyType = 'Condominium'"
-                      [class]="newProperty.propertyType === 'Condominium' ? 'bg-primary text-on-primary shadow-sm font-bold' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'"
-                      class="p-space-sm rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors border border-surface-container">
-                <span class="material-symbols-outlined text-sm">apartment</span>
-                <span class="font-label-md text-label-md">Condominium</span>
-              </button>
-              <button type="button" (click)="newProperty.propertyType = 'Apartment'"
-                      [class]="newProperty.propertyType === 'Apartment' ? 'bg-primary text-on-primary shadow-sm font-bold' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'"
-                      class="p-space-sm rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors border border-surface-container">
-                <span class="material-symbols-outlined text-sm">domain</span>
-                <span class="font-label-md text-label-md">Apartment</span>
-              </button>
-              <button type="button" (click)="newProperty.propertyType = 'Villa'"
-                      [class]="newProperty.propertyType === 'Villa' ? 'bg-primary text-on-primary shadow-sm font-bold' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'"
-                      class="p-space-sm rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors border border-surface-container">
-                <span class="material-symbols-outlined text-sm">holiday_village</span>
-                <span class="font-label-md text-label-md">Villa / House</span>
-              </button>
-              <button type="button" (click)="newProperty.propertyType = 'Studio'"
-                      [class]="newProperty.propertyType === 'Studio' ? 'bg-primary text-on-primary shadow-sm font-bold' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'"
-                      class="p-space-sm rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors border border-surface-container">
-                <span class="material-symbols-outlined text-sm">single_bed</span>
-                <span class="font-label-md text-label-md">Studio / 1BR</span>
-              </button>
-            </div>
+        <!-- 7. Bedrooms & 8. Bathrooms -->
+        <div class="grid grid-cols-2 gap-space-md">
+          <div class="space-y-1">
+            <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Bedrooms *</label>
+            <input type="number" min="0" max="20" [(ngModel)]="newProperty.bedrooms" name="bedrooms" required
+                   class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-title-md text-title-md text-on-surface font-semibold border border-surface-container"/>
           </div>
 
-          <!-- Architectural Specs Row -->
-          <div class="grid grid-cols-4 gap-space-md pt-space-xs">
-            <div class="space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface-variant font-semibold">Bedrooms</label>
-              <input type="number" min="0" max="10" [(ngModel)]="newProperty.bedrooms" name="bedrooms"
-                     class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-title-md text-title-md text-on-surface font-semibold border border-surface-container"/>
-            </div>
-            <div class="space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface-variant font-semibold">Bathrooms</label>
-              <input type="number" min="1" max="10" [(ngModel)]="newProperty.bathrooms" name="bathrooms"
-                     class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-title-md text-title-md text-on-surface font-semibold border border-surface-container"/>
-            </div>
-            <div class="space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface-variant font-semibold">Square Meters (m²)</label>
-              <input type="number" min="20" [(ngModel)]="squareFootage" name="squareFootage"
-                     class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-title-md text-title-md text-on-surface font-semibold border border-surface-container"/>
-            </div>
-            <div class="space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface-variant font-semibold">Year Built</label>
-              <input type="number" [(ngModel)]="yearBuilt" name="yearBuilt"
-                     class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-title-md text-title-md text-on-surface font-semibold border border-surface-container"/>
-            </div>
+          <div class="space-y-1">
+            <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Bathrooms *</label>
+            <input type="number" min="1" max="20" [(ngModel)]="newProperty.bathrooms" name="bathrooms" required
+                   class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-title-md text-title-md text-on-surface font-semibold border border-surface-container"/>
           </div>
-
-          <!-- Verified Key Amenities -->
-          <div class="space-y-2 pt-space-xs">
-            <span class="block font-label-sm text-label-sm text-on-surface font-semibold">Inspected On-Premise Amenities (Ethiopian High Standard)</span>
-            <div class="grid grid-cols-3 gap-2">
-              <div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container-low border border-surface-container">
-                <span class="material-symbols-outlined text-secondary text-lg">check_circle</span>
-                <span class="font-body-sm text-body-sm text-on-surface font-medium">Backup Generator (Standby)</span>
-              </div>
-              <div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container-low border border-surface-container">
-                <span class="material-symbols-outlined text-secondary text-lg">check_circle</span>
-                <span class="font-body-sm text-body-sm text-on-surface font-medium">Water Tanker (24/7 Reserve)</span>
-              </div>
-              <div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container-low border border-surface-container">
-                <span class="material-symbols-outlined text-secondary text-lg">check_circle</span>
-                <span class="font-body-sm text-body-sm text-on-surface font-medium">Dedicated Gated Parking</span>
-              </div>
-              <div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container-low border border-surface-container">
-                <span class="material-symbols-outlined text-secondary text-lg">check_circle</span>
-                <span class="font-body-sm text-body-sm text-on-surface font-medium">Balcony / City View</span>
-              </div>
-              <div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container-low border border-surface-container">
-                <span class="material-symbols-outlined text-secondary text-lg">check_circle</span>
-                <span class="font-body-sm text-body-sm text-on-surface font-medium">Modern Elevator (OTIS)</span>
-              </div>
-              <div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container-low border border-surface-container">
-                <span class="material-symbols-outlined text-secondary text-lg">check_circle</span>
-                <span class="font-body-sm text-body-sm text-on-surface font-medium">24/7 Security Guard</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- SECTION B: Rental Terms & Financials -->
-        <section class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm space-y-space-md border border-surface-container">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-space-xs">
-              <span class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface">
-                <span class="material-symbols-outlined text-lg">payments</span>
-              </span>
-              <div>
-                <h3 class="font-title-md text-title-md text-on-surface font-bold">Section B: Rental Terms &amp; Escrow Deposit Structure</h3>
-                <p class="font-body-sm text-body-sm text-on-surface-variant">Deposits held in audited escrow account per Ethiopian Residential Lease regulations</p>
-              </div>
-            </div>
-            <span class="font-label-sm text-label-sm text-secondary font-bold">Addis Ababa Rent Index Matched</span>
-          </div>
-
-          <div class="grid grid-cols-12 gap-space-md">
-            <div class="col-span-4 space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="monthly_rent">Monthly Lease Rate (ETB)</label>
-              <div class="relative">
-                <input type="number" min="1000" [(ngModel)]="newProperty.rent" name="rent" id="monthly_rent" required
-                       class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-headline-sm text-headline-sm font-bold focus:ring-2 focus:ring-primary outline-none border border-surface-container"/>
-                <span class="font-label-sm text-label-sm text-on-surface-variant absolute right-3 top-3.5 font-bold">ETB / mo</span>
-              </div>
-            </div>
-
-            <div class="col-span-4 space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="security_deposit">Security Deposit (Escrow ETB)</label>
-              <div class="relative">
-                <input type="number" min="0" [(ngModel)]="newProperty.deposit" name="deposit" id="security_deposit" required
-                       class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-headline-sm text-headline-sm font-bold border border-surface-container"/>
-                <span class="material-symbols-outlined absolute right-3 top-3 text-secondary text-lg">lock</span>
-              </div>
-            </div>
-
-            <div class="col-span-2 space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="lease_duration">Lease Term</label>
-              <input type="text" [(ngModel)]="leaseTerm" name="leaseTerm" id="lease_duration"
-                     class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-title-md text-title-md font-semibold text-center border border-surface-container"/>
-            </div>
-
-            <div class="col-span-2 space-y-1">
-              <label class="block font-label-sm text-label-sm text-on-surface font-semibold" for="available_date">Move-in Date</label>
-              <input type="text" [(ngModel)]="availableDate" name="availableDate" id="available_date"
-                     class="w-full h-11 px-space-md bg-surface-container-low rounded-lg text-on-surface font-title-md text-title-md font-semibold border border-surface-container"/>
-            </div>
-          </div>
-
-          <!-- Escrow guarantee highlight -->
-          <div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between border border-surface-container">
-            <div class="flex items-center gap-space-sm">
-              <span class="material-symbols-outlined text-secondary">shield_with_heart</span>
-              <span class="font-body-sm text-body-sm text-on-surface">Tenant deposit automatically binds to TrustRent Segregated Escrow Protocol (Protected Ethiopian Banking System).</span>
-            </div>
-            <span class="font-label-sm text-label-sm text-secondary font-bold whitespace-nowrap">Protected Guarantee</span>
-          </div>
-        </section>
-
-        <!-- SECTION C: Mandatory Verification Documents (TRUSTRENT DIFFERENTIATOR) -->
-        <section class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm space-y-space-md ring-2 ring-secondary/40 border border-secondary/30">
-          <div class="flex items-start justify-between">
-            <div class="flex items-center gap-space-xs">
-              <span class="w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center text-on-secondary-container">
-                <span class="material-symbols-outlined text-lg font-bold">verified_user</span>
-              </span>
-              <div>
-                <div class="flex items-center gap-2">
-                  <h3 class="font-title-md text-title-md text-on-surface font-bold">Section C: Mandatory Verification Documents</h3>
-                  <span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold">High Trust Tier</span>
-                </div>
-                <p class="font-body-sm text-body-sm text-on-surface-variant">Direct deed matching against Addis Ababa Land Management &amp; Housing Bureau records</p>
-              </div>
-            </div>
-            <div class="text-right">
-              <span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-secondary font-bold">
-                <span class="material-symbols-outlined text-xs">bolt</span> Review Turnaround: &sim; 4.2 hrs
-              </span>
-            </div>
-          </div>
-
-          <!-- Backend Contract Alignment Notice -->
-          <div class="p-3 bg-secondary-container/20 rounded-lg border border-secondary/30 text-xs text-on-surface flex items-start gap-2">
-            <span class="material-symbols-outlined text-secondary text-base flex-shrink-0">info</span>
-            <div>
-              <span class="font-bold text-secondary block">Backend Contract Alignment:</span>
-              <span>
-                Document records and photographic evidence are simulated verification assets for the Auditor. The listing is sent and registered in the backend with the exact 8 DTO fields:
-                <strong>Title, Description, PropertyType, Rent (ETB), Deposit (ETB), Location, Bedrooms, and Bathrooms</strong>.
-              </span>
-            </div>
-          </div>
-
-          <!-- Dual Document Dropzones -->
-          <div class="grid grid-cols-2 gap-space-md">
-            <!-- Upload Box 1: Recorded Title Deed -->
-            <div class="p-space-md rounded-xl bg-surface-container-low space-y-space-xs relative overflow-hidden border border-surface-container">
-              <div class="flex items-center justify-between">
-                <span class="font-label-sm text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Document 01 &bull; Legal Title Deed (ካርታ)</span>
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 font-label-sm text-label-sm font-semibold">
-                  <span class="material-symbols-outlined text-xs">hourglass_top</span> Pending Auditor Verification
-                </span>
-              </div>
-              <div class="p-space-md rounded-lg bg-surface-container-lowest shadow-sm flex items-center gap-space-md border border-surface-container">
-                <div class="w-10 h-10 rounded-lg bg-error-container text-on-error-container flex items-center justify-center flex-shrink-0">
-                  <span class="material-symbols-outlined text-2xl">picture_as_pdf</span>
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="font-label-md text-label-md text-on-surface font-bold truncate">Title_Deed_Certificate_AddisAbaba_LandAdmin.pdf</div>
-                  <div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2">
-                    <span>3.8 MB</span>
-                    <span>&bull;</span>
-                    <span class="text-on-surface-variant font-medium">Bole Subcity Parcel #BL-492-118</span>
-                  </div>
-                </div>
-                <button type="button" aria-label="Re-upload Deed" class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors cursor-pointer">
-                  <span class="material-symbols-outlined text-base">swap_horiz</span>
-                </button>
-              </div>
-              <div class="flex items-center justify-between text-[11px] text-on-surface-variant px-1">
-                <span>Certified Grantee: {{ authService.currentUser().fullName }}</span>
-                <span class="font-semibold text-on-surface-variant flex items-center gap-1">
-                  <span class="material-symbols-outlined text-xs">pending</span> Awaiting Deed Review
-                </span>
-              </div>
-            </div>
-
-            <!-- Upload Box 2: Utility Statement / Kebele ID -->
-            <div class="p-space-md rounded-xl bg-surface-container-low space-y-space-xs relative overflow-hidden border border-surface-container">
-              <div class="flex items-center justify-between">
-                <span class="font-label-sm text-label-sm text-on-surface-variant font-bold uppercase tracking-wider">Document 02 &bull; Utility / Kebele Invoice</span>
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 font-label-sm text-label-sm font-semibold">
-                  <span class="material-symbols-outlined text-xs">hourglass_top</span> Pending Cross-Check
-                </span>
-              </div>
-              <div class="p-space-md rounded-lg bg-surface-container-lowest shadow-sm flex items-center gap-space-md border border-surface-container">
-                <div class="w-10 h-10 rounded-lg bg-error-container text-on-error-container flex items-center justify-center flex-shrink-0">
-                  <span class="material-symbols-outlined text-2xl">picture_as_pdf</span>
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="font-label-md text-label-md text-on-surface font-bold truncate">Addis_Water_Sewerage_Authority_Bill_May2024.pdf</div>
-                  <div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2">
-                    <span>1.6 MB</span>
-                    <span>&bull;</span>
-                    <span class="text-on-surface-variant font-medium">Meter Account: #ET-99410-B</span>
-                  </div>
-                </div>
-                <button type="button" aria-label="Re-upload Utility Bill" class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors cursor-pointer">
-                  <span class="material-symbols-outlined text-base">swap_horiz</span>
-                </button>
-              </div>
-              <div class="flex items-center justify-between text-[11px] text-on-surface-variant px-1">
-                <span>Billing Address: {{ streetAddress }}, {{ subcity }}</span>
-                <span class="font-semibold text-on-surface-variant flex items-center gap-1">
-                  <span class="material-symbols-outlined text-xs">pending</span> Subject to Auditor Inspection
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Legal Attestation Checkbox -->
-          <div class="p-space-md rounded-lg bg-surface-container-low flex items-start gap-space-sm border border-surface-container">
-            <div class="pt-0.5">
-              <input type="checkbox" id="legal_attest" [(ngModel)]="legalAttest" name="legalAttest"
-                     class="w-4 h-4 rounded text-primary accent-primary cursor-pointer"/>
-            </div>
-            <label class="cursor-pointer space-y-1" for="legal_attest">
-              <span class="font-label-md text-label-md text-on-surface font-semibold block">
-                I solemnly certify under penalty of Ethiopian law that I am the legal deed holder or authorized agent registered with the Addis Ababa Land Management &amp; Housing Development Bureau.
-              </span>
-              <span class="font-body-sm text-body-sm text-on-surface-variant block">
-                TrustRent conducts automated title deed cross-checking. Fraudulent listings or forged deeds are permanently blacklisted and reported to law enforcement authorities.
-              </span>
-            </label>
-          </div>
-
-          <!-- Verification SLA Notification -->
-          <div class="flex items-center justify-between px-space-sm py-2 rounded bg-surface-container-high text-on-surface-variant text-body-sm">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-base text-on-surface">schedule</span>
-              <span>Auditor Queue: Position #3. Standard auditor review completed within 24 hours.</span>
-            </div>
-            <span class="font-label-sm text-label-sm text-on-surface font-semibold">Queue ID #TR-ETH-8849</span>
-          </div>
-        </section>
-
-        <!-- SECTION D: Property Architectural Typology Presets -->
-        <section class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm space-y-space-md border border-surface-container">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-space-xs">
-              <span class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface">
-                <span class="material-symbols-outlined text-lg">photo_library</span>
-              </span>
-              <div>
-                <h3 class="font-title-md text-title-md text-on-surface font-bold">Section D: Architectural Typology Presets</h3>
-                <p class="font-body-sm text-body-sm text-on-surface-variant">Standard high-resolution verified presets automatically assigned to listing</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="px-space-xs py-1 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm font-semibold flex items-center gap-1">
-                <span class="material-symbols-outlined text-[14px]">preview</span> Catalog Presets
-              </span>
-            </div>
-          </div>
-
-          <!-- Photo Grid: 4 Thumbnails (Upload slot and reverse notice removed) -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-space-md">
-            <!-- Photo 1: Living Area -->
-            <div class="relative group rounded-xl overflow-hidden shadow-sm aspect-[4/3] bg-surface-container-low border border-surface-container">
-              <img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
-                   [src]="propertyImages[4]" alt="Living Room"/>
-              <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent flex flex-col justify-end p-2 text-on-primary">
-                <span class="font-label-sm text-label-sm font-bold leading-tight truncate">01. Living Room</span>
-                <span class="text-[10px] text-slate-300">Interior View</span>
-              </div>
-            </div>
-
-            <!-- Photo 2: Kitchen Island -->
-            <div class="relative group rounded-xl overflow-hidden shadow-sm aspect-[4/3] bg-surface-container-low border border-surface-container">
-              <img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
-                   [src]="propertyImages[5]" alt="Kitchen"/>
-              <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent flex flex-col justify-end p-2 text-on-primary">
-                <span class="font-label-sm text-label-sm font-bold leading-tight truncate">02. Modern Kitchen</span>
-                <span class="text-[10px] text-slate-300">Kitchen View</span>
-              </div>
-            </div>
-
-            <!-- Photo 3: Primary Bedroom -->
-            <div class="relative group rounded-xl overflow-hidden shadow-sm aspect-[4/3] bg-surface-container-low border border-surface-container">
-              <img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
-                   [src]="propertyImages[2]" alt="Bedroom"/>
-              <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent flex flex-col justify-end p-2 text-on-primary">
-                <span class="font-label-sm text-label-sm font-bold leading-tight truncate">03. Master Suite</span>
-                <span class="text-[10px] text-slate-300">Bedroom View</span>
-              </div>
-            </div>
-
-            <!-- Photo 4: Balcony Skyline View -->
-            <div class="relative group rounded-xl overflow-hidden shadow-sm aspect-[4/3] bg-surface-container-low border border-surface-container">
-              <img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
-                   [src]="propertyImages[3]" alt="Balcony View"/>
-              <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent flex flex-col justify-end p-2 text-on-primary">
-                <span class="font-label-sm text-label-sm font-bold leading-tight truncate">04. Exterior View</span>
-                <span class="text-[10px] text-slate-300">Balcony / Exterior</span>
-              </div>
-            </div>
-          </div>
-        </section>
+        </div>
 
       </form>
 
-      <!-- ------------------------------------------------------------------- -->
-      <!-- MODAL STICKY FOOTER / ACTION CONTROLS                               -->
-      <!-- ------------------------------------------------------------------- -->
-      <div class="px-space-xl py-space-md bg-surface-container-lowest shadow-[0_-4px_16px_rgba(0,0,0,0.04)] flex items-center justify-between z-20 border-t border-surface-container flex-shrink-0">
-        <!-- Left: Draft Save -->
-        <button type="button" (click)="showToast('Property progress saved to draft portfolio.')"
-                class="inline-flex items-center gap-2 px-space-md py-2.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md transition-colors cursor-pointer border border-surface-container">
-          <span class="material-symbols-outlined text-base">save</span>
-          <span>Save as Draft</span>
+      <!-- MODAL FOOTER -->
+      <div class="px-space-xl py-space-md bg-surface-container-lowest flex items-center justify-end gap-space-md z-20 border-t border-surface-container flex-shrink-0">
+        <button type="button" (click)="closeCreateModal()"
+                class="px-space-md py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors cursor-pointer">
+          Cancel
         </button>
 
-        <!-- Right: Actions & Primary Submission CTA -->
-        <div class="flex items-center gap-space-md">
-          <button type="button" (click)="closeCreateModal()"
-                  class="px-space-md py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors cursor-pointer">
-            Cancel
-          </button>
-
-          <button type="button" id="submitAuditBtn" (click)="onSubmitProperty()" [disabled]="isLoading()"
-                  class="inline-flex items-center gap-space-xs px-space-xl py-3 rounded-lg bg-secondary text-on-secondary hover:bg-on-secondary-container transition-all shadow-md hover:shadow-lg font-label-md text-label-md font-bold tracking-wide active:scale-[0.99] cursor-pointer">
-            @if (isLoading()) {
-              <span class="material-symbols-outlined text-lg animate-spin">progress_activity</span>
-              <span>Submitting to Auditor...</span>
-            } @else {
-              <span class="material-symbols-outlined text-lg">shield</span>
-              <span>Submit Property for Auditor Review</span>
-            }
-          </button>
-        </div>
-      </div>
-
-      <!-- Trust Anti-Fraud Microcopy Ribbon -->
-      <div class="bg-primary px-space-xl py-1.5 text-center text-on-primary font-label-sm text-label-sm tracking-wide font-medium flex-shrink-0">
-        TrustRent 100% Anti-Fraud Escrow Guarantee &bull; Zero Fake Listings Tolerated &bull; Deed Authentication Certified
+        <button type="button" id="submitPropertyBtn" (click)="onSubmitProperty()" [disabled]="isLoading()"
+                class="inline-flex items-center gap-space-xs px-space-xl py-2.5 rounded-lg bg-primary text-on-primary hover:bg-primary/90 transition-all shadow-md font-label-md text-label-md font-bold cursor-pointer disabled:opacity-50">
+          @if (isLoading()) {
+            <span class="material-symbols-outlined text-lg animate-spin">progress_activity</span>
+            <span>Creating...</span>
+          } @else {
+            <span class="material-symbols-outlined text-lg">add_home</span>
+            <span>Create Property</span>
+          }
+        </button>
       </div>
 
     </div>
