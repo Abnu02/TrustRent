@@ -77,47 +77,38 @@
 <!-- TOP HEADER & MAIN WORKSPACE (PL-72)                       -->
 <!-- ======================================================== -->
 <div class="pl-72">
-  <!-- Fixed Top Header -->
+  <!-- Clean Fixed Top Header -->
   <header class="fixed top-0 left-72 right-0 h-20 bg-surface-container-lowest/95 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-gutter flex items-center justify-between gap-space-md border-b border-surface-container">
-    <nav class="flex items-center gap-space-lg">
-      <a href="#" (click)="$event.preventDefault()" class="text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors">Explore Rentals</a>
-      <a href="#" (click)="$event.preventDefault()" class="text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors">Verified Landlords</a>
-      <button type="button" (click)="openDrawer()" class="text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors">How Verification Works</button>
-      <a href="#" (click)="$event.preventDefault()" class="transition-colors text-on-surface font-bold font-label-md text-label-md">Landlord Portal</a>
-      <a href="http://localhost:5151/scalar/v1" target="_blank" class="text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors flex items-center gap-1">
-        <span>Scalar API</span>
-        <span class="material-symbols-outlined text-xs">open_in_new</span>
-      </a>
-    </nav>
+    <div class="flex items-center gap-3">
+      <h1 class="font-headline-sm text-lg text-on-surface font-bold tracking-tight">Landlord Dashboard</h1>
+      <span class="px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-xs font-bold flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+        Console
+      </span>
+    </div>
 
     <div class="flex items-center gap-space-md">
-      <!-- Landlord Active Role Badge -->
-      <div class="flex items-center gap-2 px-3 py-1.5 bg-surface-container rounded-lg border border-surface-container">
-        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
-        <span class="font-label-sm text-label-sm text-on-surface font-bold">Landlord Console</span>
-      </div>
-
-      <!-- List a Property CTA -->
+      <!-- Create Property CTA -->
       <button type="button" (click)="openCreateModal()" 
-              class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary transition-all font-label-md text-label-md shadow-[0_1px_3px_rgba(15,23,42,0.08)] cursor-pointer">
+              class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-primary text-on-primary hover:bg-primary/90 transition-all font-label-md text-label-md shadow-sm cursor-pointer font-bold">
         <span class="material-symbols-outlined text-sm">add_home</span>
-        <span>List a Property</span>
-      </button>
-
-      <!-- Notifications -->
-      <button type="button" aria-label="Notifications" class="relative p-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors cursor-pointer">
-        <span class="material-symbols-outlined text-xl">notifications</span>
-        <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-secondary ring-2 ring-surface-container-lowest"></span>
+        <span>Create Property</span>
       </button>
 
       <!-- Profile Avatar with Verified Badge -->
       <div (click)="openRegisterModal()" title="Click to view/switch Landlord Profile"
-           class="relative flex items-center gap-space-xs p-1 rounded-full hover:bg-surface-container cursor-pointer transition-colors">
-        <img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-xs" 
-             src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkn7jr3EkWyNj1A28toyoWI_bCV92mSphnVDuYTaakoEPBzNAe6LMu9hocEGqriQXNwDNngT_5N9NjMPiakVpLKXxeYCvOWJBqRYxgimqcNtnZBt1P5i6s8kk0BRlPbivI8ldH6o4K_8Cb5j3ERbulBvRSnK55epM7gPol8vuzJH6IypQLo9zS3SBb97xi1pOHQKHG-JTtdvga3C2RaWIj0qZ_RzWK0cvsuGHzeNcAIPxWk2EQdb0DGg"/>
-        <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-secondary-container flex items-center justify-center">
-          <span class="material-symbols-outlined text-on-secondary-container text-[10px] leading-none font-bold">verified</span>
-        </span>
+           class="relative flex items-center gap-2.5 px-3 py-1.5 rounded-full hover:bg-surface-container cursor-pointer transition-colors border border-surface-container">
+        <div class="relative">
+          <img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-xs" 
+               src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkn7jr3EkWyNj1A28toyoWI_bCV92mSphnVDuYTaakoEPBzNAe6LMu9hocEGqriQXNwDNngT_5N9NjMPiakVpLKXxeYCvOWJBqRYxgimqcNtnZBt1P5i6s8kk0BRlPbivI8ldH6o4K_8Cb5j3ERbulBvRSnK55epM7gPol8vuzJH6IypQLo9zS3SBb97xi1pOHQKHG-JTtdvga3C2RaWIj0qZ_RzWK0cvsuGHzeNcAIPxWk2EQdb0DGg"/>
+          <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-secondary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-secondary-container text-[10px] leading-none font-bold">verified</span>
+          </span>
+        </div>
+        <div class="hidden sm:flex flex-col text-left">
+          <span class="text-xs font-bold text-on-surface leading-tight">{{ authService.currentUser().fullName }}</span>
+          <span class="text-[10px] text-on-surface-variant leading-none">Verified Landlord</span>
+        </div>
       </div>
     </div>
   </header>
@@ -433,6 +424,13 @@
 
                   <!-- Buttons -->
                   <div class="flex items-center gap-2 flex-shrink-0">
+                    <button type="button" (click)="openEditModal(property)" 
+                            title="Edit this property listing"
+                            class="px-3 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-semibold transition-colors flex items-center gap-1.5 cursor-pointer border border-surface-container">
+                      <span class="material-symbols-outlined text-sm">edit</span>
+                      <span>Edit</span>
+                    </button>
+
                     @if (property.status === 'Pending') {
                       <!-- Live demo helper: allows the user or hackathon judges to simulate admin approval -->
                       <button type="button" (click)="simulateAdminApprove(property.id)" 
@@ -441,16 +439,11 @@
                         <span class="material-symbols-outlined text-sm">verified</span>
                         <span>Approve Live</span>
                       </button>
-                      <button type="button" (click)="openDrawer()" 
-                              class="px-3 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors cursor-pointer">
-                        View Submission
-                      </button>
-                    } @else {
-                      <button type="button" class="px-3 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors cursor-pointer">
-                        Edit Property
-                      </button>
-                      <button type="button" class="px-3 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors cursor-pointer">
-                        View Public Listing
+                    } @else if (property.status === 'Rejected') {
+                      <button type="button" (click)="onSubmitVerification(property.id)" 
+                              class="px-3 py-2 rounded-lg bg-primary text-on-primary hover:bg-primary/90 font-label-md text-label-md font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer">
+                        <span class="material-symbols-outlined text-sm">send</span>
+                        <span>Resubmit</span>
                       </button>
                     }
                   </div>
@@ -533,8 +526,12 @@
               </span>
               <span class="font-label-sm text-label-sm tracking-wider uppercase text-on-surface-variant font-bold">Landlord Portal</span>
             </div>
-            <h2 class="font-headline-md text-headline-md text-on-surface tracking-tight font-bold">Create Property</h2>
-            <p class="font-body-sm text-body-sm text-on-surface-variant">Fill in the 8 property details below to create your listing.</p>
+            <h2 class="font-headline-md text-headline-md text-on-surface tracking-tight font-bold">
+              {{ isEditMode() ? 'Edit Property' : 'Create Property' }}
+            </h2>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">
+              {{ isEditMode() ? 'Update the 8 property details below for this listing.' : 'Fill in the 8 property details below to create your listing.' }}
+            </p>
           </div>
           <button type="button" aria-label="Close modal" 
                   class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors cursor-pointer" 
@@ -672,10 +669,10 @@
                 class="inline-flex items-center gap-space-xs px-space-xl py-2.5 rounded-lg bg-primary text-on-primary hover:bg-primary/90 transition-all shadow-md font-label-md text-label-md font-bold cursor-pointer disabled:opacity-50">
           @if (isLoading()) {
             <span class="material-symbols-outlined text-lg animate-spin">progress_activity</span>
-            <span>Creating...</span>
+            <span>{{ isEditMode() ? 'Saving Changes...' : 'Creating...' }}</span>
           } @else {
-            <span class="material-symbols-outlined text-lg">add_home</span>
-            <span>Create Property</span>
+            <span class="material-symbols-outlined text-lg">{{ isEditMode() ? 'save' : 'add_home' }}</span>
+            <span>{{ isEditMode() ? 'Save Changes' : 'Create Property' }}</span>
           }
         </button>
       </div>

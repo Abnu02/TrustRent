@@ -71,6 +71,18 @@ export class LandlordService {
     });
   }
 
+  updateProperty(id: string, data: CreatePropertyDto): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, data, {
+      headers: this.getHeaders()
+    });
+  }
+
+  submitForVerification(id: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${id}/submit-verification`, {}, {
+      headers: this.getHeaders()
+    });
+  }
+
   getPropertyById(id: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }

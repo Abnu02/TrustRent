@@ -20,6 +20,7 @@ export interface CreatePropertyDto {
 export interface MyProperty {
   id: string;
   title: string;
+  description?: string;
   rent: number;
   deposit: number;
   location: string;

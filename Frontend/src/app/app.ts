@@ -24,6 +24,8 @@ export class App implements OnInit {
 
   // Modal & Drawer visibility signals
   isCreateModalOpen = signal<boolean>(false);
+  isEditMode = signal<boolean>(false);
+  editingPropertyId = signal<string | null>(null);
   isDrawerOpen = signal<boolean>(false);
   isRegisterModalOpen = signal<boolean>(false);
 
@@ -176,12 +178,54 @@ export class App implements OnInit {
   // MODAL & DRAWER TRIGGERS
   // ==========================================
   openCreateModal() {
-    this.currentStep.set(1);
+    this.isEditMode.set(false);
+    this.editingPropertyId.set(null);
+    this.newProperty = {
+      title: '',
+      description: '',
+      propertyType: 'Condominium',
+      rent: 25000,
+      deposit: 50000,
+      location: 'Bole, Addis Ababa',
+      bedrooms: 2,
+      bathrooms: 2
+    };
+    this.isCreateModalOpen.set(true);
+  }
+
+  openEditModal(property: MyProperty) {
+    this.isEditMode.set(true);
+    this.editingPropertyId.set(property.id);
+    this.newProperty = {
+      title: property.title,
+      description: property.description || '',
+      propertyType: property.propertyType || 'Apartment',
+      rent: property.rent,
+      deposit: property.deposit,
+      location: property.location,
+      bedrooms: property.bedrooms,
+      bathrooms: property.bathrooms
+    };
+
+    // If description is not present, fetch from backend
+    if (!this.newProperty.description) {
+      this.landlordService.getPropertyById(property.id).subscribe({
+        next: (full) => {
+          if (full?.description) {
+            this.newProperty.description = full.description;
+          }
+        },
+        error: () => {}
+      });
+    }
+
     this.isCreateModalOpen.set(true);
   }
 
   closeCreateModal() {
     this.isCreateModalOpen.set(false);
+    this.isEditMode.set(false);
+    this.editingPropertyId.set(null);
   }
 
   openDrawer() {
@@ -208,8 +252,8 @@ export class App implements OnInit {
   }
 
   // ==========================================
-  // LANDLORD WORKFLOW: CREATE & SUBMIT PROPERTY
-  // Sends STRICTLY the 8 fields defined in backend CreatePropertyRequest:
+  // LANDLORD WORKFLOW: CREATE & SUBMIT PROPERTY / EDIT PROPERTY
+  // Sends STRICTLY the 8 fields defined in backend CreatePropertyRequest / UpdatePropertyRequest:
   // (Title, Description, PropertyType, Rent, Deposit, Location, Bedrooms, Bathrooms)
   // ==========================================
   onSubmitProperty() {
@@ -238,7 +282,7 @@ export class App implements OnInit {
       return;
     }
 
-    // STRICTLY send ONLY the 8 fields defined in the backend CreatePropertyRequest record:
+    // STRICTLY send ONLY the 8 fields defined in the backend record:
     const payload: CreatePropertyDto = {
       title: this.newProperty.title.trim(),
       description: this.newProperty.description.trim(),
@@ -251,33 +295,68 @@ export class App implements OnInit {
     };
 
     this.isLoading.set(true);
-    this.landlordService.createProperty(payload).subscribe({
-      next: (response) => {
-        this.isLoading.set(false);
-        this.closeCreateModal();
-        this.showToast(`Property "${response.title}" submitted to backend! Status: PENDING Auditor Review.`, 'success');
-        
-        // Reset form
-        this.newProperty = {
-          title: '',
-          description: '',
-          propertyType: 'Condominium',
-          rent: 25000,
-          deposit: 50000,
-          location: 'Bole, Addis Ababa',
-          bedrooms: 2,
-          bathrooms: 2
-        };
 
-        // Reset to first page & refresh properties & KPI counters
-        this.statusFilter.set('All');
-        this.page.set(1);
+    if (this.isEditMode() && this.editingPropertyId()) {
+      // EDIT PROPERTY
+      this.landlordService.updateProperty(this.editingPropertyId()!, payload).subscribe({
+        next: (response) => {
+          this.isLoading.set(false);
+          this.closeCreateModal();
+          this.showToast(`Property "${response.title || payload.title}" updated successfully!`, 'success');
+          this.loadProperties();
+          this.loadStats();
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          this.showToast(err.error?.detail || err.error?.message || 'Failed to update property.', 'error');
+        }
+      });
+    } else {
+      // CREATE PROPERTY
+      this.landlordService.createProperty(payload).subscribe({
+        next: (response) => {
+          this.isLoading.set(false);
+          this.closeCreateModal();
+          this.showToast(`Property "${response.title}" created successfully! Status: PENDING Verification.`, 'success');
+          
+          // Reset form
+          this.newProperty = {
+            title: '',
+            description: '',
+            propertyType: 'Condominium',
+            rent: 25000,
+            deposit: 50000,
+            location: 'Bole, Addis Ababa',
+            bedrooms: 2,
+            bathrooms: 2
+          };
+
+          // Reset to first page & refresh properties & KPI counters
+          this.statusFilter.set('All');
+          this.page.set(1);
+          this.loadProperties();
+          this.loadStats();
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          this.showToast(err.error?.detail || err.error?.message || 'Failed to submit property.', 'error');
+        }
+      });
+    }
+  }
+
+  onSubmitVerification(propertyId: string) {
+    this.isLoading.set(true);
+    this.landlordService.submitForVerification(propertyId).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.showToast('Property submitted for auditor verification!', 'success');
         this.loadProperties();
         this.loadStats();
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.showToast(err.error?.detail || err.error?.message || 'Failed to submit property.', 'error');
+        this.showToast(err.error?.detail || err.error?.message || 'Failed to submit verification.', 'error');
       }
     });
   }
