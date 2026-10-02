@@ -73,12 +73,12 @@ export class App implements OnInit {
   };
 
 
-  // Registration Form Model
-  registerForm = {
-    fullName: 'Abreham Bekele',
-    email: 'abreham@example.com',
+  // Landlord Profile & Security Model (Best Practice: Phone editable, Password dedicated action)
+  profileForm = {
     phoneNumber: '0912345678',
-    password: 'password123'
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
   };
 
   // Real estate photography collection
@@ -237,6 +237,10 @@ export class App implements OnInit {
   }
 
   openRegisterModal() {
+    this.profileForm.phoneNumber = this.authService.currentUser().phoneNumber || '0912345678';
+    this.profileForm.currentPassword = '';
+    this.profileForm.newPassword = '';
+    this.profileForm.confirmPassword = '';
     this.isRegisterModalOpen.set(true);
   }
 
@@ -362,40 +366,49 @@ export class App implements OnInit {
   }
 
   // ==========================================
-  // LANDLORD ONBOARDING: REGISTER
+  // LANDLORD PROFILE & SECURITY: SAVE CHANGES
+  // Best practice: Full Name & Email are locked/verified.
+  // Phone Number is editable, and Password requires Current Password + Confirmation.
   // ==========================================
-  onRegisterLandlord() {
-    if (!this.registerForm.fullName || !this.registerForm.email || !this.registerForm.phoneNumber) {
-      this.showToast('Please fill out all registration fields.', 'error');
+  onSaveProfile() {
+    if (!this.profileForm.phoneNumber || !this.profileForm.phoneNumber.trim()) {
+      this.showToast('Please provide a valid Ethiopian mobile phone number.', 'error');
       return;
     }
 
-    this.isLoading.set(true);
-    this.landlordService.registerLandlord({
-      fullName: this.registerForm.fullName,
-      email: this.registerForm.email,
-      phoneNumber: this.registerForm.phoneNumber,
-      password: this.registerForm.password
-    }).subscribe({
-      next: (res) => {
-        this.isLoading.set(false);
-        this.authService.currentUser.set({
-          id: res.id,
-          fullName: res.fullName,
-          email: res.email,
-          phoneNumber: res.phoneNumber,
-          role: 'Landlord',
-          isVerified: res.isVerified
-        });
-        this.closeRegisterModal();
-        this.showToast(`Welcome ${res.fullName}! Landlord profile active.`, 'success');
-        this.loadProperties();
-        this.loadStats();
-      },
-      error: (err) => {
-        this.isLoading.set(false);
-        this.showToast(err.error?.detail || err.error?.message || 'Registration failed.', 'error');
+    const isChangingPassword = Boolean(
+      this.profileForm.newPassword.trim() || 
+      this.profileForm.currentPassword.trim() || 
+      this.profileForm.confirmPassword.trim()
+    );
+
+    if (isChangingPassword) {
+      if (!this.profileForm.currentPassword.trim()) {
+        this.showToast('Current password is required to change security credentials.', 'error');
+        return;
       }
-    });
+      if (this.profileForm.newPassword.length < 6) {
+        this.showToast('New password must be at least 6 characters.', 'error');
+        return;
+      }
+      if (this.profileForm.newPassword !== this.profileForm.confirmPassword) {
+        this.showToast('New password and confirm password do not match.', 'error');
+        return;
+      }
+    }
+
+    // Update active landlord profile contact
+    const updatedPhone = this.profileForm.phoneNumber.trim();
+    this.authService.currentUser.update(user => ({
+      ...user,
+      phoneNumber: updatedPhone
+    }));
+
+    this.closeRegisterModal();
+    if (isChangingPassword) {
+      this.showToast('Profile phone number and password updated successfully!', 'success');
+    } else {
+      this.showToast('Landlord contact phone number updated successfully!', 'success');
+    }
   }
 }

@@ -156,7 +156,7 @@
             <button type="button" (click)="openRegisterModal()" 
                     class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-label-md text-label-md cursor-pointer">
               <span class="material-symbols-outlined text-base">manage_accounts</span>
-              <span>Onboard / Switch</span>
+              <span>Profile &amp; Security</span>
             </button>
             <button type="button" (click)="openCreateModal()" 
                     class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-all font-label-md text-label-md shadow-sm cursor-pointer">
@@ -815,59 +815,125 @@
 }
 
 <!-- ========================================================================= -->
-<!-- MODAL: LANDLORD ONBOARDING & REGISTRATION                                  -->
+<!-- MODAL: LANDLORD PROFILE & SECURITY SETTINGS                               -->
 <!-- ========================================================================= -->
 @if (isRegisterModalOpen()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-space-md overflow-y-auto">
     <div class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-sm transition-opacity" (click)="closeRegisterModal()"></div>
     
-    <div class="relative w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-2xl overflow-hidden p-space-lg z-10 border border-surface-container">
+    <div class="relative w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-2xl overflow-hidden p-space-lg z-10 border border-surface-container max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-space-md border-b border-surface-container">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-secondary text-xl font-bold">badge</span>
-          <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Landlord Onboarding / Registration</h3>
+          <span class="material-symbols-outlined text-secondary text-2xl font-bold">manage_accounts</span>
+          <div>
+            <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">Landlord Profile &amp; Security</h3>
+            <p class="text-xs text-on-surface-variant">Manage verified contact details and password credentials</p>
+          </div>
         </div>
-        <button type="button" (click)="closeRegisterModal()" class="text-on-surface-variant hover:text-on-surface cursor-pointer">
+        <button type="button" (click)="closeRegisterModal()" class="text-on-surface-variant hover:text-on-surface cursor-pointer p-1 rounded-lg hover:bg-surface-container">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
 
-      <form (submit)="onRegisterLandlord(); $event.preventDefault();" class="space-y-space-md mt-space-md">
+      <form (submit)="onSaveProfile(); $event.preventDefault();" class="space-y-space-md mt-space-md">
+        <!-- Field 1: Full Legal Name (Locked / Read-Only) -->
         <div class="space-y-1">
-          <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Full Legal Name</label>
-          <input type="text" [(ngModel)]="registerForm.fullName" name="regFullName" required
-                 class="w-full h-11 px-3 rounded-lg bg-surface-container-low border border-surface-container text-on-surface focus:ring-2 focus:ring-primary outline-none"
-                 placeholder="e.g. Abreham Bekele"/>
+          <div class="flex items-center justify-between">
+            <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Full Legal Name</label>
+            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-secondary px-2 py-0.5 rounded-full bg-secondary-container/60">
+              <span class="material-symbols-outlined text-xs">lock</span>
+              Locked • Verified by Admin
+            </span>
+          </div>
+          <div class="relative">
+            <input type="text" [value]="authService.currentUser().fullName" readonly disabled
+                   class="w-full h-11 px-3 rounded-lg bg-surface-container-high/60 border border-surface-container-highest text-on-surface-variant font-medium cursor-not-allowed"/>
+            <span class="absolute right-3 top-3 text-outline material-symbols-outlined text-base">verified_user</span>
+          </div>
+          <p class="text-[11px] text-on-surface-variant">Legal identity is locked per title deed registration and cannot be modified without admin re-audit.</p>
         </div>
 
+        <!-- Field 2: Email Address (Locked / Read-Only) -->
         <div class="space-y-1">
-          <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Ethiopian Mobile Phone</label>
-          <input type="text" [(ngModel)]="registerForm.phoneNumber" name="regPhone" required
-                 class="w-full h-11 px-3 rounded-lg bg-surface-container-low border border-surface-container text-on-surface focus:ring-2 focus:ring-primary outline-none"
-                 placeholder="0912345678"/>
+          <div class="flex items-center justify-between">
+            <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Email Address (Login ID)</label>
+            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-on-surface-variant px-2 py-0.5 rounded-full bg-surface-container-high">
+              <span class="material-symbols-outlined text-xs">lock</span>
+              Locked • Account ID
+            </span>
+          </div>
+          <div class="relative">
+            <input type="email" [value]="authService.currentUser().email" readonly disabled
+                   class="w-full h-11 px-3 rounded-lg bg-surface-container-high/60 border border-surface-container-highest text-on-surface-variant font-medium cursor-not-allowed"/>
+            <span class="absolute right-3 top-3 text-outline material-symbols-outlined text-base">alternate_email</span>
+          </div>
+          <p class="text-[11px] text-on-surface-variant">Primary credential used for authentication and legal escrow notifications.</p>
         </div>
 
+        <!-- Field 3: Ethiopian Mobile Phone (Editable) -->
         <div class="space-y-1">
-          <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Email Address</label>
-          <input type="email" [(ngModel)]="registerForm.email" name="regEmail" required
-                 class="w-full h-11 px-3 rounded-lg bg-surface-container-low border border-surface-container text-on-surface focus:ring-2 focus:ring-primary outline-none"
-                 placeholder="abreham@example.com"/>
+          <div class="flex items-center justify-between">
+            <label class="block font-label-sm text-label-sm text-on-surface font-semibold">
+              Ethiopian Mobile Phone <span class="text-error">*</span>
+            </label>
+            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary px-2 py-0.5 rounded-full bg-primary-container/40">
+              <span class="material-symbols-outlined text-xs">edit</span>
+              Editable Contact
+            </span>
+          </div>
+          <div class="relative">
+            <input type="tel" [(ngModel)]="profileForm.phoneNumber" name="profilePhone" required
+                   class="w-full h-11 px-3 rounded-lg bg-surface-container-low border border-surface-container text-on-surface focus:ring-2 focus:ring-primary outline-none font-mono"
+                   placeholder="0912345678"/>
+            <span class="absolute right-3 top-3 text-primary material-symbols-outlined text-base">phone_iphone</span>
+          </div>
+          <p class="text-[11px] text-on-surface-variant">Direct contact number displayed to prospective tenants for property viewings.</p>
         </div>
 
-        <div class="space-y-1">
-          <label class="block font-label-sm text-label-sm text-on-surface font-semibold">Password</label>
-          <input type="password" [(ngModel)]="registerForm.password" name="regPassword" required
-                 class="w-full h-11 px-3 rounded-lg bg-surface-container-low border border-surface-container text-on-surface focus:ring-2 focus:ring-primary outline-none"
-                 placeholder="••••••••"/>
+        <!-- Field 4: Dedicated Security Action (Change Password) -->
+        <div class="pt-space-xs">
+          <div class="p-space-md rounded-xl bg-surface-container-low border border-surface-container space-y-space-sm">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary text-base">key</span>
+                <span class="font-label-sm text-label-sm font-bold text-on-surface">Change Password</span>
+              </div>
+              <span class="text-[10px] text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">Optional</span>
+            </div>
+            <p class="text-[11px] text-on-surface-variant">To update your password, enter your current password followed by your new password.</p>
+
+            <div class="space-y-1">
+              <label class="block text-[11px] font-medium text-on-surface-variant">Current Password</label>
+              <input type="password" [(ngModel)]="profileForm.currentPassword" name="currentPassword"
+                     class="w-full h-10 px-3 rounded-lg bg-surface-container-lowest border border-surface-container text-on-surface text-sm focus:ring-2 focus:ring-primary outline-none"
+                     placeholder="Enter your current password"/>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+              <div class="space-y-1">
+                <label class="block text-[11px] font-medium text-on-surface-variant">New Password</label>
+                <input type="password" [(ngModel)]="profileForm.newPassword" name="newPassword"
+                       class="w-full h-10 px-3 rounded-lg bg-surface-container-lowest border border-surface-container text-on-surface text-sm focus:ring-2 focus:ring-primary outline-none"
+                       placeholder="Min 6 characters"/>
+              </div>
+              <div class="space-y-1">
+                <label class="block text-[11px] font-medium text-on-surface-variant">Confirm New Password</label>
+                <input type="password" [(ngModel)]="profileForm.confirmPassword" name="confirmPassword"
+                       class="w-full h-10 px-3 rounded-lg bg-surface-container-lowest border border-surface-container text-on-surface text-sm focus:ring-2 focus:ring-primary outline-none"
+                       placeholder="Re-enter new password"/>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="pt-space-sm flex items-center justify-end gap-space-sm">
+        <div class="pt-space-sm flex items-center justify-end gap-space-sm border-t border-surface-container">
           <button type="button" (click)="closeRegisterModal()" class="px-space-md py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer">
             Cancel
           </button>
           <button type="submit" [disabled]="isLoading()" 
-                  class="px-space-lg py-2.5 rounded-lg bg-primary text-on-primary hover:bg-primary-container font-label-md text-label-md font-bold transition-all shadow-sm cursor-pointer">
-            {{ isLoading() ? 'Saving...' : 'Register as Landlord' }}
+                  class="px-space-lg py-2.5 rounded-lg bg-primary text-on-primary hover:bg-primary-container font-label-md text-label-md font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">save</span>
+            <span>{{ isLoading() ? 'Saving...' : 'Save Profile Changes' }}</span>
           </button>
         </div>
       </form>
