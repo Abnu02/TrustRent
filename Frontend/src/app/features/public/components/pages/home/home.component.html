@@ -1,0 +1,838 @@
+<app-public-navbar />
+
+<main class="home-page">
+
+  <!-- ========================================================= -->
+  <!-- HERO -->
+  <!-- ========================================================= -->
+
+  <section class="hero">
+
+    <div class="hero-background hero-glow-one"></div>
+    <div class="hero-background hero-glow-two"></div>
+
+    <div class="container hero-content">
+
+      <div class="trust-badge">
+        <span class="material-symbols-outlined">
+          verified
+        </span>
+
+        <span>
+          Trusted Rental Verification Platform
+        </span>
+      </div>
+
+
+      <h1>
+        Find a Rental You Can
+        <span>Trust.</span>
+      </h1>
+
+
+      <p class="hero-description">
+        Discover verified rental properties, transparent property
+        information, and trusted landlords in one place.
+      </p>
+
+
+      <!-- SEARCH -->
+
+      <div class="search-panel">
+
+        <div class="search-field">
+
+          <span class="material-symbols-outlined">
+            location_on
+          </span>
+
+          <div>
+            <label>Location</label>
+
+            <input
+              type="text"
+              placeholder="Enter city or neighborhood"
+            />
+          </div>
+
+        </div>
+
+
+        <div class="search-field">
+
+          <span class="material-symbols-outlined">
+            apartment
+          </span>
+
+          <div>
+            <label>Property Type</label>
+
+            <select>
+              <option>Any Type</option>
+              <option>Apartment</option>
+              <option>Condo</option>
+              <option>House</option>
+              <option>Townhouse</option>
+            </select>
+          </div>
+
+        </div>
+
+
+        <div class="search-field">
+
+          <span class="material-symbols-outlined">
+            bed
+          </span>
+
+          <div>
+            <label>Bedrooms</label>
+
+            <select>
+              <option>Any</option>
+              <option>1 Bedroom</option>
+              <option>2 Bedrooms</option>
+              <option>3+ Bedrooms</option>
+            </select>
+          </div>
+
+        </div>
+
+
+        <div class="search-field">
+
+          <span class="material-symbols-outlined">
+            payments
+          </span>
+
+          <div>
+            <label>Budget</label>
+
+            <select>
+              <option>Any Budget</option>
+              <option>Under 15,000 ETB</option>
+              <option>15,000 - 25,000 ETB</option>
+              <option>25,000 - 40,000 ETB</option>
+              <option>40,000+ ETB</option>
+            </select>
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="search-button"
+          (click)="search()"
+        >
+          <span class="material-symbols-outlined">
+            search
+          </span>
+
+          Search Rentals
+        </button>
+
+      </div>
+
+
+      <!-- TRUST METRICS -->
+
+      <div class="trust-metrics">
+
+        <div class="metric">
+          <span class="material-symbols-outlined">
+            verified_user
+          </span>
+
+          <strong>Verified</strong>
+          <small>Property Listings</small>
+        </div>
+
+
+        <div class="metric">
+          <span class="material-symbols-outlined">
+            badge
+          </span>
+
+          <strong>Verified</strong>
+          <small>Landlords</small>
+        </div>
+
+
+        <div class="metric">
+          <span class="material-symbols-outlined">
+            security
+          </span>
+
+          <strong>Transparent</strong>
+          <small>Property Information</small>
+        </div>
+
+
+        <div class="metric">
+          <span class="material-symbols-outlined">
+            support_agent
+          </span>
+
+          <strong>Trusted</strong>
+          <small>Rental Process</small>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ========================================================= -->
+  <!-- ABOUT -->
+  <!-- ========================================================= -->
+
+  <section
+    id="about"
+    class="section"
+  >
+
+    <div class="container">
+
+      <div class="section-heading">
+
+        <span class="section-label">
+          WHY TRUSTRENT
+        </span>
+
+        <h2>
+          Rental decisions should be based on
+          <span>trust.</span>
+        </h2>
+
+        <p>
+          TrustRent brings rental property information into one
+          structured platform so tenants can discover properties
+          with greater confidence.
+        </p>
+
+      </div>
+
+
+      <div class="feature-grid">
+
+        <article class="feature-card">
+
+          <div class="feature-icon">
+            <span class="material-symbols-outlined">
+              verified
+            </span>
+          </div>
+
+          <h3>
+            Verified Listings
+          </h3>
+
+          <p>
+            Properties go through the TrustRent verification
+            process before they are presented as verified listings.
+          </p>
+
+        </article>
+
+
+        <article class="feature-card">
+
+          <div class="feature-icon">
+            <span class="material-symbols-outlined">
+              badge
+            </span>
+          </div>
+
+          <h3>
+            Verified Landlords
+          </h3>
+
+          <p>
+            Tenants can see whether the landlord associated with
+            a property has completed platform verification.
+          </p>
+
+        </article>
+
+
+        <article class="feature-card">
+
+          <div class="feature-icon">
+            <span class="material-symbols-outlined">
+              search
+            </span>
+          </div>
+
+          <h3>
+            Easy Property Discovery
+          </h3>
+
+          <p>
+            Search and filter rental properties by location,
+            property type, bedrooms and budget.
+          </p>
+
+        </article>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ========================================================= -->
+  <!-- SERVICES -->
+  <!-- ========================================================= -->
+
+  <section
+    id="services"
+    class="section section-light"
+  >
+
+    <div class="container">
+
+      <div class="section-heading">
+
+        <span class="section-label">
+          OUR SERVICES
+        </span>
+
+        <h2>
+          A simpler rental discovery experience
+        </h2>
+
+      </div>
+
+
+      <div class="service-grid">
+
+        <article class="service-card">
+
+          <span class="material-symbols-outlined">
+            home_work
+          </span>
+
+          <h3>
+            Property Discovery
+          </h3>
+
+          <p>
+            Browse available rental properties from a centralized
+            platform.
+          </p>
+
+        </article>
+
+
+        <article class="service-card">
+
+          <span class="material-symbols-outlined">
+            fact_check
+          </span>
+
+          <h3>
+            Listing Verification
+          </h3>
+
+          <p>
+            Verified listings provide additional information about
+            the platform's verification status.
+          </p>
+
+        </article>
+
+
+        <article class="service-card">
+
+          <span class="material-symbols-outlined">
+            manage_search
+          </span>
+
+          <h3>
+            Smart Search
+          </h3>
+
+          <p>
+            Narrow down properties according to your rental
+            requirements.
+          </p>
+
+        </article>
+
+
+        <article class="service-card">
+
+          <span class="material-symbols-outlined">
+            connect_without_contact
+          </span>
+
+          <h3>
+            Direct Contact
+          </h3>
+
+          <p>
+            Connect tenants with the landlord or property
+            representative associated with a listing.
+          </p>
+
+        </article>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ========================================================= -->
+  <!-- HOW VERIFICATION WORKS -->
+  <!-- ========================================================= -->
+
+  <section
+    id="verification"
+    class="section"
+  >
+
+    <div class="container">
+
+      <div class="section-heading">
+
+        <span class="section-label">
+          VERIFICATION PROCESS
+        </span>
+
+        <h2>
+          How TrustRent Verification Works
+        </h2>
+
+        <p>
+          A simple verification workflow helps distinguish
+          approved properties from unverified listings.
+        </p>
+
+      </div>
+
+
+      <div class="verification-grid">
+
+        <article class="verification-step">
+
+          <div class="step-number">
+            01
+          </div>
+
+          <div class="step-icon">
+            <span class="material-symbols-outlined">
+              add_business
+            </span>
+          </div>
+
+          <h3>
+            Property Submitted
+          </h3>
+
+          <p>
+            A landlord or broker submits property information
+            through the platform.
+          </p>
+
+        </article>
+
+
+        <article class="verification-step">
+
+          <div class="step-number">
+            02
+          </div>
+
+          <div class="step-icon">
+            <span class="material-symbols-outlined">
+              fact_check
+            </span>
+          </div>
+
+          <h3>
+            Information Reviewed
+          </h3>
+
+          <p>
+            The submitted property information is reviewed by
+            the platform administrator.
+          </p>
+
+        </article>
+
+
+        <article class="verification-step">
+
+          <div class="step-number">
+            03
+          </div>
+
+          <div class="step-icon">
+            <span class="material-symbols-outlined">
+              verified_user
+            </span>
+          </div>
+
+          <h3>
+            Property Verified
+          </h3>
+
+          <p>
+            Approved listings receive a TrustRent verified
+            status.
+          </p>
+
+        </article>
+
+
+        <article class="verification-step active">
+
+          <div class="step-number">
+            04
+          </div>
+
+          <div class="step-icon">
+            <span class="material-symbols-outlined">
+              visibility
+            </span>
+          </div>
+
+          <h3>
+            Tenant Discovers
+          </h3>
+
+          <p>
+            Tenants can browse verified properties and review
+            their available information.
+          </p>
+
+        </article>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ========================================================= -->
+  <!-- RENTED PROPERTIES -->
+  <!-- ========================================================= -->
+
+  <section
+    id="rented-properties"
+    class="section section-light"
+  >
+
+    <div class="container">
+
+      <div class="section-heading">
+
+        <span class="section-label">
+          TRUSTED RENTALS
+        </span>
+
+        <h2>
+          Properties successfully rented through TrustRent
+        </h2>
+
+        <p>
+          Explore examples of rental properties that have
+          completed the TrustRent process.
+        </p>
+
+      </div>
+
+
+      <div class="rented-grid">
+
+        <article class="rented-card">
+
+          <div class="rented-image image-one">
+
+            <span class="status-badge">
+              <span class="material-symbols-outlined">
+                check_circle
+              </span>
+
+              Rented
+            </span>
+
+          </div>
+
+          <div class="rented-content">
+
+            <span class="location">
+              Bole, Addis Ababa
+            </span>
+
+            <h3>
+              Modern 2 Bedroom Apartment
+            </h3>
+
+            <p>
+              Spacious apartment with convenient access
+              to nearby services.
+            </p>
+
+            <div class="property-meta">
+
+              <span>
+                <span class="material-symbols-outlined">
+                  bed
+                </span>
+                2 Beds
+              </span>
+
+              <span>
+                <span class="material-symbols-outlined">
+                  bathtub
+                </span>
+                2 Baths
+              </span>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <article class="rented-card">
+
+          <div class="rented-image image-two">
+
+            <span class="status-badge">
+              <span class="material-symbols-outlined">
+                check_circle
+              </span>
+
+              Rented
+            </span>
+
+          </div>
+
+          <div class="rented-content">
+
+            <span class="location">
+              Kazanchis, Addis Ababa
+            </span>
+
+            <h3>
+              Comfortable City Apartment
+            </h3>
+
+            <p>
+              Modern residential space suitable for
+              professionals and families.
+            </p>
+
+            <div class="property-meta">
+
+              <span>
+                <span class="material-symbols-outlined">
+                  bed
+                </span>
+                1 Bed
+              </span>
+
+              <span>
+                <span class="material-symbols-outlined">
+                  bathtub
+                </span>
+                1 Bath
+              </span>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <article class="rented-card">
+
+          <div class="rented-image image-three">
+
+            <span class="status-badge">
+              <span class="material-symbols-outlined">
+                check_circle
+              </span>
+
+              Rented
+            </span>
+
+          </div>
+
+          <div class="rented-content">
+
+            <span class="location">
+              Saris, Addis Ababa
+            </span>
+
+            <h3>
+              Family Residence
+            </h3>
+
+            <p>
+              A spacious residential property with
+              essential amenities.
+            </p>
+
+            <div class="property-meta">
+
+              <span>
+                <span class="material-symbols-outlined">
+                  bed
+                </span>
+                3 Beds
+              </span>
+
+              <span>
+                <span class="material-symbols-outlined">
+                  bathtub
+                </span>
+                2 Baths
+              </span>
+
+            </div>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ========================================================= -->
+  <!-- CTA -->
+  <!-- ========================================================= -->
+
+  <section class="cta-section">
+
+    <div class="container">
+
+      <div class="cta-content">
+
+        <span class="material-symbols-outlined">
+          verified_user
+        </span>
+
+        <h2>
+          Ready to find a rental you can trust?
+        </h2>
+
+        <p>
+          Browse verified rental properties and make your
+          next housing decision with better information.
+        </p>
+
+        <a
+          routerLink="/tenant"
+          class="cta-button"
+        >
+          <span class="material-symbols-outlined">
+            search
+          </span>
+
+          Browse Verified Rentals
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ========================================================= -->
+  <!-- CONTACT -->
+  <!-- ========================================================= -->
+
+  <section
+    id="contact"
+    class="section contact-section"
+  >
+
+    <div class="container contact-grid">
+
+      <div>
+
+        <span class="section-label">
+          CONTACT TRUSTRENT
+        </span>
+
+        <h2>
+          Have a question?
+        </h2>
+
+        <p>
+          Our team is here to help tenants, landlords and
+          brokers understand the TrustRent platform.
+        </p>
+
+      </div>
+
+
+      <div class="contact-items">
+
+        <div class="contact-item">
+
+          <span class="material-symbols-outlined">
+            email
+          </span>
+
+          <div>
+            <strong>Email</strong>
+            <span>support@trustrent.com</span>
+          </div>
+
+        </div>
+
+
+        <div class="contact-item">
+
+          <span class="material-symbols-outlined">
+            phone
+          </span>
+
+          <div>
+            <strong>Phone</strong>
+            <span>+251 900 000 000</span>
+          </div>
+
+        </div>
+
+
+        <div class="contact-item">
+
+          <span class="material-symbols-outlined">
+            location_on
+          </span>
+
+          <div>
+            <strong>Location</strong>
+            <span>Addis Ababa, Ethiopia</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+<app-public-footer />
