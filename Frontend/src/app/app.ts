@@ -398,21 +398,4 @@ export class App implements OnInit {
       }
     });
   }
-
-  // Demo Helper: Simulates Admin approval so judges see status flip live!
-  simulateAdminApprove(propertyId: string) {
-    this.isLoading.set(true);
-    this.http.put(`http://localhost:5151/api/v1/admin/properties/${propertyId}/approve`, {}).subscribe({
-      next: () => {
-        this.isLoading.set(false);
-        this.showToast('Auditor verification complete! Listing is now APPROVED & LIVE on TrustRent.', 'success');
-        this.loadProperties();
-        this.loadStats();
-      },
-      error: () => {
-        this.isLoading.set(false);
-        this.showToast('Failed to approve property.', 'error');
-      }
-    });
-  }
 }

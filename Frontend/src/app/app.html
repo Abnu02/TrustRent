@@ -306,17 +306,17 @@
             <button type="button" (click)="onStatusFilterChange('Approved')" 
                     [class]="statusFilter() === 'Approved' ? 'bg-surface-container-lowest text-on-surface shadow-sm font-bold' : 'text-on-surface-variant hover:text-on-surface'"
                     class="px-3 py-1.5 rounded-md font-label-sm text-label-sm transition-all cursor-pointer">
-              Approved / Live ({{ stats()?.approvedCount ?? 0 }})
+              Approved by Admin ({{ stats()?.approvedCount ?? 0 }})
             </button>
             <button type="button" (click)="onStatusFilterChange('Pending')" 
                     [class]="statusFilter() === 'Pending' ? 'bg-surface-container-lowest text-on-surface shadow-sm font-bold' : 'text-on-surface-variant hover:text-on-surface'"
                     class="px-3 py-1.5 rounded-md font-label-sm text-label-sm transition-all cursor-pointer">
-              Pending Verification ({{ stats()?.pendingCount ?? 0 }})
+              Waiting for Admin ({{ stats()?.pendingCount ?? 0 }})
             </button>
             <button type="button" (click)="onStatusFilterChange('Rejected')" 
                     [class]="statusFilter() === 'Rejected' ? 'bg-surface-container-lowest text-on-surface shadow-sm font-bold' : 'text-on-surface-variant hover:text-on-surface'"
                     class="px-3 py-1.5 rounded-md font-label-sm text-label-sm transition-all cursor-pointer">
-              Revisions Needed ({{ stats()?.rejectedCount ?? 0 }})
+              Rejected by Admin ({{ stats()?.rejectedCount ?? 0 }})
             </button>
           </div>
         </div>
@@ -372,26 +372,31 @@
                         {{ property.title }}
                       </span>
 
-                      <!-- Status Pill -->
+                      <!-- Status Pill (Pending, Approved, Rejected) -->
                       @if (property.status === 'Approved') {
                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold">
                           <span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">verified</span>
-                          Approved &amp; Live
+                          Approved by Admin
                         </span>
                       } @else if (property.status === 'Pending') {
-                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-tertiary-container font-label-sm text-label-sm font-bold">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 font-label-sm text-label-sm font-bold">
                           <span class="material-symbols-outlined text-[13px]">hourglass_top</span>
-                          Pending Verification
+                          Waiting for Admin Approval
                         </span>
                       } @else {
                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-bold">
-                          <span class="material-symbols-outlined text-[13px]">error</span>
-                          Revisions Needed
+                          <span class="material-symbols-outlined text-[13px]">cancel</span>
+                          Rejected by Admin
                         </span>
                       }
                     </div>
 
-                    <p class="font-body-md text-body-md text-on-surface-variant">{{ property.location }}</p>
+                    <p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1">
+                      <span class="material-symbols-outlined text-xs text-on-surface-variant">location_on</span>
+                      <span>{{ property.location }}</span>
+                      <span class="text-outline-variant">•</span>
+                      <span class="font-medium text-xs">{{ property.propertyType }}</span>
+                    </p>
 
                     <div class="flex flex-wrap items-center gap-x-3 gap-y-1 font-label-sm text-label-sm text-on-surface-variant">
                       <span class="text-on-surface font-bold text-sm">{{ property.rent | number:'1.0-0' }} ETB / mo</span>
@@ -400,10 +405,22 @@
                       <span class="text-outline-variant">•</span>
                       <span>{{ property.bedrooms }} Bed, {{ property.bathrooms }} Bath</span>
                       <span class="text-outline-variant">•</span>
-                      <span class="flex items-center gap-1 text-secondary font-medium">
-                        <span class="material-symbols-outlined text-xs">gavel</span>
-                        Title Deed Validated
-                      </span>
+                      @if (property.status === 'Approved') {
+                        <span class="flex items-center gap-1 text-secondary font-medium">
+                          <span class="material-symbols-outlined text-xs">verified</span>
+                          Live on Platform
+                        </span>
+                      } @else if (property.status === 'Pending') {
+                        <span class="flex items-center gap-1 text-amber-600 font-medium">
+                          <span class="material-symbols-outlined text-xs">hourglass_top</span>
+                          In Admin Review Queue
+                        </span>
+                      } @else {
+                        <span class="flex items-center gap-1 text-error font-medium">
+                          <span class="material-symbols-outlined text-xs">info</span>
+                          Needs Revisions
+                        </span>
+                      }
                     </div>
                   </div>
                 </div>
@@ -422,26 +439,31 @@
                     </div>
                   </div>
 
-                  <!-- Buttons -->
+                  <!-- Buttons: Landlord can Edit his post and view status (Admin approves) -->
                   <div class="flex items-center gap-2 flex-shrink-0">
                     <button type="button" (click)="openEditModal(property)" 
                             title="Edit this property listing"
                             class="px-3 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-semibold transition-colors flex items-center gap-1.5 cursor-pointer border border-surface-container">
                       <span class="material-symbols-outlined text-sm">edit</span>
-                      <span>Edit</span>
+                      <span>Edit Property</span>
                     </button>
 
                     @if (property.status === 'Pending') {
-                      <!-- Live demo helper: allows the user or hackathon judges to simulate admin approval -->
-                      <button type="button" (click)="simulateAdminApprove(property.id)" 
-                              title="Simulate Admin verification approval for demo"
-                              class="px-3 py-2 rounded-lg bg-secondary text-on-secondary hover:bg-on-secondary-container font-label-md text-label-md font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer">
-                        <span class="material-symbols-outlined text-sm">verified</span>
-                        <span>Approve Live</span>
-                      </button>
+                      <span class="px-3 py-2 rounded-lg bg-surface-container-low text-on-surface-variant font-label-sm text-xs font-semibold flex items-center gap-1.5 border border-surface-container"
+                            title="Waiting for Admin approval">
+                        <span class="material-symbols-outlined text-sm text-amber-500">schedule</span>
+                        <span>Waiting for Admin</span>
+                      </span>
+                    } @else if (property.status === 'Approved') {
+                      <span class="px-3 py-2 rounded-lg bg-secondary-container/40 text-on-secondary-container font-label-sm text-xs font-semibold flex items-center gap-1.5 border border-secondary/20"
+                            title="Listing approved by Admin and live">
+                        <span class="material-symbols-outlined text-sm text-secondary">verified</span>
+                        <span>Approved &amp; Live</span>
+                      </span>
                     } @else if (property.status === 'Rejected') {
                       <button type="button" (click)="onSubmitVerification(property.id)" 
-                              class="px-3 py-2 rounded-lg bg-primary text-on-primary hover:bg-primary/90 font-label-md text-label-md font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer">
+                              title="Resubmit property for Admin verification"
+                              class="px-3 py-2 rounded-lg bg-primary text-on-primary hover:bg-primary/90 font-label-md text-label-md font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer">
                         <span class="material-symbols-outlined text-sm">send</span>
                         <span>Resubmit</span>
                       </button>
