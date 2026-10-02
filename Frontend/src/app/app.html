@@ -96,7 +96,7 @@
       </button>
 
       <!-- Profile Avatar with Verified Badge -->
-      <div (click)="openRegisterModal()" title="Click to view/switch Landlord Profile"
+      <div (click)="openRegisterModal()" title="Landlord Profile & Security Settings"
            class="relative flex items-center gap-2.5 px-3 py-1.5 rounded-full hover:bg-surface-container cursor-pointer transition-colors border border-surface-container">
         <div class="relative">
           <img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-xs" 
@@ -123,8 +123,9 @@
       <section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm border border-surface-container">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
           <div class="flex items-start sm:items-center gap-space-md min-w-0">
-            <div class="relative flex-shrink-0">
-              <img class="w-20 h-20 rounded-full object-cover shadow-sm border-2 border-surface-container" 
+            <div (click)="openRegisterModal()" title="Click to view Landlord Profile & Security Settings"
+                 class="relative flex-shrink-0 cursor-pointer group">
+              <img class="w-20 h-20 rounded-full object-cover shadow-sm border-2 border-surface-container group-hover:ring-2 group-hover:ring-primary/40 transition-all" 
                    alt="Landlord Photo" 
                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkn7jr3EkWyNj1A28toyoWI_bCV92mSphnVDuYTaakoEPBzNAe6LMu9hocEGqriQXNwDNngT_5N9NjMPiakVpLKXxeYCvOWJBqRYxgimqcNtnZBt1P5i6s8kk0BRlPbivI8ldH6o4K_8Cb5j3ERbulBvRSnK55epM7gPol8vuzJH6IypQLo9zS3SBb97xi1pOHQKHG-JTtdvga3C2RaWIj0qZ_RzWK0cvsuGHzeNcAIPxWk2EQdb0DGg"/>
               <span class="absolute -bottom-1 -right-1 bg-secondary text-on-secondary w-6 h-6 rounded-full flex items-center justify-center shadow-sm">
