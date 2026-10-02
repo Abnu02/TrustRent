@@ -356,13 +356,14 @@
                  [ngClass]="property.status === 'Pending' ? 'bg-surface-container-lowest/70' : ''">
               <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
                 
-                <!-- Left: Thumbnail & Details -->
+                <!-- Left: Typology Visual Card & Details -->
                 <div class="flex items-start sm:items-center gap-space-md min-w-0">
-                  <div class="relative w-28 h-20 sm:w-36 sm:h-24 rounded-lg overflow-hidden flex-shrink-0 shadow-sm bg-surface-container">
-                    <img class="w-full h-full object-cover" [src]="getPropertyImage(idx)" alt="Property photo"/>
-                    <span class="absolute top-1 left-1 px-1.5 py-0.5 rounded backdrop-blur-sm font-label-sm text-[10px] font-bold"
-                          [ngClass]="property.status === 'Approved' ? 'bg-surface-container-lowest/90 text-secondary' : 'bg-surface-container-high/90 text-on-tertiary-container'">
-                      {{ property.status === 'Approved' ? 'Active' : (property.status === 'Pending' ? 'Audit in Progress' : 'Revision Required') }}
+                  <div class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl flex-shrink-0 shadow-sm bg-surface-container-low border border-surface-container flex flex-col items-center justify-center p-2 text-center">
+                    <span class="material-symbols-outlined text-3xl text-primary">
+                      {{ property.propertyType === 'Condominium' ? 'apartment' : (property.propertyType === 'Villa' ? 'holiday_village' : (property.propertyType === 'Studio' ? 'single_bed' : 'domain')) }}
+                    </span>
+                    <span class="font-label-sm text-[11px] font-bold text-on-surface mt-1 truncate max-w-full">
+                      {{ property.propertyType }}
                     </span>
                   </div>
 
@@ -715,79 +716,98 @@
       <!-- Drawer Header -->
       <div class="p-space-lg bg-surface-container-low flex items-start justify-between border-b border-surface-container">
         <div class="space-y-1">
-          <span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-bold">Standard Operating Procedure</span>
-          <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Submit Property for TrustRent Verification</h3>
-          <p class="font-body-sm text-body-sm text-on-surface-variant">Every rental listed on TrustRent requires strict title and identity corroboration prior to tenant discovery.</p>
+          <span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-bold">Verification Pipeline</span>
+          <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Property Verification Process</h3>
+          <p class="font-body-sm text-body-sm text-on-surface-variant">The 4-step workflow for property listing, verification queue, and Admin approval.</p>
         </div>
         <button type="button" (click)="closeDrawer()" class="p-1 rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
 
-      <!-- Requirements Checklist -->
+      <!-- Verification Pipeline Steps -->
       <div class="p-space-lg space-y-space-lg flex-1">
         <div class="space-y-space-md">
-          <!-- Step 1 -->
+          <!-- Step 1: Register -->
           <div class="p-space-md rounded-xl bg-surface-container-low flex gap-space-md border border-surface-container">
             <div class="w-8 h-8 rounded-full bg-primary text-on-primary font-headline-sm text-sm flex items-center justify-center flex-shrink-0 font-bold">1</div>
             <div class="space-y-1 min-w-0">
-              <h4 class="font-title-md text-title-md text-on-surface font-bold">Property Photos &amp; Lease Terms</h4>
-              <p class="font-body-sm text-body-sm text-on-surface-variant">High-resolution interior/exterior photos, monthly rent in ETB, security deposit, and lease duration.</p>
-              <div class="pt-2 flex items-center gap-2 text-secondary font-label-sm text-label-sm font-semibold">
-                <span class="material-symbols-outlined text-xs">task_alt</span>
-                <span>Metadata &amp; EXIF geolocation auto-scanned</span>
+              <h4 class="font-title-md text-title-md text-on-surface font-bold">Landlord Registration</h4>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">Register your profile with Full Name, Email, Phone Number, and Password to obtain verified landlord authority.</p>
+              <div class="pt-1 flex items-center gap-1.5 text-secondary font-label-sm text-xs font-semibold">
+                <span class="material-symbols-outlined text-xs">check_circle</span>
+                <span>Active Profile: {{ authService.currentUser().fullName }}</span>
               </div>
             </div>
           </div>
 
-          <!-- Step 2 -->
+          <!-- Step 2: Create Property -->
           <div class="p-space-md rounded-xl bg-surface-container-low flex gap-space-md border border-surface-container">
             <div class="w-8 h-8 rounded-full bg-primary text-on-primary font-headline-sm text-sm flex items-center justify-center flex-shrink-0 font-bold">2</div>
             <div class="space-y-1 min-w-0">
-              <h4 class="font-title-md text-title-md text-on-surface font-bold">Title Deed (ካርታ) / Proof of Ownership</h4>
-              <p class="font-body-sm text-body-sm text-on-surface-variant">Certified Land Administration registration page matching the landlord's legal name.</p>
-              <div class="pt-2 flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm font-semibold">
-                <span class="material-symbols-outlined text-xs">upload_file</span>
-                <span>Accepted Formats: PDF, PNG, TIFF (Max 25MB)</span>
+              <h4 class="font-title-md text-title-md text-on-surface font-bold">Create Property (8 Core Specifications)</h4>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">Fill in the 8 rental specifications: Title, Description, Property Typology, Location, Rent (ETB), Deposit (ETB), Bedrooms, and Bathrooms.</p>
+              <div class="pt-1 flex items-center gap-1.5 text-on-surface-variant font-label-sm text-xs font-semibold">
+                <span class="material-symbols-outlined text-xs">tune</span>
+                <span>Exact 8-Field Architecture</span>
               </div>
             </div>
           </div>
 
-          <!-- Step 3 -->
+          <!-- Step 3: Submit for Verification -->
           <div class="p-space-md rounded-xl bg-surface-container-low flex gap-space-md border border-surface-container">
             <div class="w-8 h-8 rounded-full bg-primary text-on-primary font-headline-sm text-sm flex items-center justify-center flex-shrink-0 font-bold">3</div>
             <div class="space-y-1 min-w-0">
-              <h4 class="font-title-md text-title-md text-on-surface font-bold">Active Utility Bill (Past 60 Days)</h4>
-              <p class="font-body-sm text-body-sm text-on-surface-variant">Addis Water &amp; Sewerage or Ethiopian Electric Utility invoice confirming active service.</p>
-              <div class="pt-2 flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm font-semibold">
-                <span class="material-symbols-outlined text-xs">history</span>
-                <span>Must reflect premises physical address</span>
+              <h4 class="font-title-md text-title-md text-on-surface font-bold">Submit for Verification</h4>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">The property is submitted to the backend queue with status "Waiting for Admin Approval". Landlord can edit details at any time.</p>
+              <div class="pt-1 flex items-center gap-1.5 text-amber-600 font-label-sm text-xs font-semibold">
+                <span class="material-symbols-outlined text-xs">hourglass_top</span>
+                <span>Status: Waiting for Admin</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: Wait for Admin Approval -->
+          <div class="p-space-md rounded-xl bg-surface-container-low flex gap-space-md border border-surface-container">
+            <div class="w-8 h-8 rounded-full bg-secondary text-on-secondary font-headline-sm text-sm flex items-center justify-center flex-shrink-0 font-bold">4</div>
+            <div class="space-y-1 min-w-0">
+              <h4 class="font-title-md text-title-md text-on-surface font-bold">Wait for Admin Approval</h4>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">Only the system Admin can review and approve or reject submissions. Once approved by Admin, the post immediately becomes Live on TrustRent.</p>
+              <div class="pt-1 flex items-center gap-1.5 text-secondary font-label-sm text-xs font-semibold">
+                <span class="material-symbols-outlined text-xs">verified</span>
+                <span>Admin Decision Authority</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Turnaround Guarantee Notice -->
-        <div class="p-space-md rounded-xl bg-secondary-container/30 flex items-start gap-space-sm border border-secondary/20">
-          <span class="material-symbols-outlined text-secondary text-lg flex-shrink-0">verified</span>
+        <!-- Pipeline Info Notice -->
+        <div class="p-space-md rounded-xl bg-surface-container-high flex items-start gap-space-sm border border-surface-container">
+          <span class="material-symbols-outlined text-secondary text-lg flex-shrink-0">info</span>
           <div class="space-y-0.5 min-w-0">
-            <span class="font-label-md text-label-md text-on-surface block font-bold">Auditor Guarantee SLA</span>
-            <p class="font-body-sm text-body-sm text-on-surface-variant">All deed records undergo automated matching against Addis Ababa land records within 24 hours of submission.</p>
+            <span class="font-label-md text-label-md text-on-surface block font-bold">Admin Verification Standard</span>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">Landlords cannot approve their own listings. Every listing is reviewed by the platform administrator before going live.</p>
           </div>
         </div>
       </div>
 
       <!-- Drawer Footer Actions -->
-      <div class="p-space-lg bg-surface-container-low flex items-center justify-end gap-space-sm border-t border-surface-container">
+      <div class="p-space-lg bg-surface-container-low flex items-center justify-between gap-space-sm border-t border-surface-container">
         <button type="button" (click)="closeDrawer()" 
                 class="px-space-md py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors cursor-pointer">
-          Dismiss
+          Close
         </button>
-        <button type="button" (click)="closeDrawer(); openCreateModal()" 
-                class="px-space-md py-2.5 rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-all font-label-md text-label-md shadow-sm flex items-center gap-2 cursor-pointer font-bold">
-          <span>Proceed to Listing Form</span>
-          <span class="material-symbols-outlined text-sm">arrow_forward</span>
-        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" (click)="closeDrawer(); onStatusFilterChange('Pending')" 
+                  class="px-space-md py-2.5 rounded-lg bg-surface-container-highest hover:bg-surface-container text-on-surface font-label-md text-label-md transition-colors cursor-pointer font-semibold">
+            View Pending ({{ stats()?.pendingCount ?? 0 }})
+          </button>
+          <button type="button" (click)="closeDrawer(); openCreateModal()" 
+                  class="px-space-md py-2.5 rounded-lg bg-primary text-on-primary hover:bg-primary/90 transition-all font-label-md text-label-md shadow-sm flex items-center gap-1.5 cursor-pointer font-bold">
+            <span class="material-symbols-outlined text-sm">add_home</span>
+            <span>Create Property</span>
+          </button>
+        </div>
       </div>
 
     </div>
