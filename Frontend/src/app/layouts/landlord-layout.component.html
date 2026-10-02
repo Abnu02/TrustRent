@@ -16,7 +16,11 @@
   <div class="landlord-main">
     <header class="landlord-topbar">
       <span class="topbar-title">Landlord Workspace</span>
-      <a class="topbar-action" routerLink="/landlord/properties/new"><span class="material-symbols-outlined" aria-hidden="true">add</span>Add Property</a>
+      <div class="topbar-actions">
+        @if (user(); as currentUser) { <span class="topbar-user">{{ currentUser.fullName }}</span> }
+        <a class="topbar-action" routerLink="/landlord/properties/new"><span class="material-symbols-outlined" aria-hidden="true">add</span>Add Property</a>
+        <button class="sign-out" type="button" (click)="signOut()" aria-label="Sign out"><span class="material-symbols-outlined" aria-hidden="true">logout</span><span>Sign out</span></button>
+      </div>
     </header>
     <main class="route-content"><router-outlet /></main>
   </div>

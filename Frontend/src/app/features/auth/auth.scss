@@ -1,0 +1,37 @@
+:host { display: block; min-height: 100vh; }
+.auth-page { display: grid; grid-template-columns: minmax(310px, .85fr) minmax(480px, 1.15fr); min-height: 100vh; background: #f8f9ff; }
+.auth-brand-panel { display: flex; flex-direction: column; justify-content: space-between; min-height: 100vh; padding: clamp(26px, 5vw, 62px); background: #111b2b; color: #fff; }
+.auth-brand { display: inline-flex; align-items: center; gap: 9px; width: max-content; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 19px; font-weight: 700; text-decoration: none; }
+.auth-brand .material-symbols-outlined { color: #79ddb3; font-size: 25px; }
+.brand-message { max-width: 465px; margin: 70px auto; }
+.brand-kicker, .auth-eyebrow { color: #81d8b5; font-size: 9px; font-weight: 700; letter-spacing: 1.2px; }
+.brand-message h1 { margin: 17px 0 14px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(30px, 3.6vw, 48px); font-weight: 700; line-height: 1.14; }
+.brand-message p { max-width: 390px; margin: 0; color: #c2ccd9; font-size: 13px; line-height: 1.8; }
+.brand-footer { display: flex; align-items: center; gap: 8px; color: #c2ccd9; font-size: 10px; }
+.brand-footer .material-symbols-outlined { color: #79ddb3; font-size: 17px; }
+.auth-content { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; padding: 38px 24px 19px; }
+.auth-card { width: min(100%, 410px); }
+.mobile-brand { display: none; }
+.auth-eyebrow { margin: 0 0 8px; color: #667184; }
+.auth-card h2 { margin: 0; color: #0b1c30; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 27px; font-weight: 700; }
+.auth-description { margin: 7px 0 21px; color: #697386; font-size: 12px; line-height: 1.6; }
+.auth-tabs { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 18px; border-bottom: 1px solid #dce1eb; }
+.auth-tabs button { min-height: 38px; padding: 0 8px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #677284; font-size: 11px; font-weight: 600; cursor: pointer; }
+.auth-tabs button.active { border-bottom-color: #101a2a; color: #101a2a; }
+.auth-card form { display: grid; gap: 12px; }
+.auth-field { display: grid; gap: 6px; color: #263347; font-size: 10px; font-weight: 650; }
+.auth-field input { width: 100%; height: 41px; padding: 0 11px; border: 1px solid #c9cfda; border-radius: 6px; outline: 0; background: #fff; color: #0b1c30; font-size: 12px; font-weight: 400; }
+.auth-field input:focus { border-color: #101a2a; box-shadow: 0 0 0 2px rgb(17 27 43 / 9%); }
+.auth-field input.ng-invalid.ng-touched { border-color: #b42318; }
+.auth-field small { min-height: 12px; color: #a42323; font-size: 9px; font-weight: 450; }
+.auth-submit { display: flex; align-items: center; justify-content: space-between; min-height: 42px; margin-top: 5px; padding: 0 13px; border: 0; border-radius: 6px; background: #111b2b; color: #fff; font-size: 11px; font-weight: 650; cursor: pointer; }
+.auth-submit:hover:not(:disabled) { background: #233148; }
+.auth-submit:disabled { opacity: .55; cursor: wait; }
+.auth-submit .material-symbols-outlined { font-size: 18px; }
+.auth-message { display: flex; align-items: flex-start; gap: 7px; margin-bottom: 13px; padding: 10px; border: 1px solid; border-radius: 6px; font-size: 10px; line-height: 1.5; }
+.auth-message .material-symbols-outlined { flex: 0 0 auto; font-size: 16px; }
+.auth-error { border-color: #f2c5bf; background: #fff6f4; color: #842b22; }
+.auth-success { border-color: #a7edca; background: #ecfdf5; color: #065f46; }
+.auth-terms { margin: 15px 0 0; color: #7a8493; font-size: 9px; line-height: 1.6; text-align: center; }
+.auth-footer { margin-top: auto; padding-top: 32px; color: #7a8493; font-size: 9px; }
+@media (max-width: 760px) { .auth-page { display: block; } .auth-brand-panel { display: none; } .auth-content { min-height: 100vh; padding: 24px 19px; } .auth-card { width: min(100%, 430px); } .mobile-brand { display: flex; align-items: center; gap: 7px; margin-bottom: 34px; color: #111b2b; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; } .mobile-brand .material-symbols-outlined { color: #006c4a; font-size: 22px; } .auth-card h2 { font-size: 25px; } .auth-footer { padding-top: 22px; } }

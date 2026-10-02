@@ -112,6 +112,7 @@ public class PropertyServiceTests
         Assert.Equal(landlordId, property.LandlordId);
         Assert.Equal(PropertyStatus.Approved, property.Status);
         Assert.True(property.IsVerified);
+        Assert.Equal(1, repository.UpdateLoads);
     }
 
     [Fact]
@@ -131,6 +132,7 @@ public class PropertyServiceTests
         Assert.Null(result);
         Assert.Equal("Existing apartment", property.Title);
         Assert.Equal(ownerId, property.LandlordId);
+        Assert.Equal(1, repository.UpdateLoads);
     }
 
     private static PropertyService CreateService(FakePropertyRepository repository)
@@ -188,6 +190,7 @@ public class PropertyServiceTests
     private sealed class FakePropertyRepository(params Property[] properties) : IPropertyRepository
     {
         public List<Property> Properties { get; } = [.. properties];
+        public int UpdateLoads { get; private set; }
 
         public Task AddAsync(Property property, CancellationToken cancellationToken)
         {
@@ -205,11 +208,12 @@ public class PropertyServiceTests
 
         public Task<Property?> GetByIdAsync(Guid propertyId, CancellationToken cancellationToken)
         {
-            return Task.FromResult(Properties.SingleOrDefault(property => property.Id == propertyId));
+            throw new NotSupportedException("Property update must use the tracked lookup.");
         }
 
         public Task<Property?> GetByIdForUpdateAsync(Guid propertyId, CancellationToken cancellationToken)
         {
+            UpdateLoads++;
             return Task.FromResult(Properties.SingleOrDefault(property => property.Id == propertyId));
         }
 

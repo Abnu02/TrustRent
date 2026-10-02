@@ -26,7 +26,9 @@ describe('App', () => {
   });
 
   it('should declare all landlord property routes', () => {
+    expect(routes.some(route => route.path === 'auth')).toBe(true);
     const landlordRoute = routes.find(route => route.path === 'landlord');
+    expect(landlordRoute?.canActivate).toBeTruthy();
     expect(landlordRoute?.children?.map(route => route.path)).toEqual([
       '', 'dashboard', 'properties/new', 'properties/:id/edit', 'properties/:id', 'properties',
     ]);

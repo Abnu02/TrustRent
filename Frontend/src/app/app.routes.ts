@@ -1,8 +1,14 @@
 import { Routes } from '@angular/router';
+import { landlordGuard } from './auth/landlord.guard';
 
 export const routes: Routes = [
 	{
+		path: 'auth',
+		loadComponent: () => import('./features/auth/auth').then(module => module.Auth),
+	},
+	{
 		path: 'landlord',
+		canActivate: [landlordGuard],
 		loadComponent: () => import('./layouts/landlord-layout.component')
 			.then(module => module.LandlordLayoutComponent),
 		children: [
@@ -34,6 +40,6 @@ export const routes: Routes = [
 			},
 		],
 	},
-	{ path: '', pathMatch: 'full', redirectTo: 'landlord/dashboard' },
-	{ path: '**', redirectTo: 'landlord/dashboard' },
+	{ path: '', pathMatch: 'full', redirectTo: 'auth' },
+	{ path: '**', redirectTo: 'auth' },
 ];

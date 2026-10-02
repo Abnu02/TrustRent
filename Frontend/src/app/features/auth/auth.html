@@ -1,0 +1,43 @@
+<main class="auth-page">
+  <aside class="auth-brand-panel">
+    <a class="auth-brand" routerLink="/auth"><span class="material-symbols-outlined" aria-hidden="true">shield</span><span>TrustRent</span></a>
+    <div class="brand-message"><span class="brand-kicker">LANDLORD PORTAL</span><h1>Property management,<br>made straightforward.</h1><p>Sign in to manage your listings, review their status, and keep your property details up to date.</p></div>
+    <div class="brand-footer"><span class="material-symbols-outlined" aria-hidden="true">verified_user</span>Secure access for TrustRent landlords</div>
+  </aside>
+
+  <section class="auth-content" aria-labelledby="auth-title">
+    <div class="auth-card">
+      <div class="mobile-brand"><span class="material-symbols-outlined" aria-hidden="true">shield</span>TrustRent</div>
+      <p class="auth-eyebrow">LANDLORD ACCOUNT</p>
+      <h2 id="auth-title">{{ mode === 'sign-in' ? 'Welcome back' : 'Create your account' }}</h2>
+      <p class="auth-description">{{ mode === 'sign-in' ? 'Sign in to continue to your landlord workspace.' : 'Create an account to start managing your properties.' }}</p>
+
+      <div class="auth-tabs" role="tablist" aria-label="Account access">
+        <button type="button" role="tab" [attr.aria-selected]="mode === 'sign-in'" [class.active]="mode === 'sign-in'" (click)="setMode('sign-in')">Sign in</button>
+        <button type="button" role="tab" [attr.aria-selected]="mode === 'register'" [class.active]="mode === 'register'" (click)="setMode('register')">Create account</button>
+      </div>
+
+      @if (errorMessage) { <div class="auth-message auth-error" role="alert"><span class="material-symbols-outlined" aria-hidden="true">error</span>{{ errorMessage }}</div> }
+      @if (successMessage) { <div class="auth-message auth-success" role="status"><span class="material-symbols-outlined" aria-hidden="true">check_circle</span>{{ successMessage }}</div> }
+
+      @if (mode === 'sign-in') {
+        <form [formGroup]="loginForm" (ngSubmit)="submit()" novalidate>
+          <label class="auth-field"><span>Email address</span><input formControlName="email" type="email" autocomplete="email" placeholder="name@example.com"><small>@if (loginForm.controls.email.touched && loginForm.controls.email.hasError('required')) { Enter your email address. } @else if (loginForm.controls.email.touched && loginForm.controls.email.invalid) { Enter a valid email address. }</small></label>
+          <label class="auth-field"><span>Password</span><input formControlName="password" type="password" autocomplete="current-password" placeholder="Enter your password"><small>@if (loginForm.controls.password.touched && loginForm.controls.password.hasError('required')) { Enter your password. }</small></label>
+          <button class="auth-submit" type="submit" [disabled]="submitting"><span>{{ submitting ? 'Signing in…' : 'Sign in' }}</span><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
+        </form>
+      } @else {
+        <form [formGroup]="registerForm" (ngSubmit)="submit()" novalidate>
+          <label class="auth-field"><span>Full name</span><input formControlName="fullName" autocomplete="name" maxlength="200" placeholder="Your full name"><small>@if (registerForm.controls.fullName.touched && registerForm.controls.fullName.hasError('required')) { Enter your name. }</small></label>
+          <label class="auth-field"><span>Email address</span><input formControlName="email" type="email" autocomplete="email" maxlength="256" placeholder="name@example.com"><small>@if (registerForm.controls.email.touched && registerForm.controls.email.invalid) { Enter a valid email address. }</small></label>
+          <label class="auth-field"><span>Phone number</span><input formControlName="phoneNumber" type="tel" autocomplete="tel" placeholder="+251 9 00 000 000"><small>@if (registerForm.controls.phoneNumber.touched && registerForm.controls.phoneNumber.invalid) { Enter a valid phone number. }</small></label>
+          <label class="auth-field"><span>Password</span><input formControlName="password" type="password" autocomplete="new-password" placeholder="Create a password"><small>@if (registerForm.controls.password.touched && registerForm.controls.password.invalid) { Use at least 8 characters with uppercase, lowercase, number, and symbol. }</small></label>
+          <label class="auth-field"><span>Confirm password</span><input formControlName="confirmPassword" type="password" autocomplete="new-password" placeholder="Enter the password again"><small>@if (registerForm.controls.confirmPassword.touched && registerForm.controls.confirmPassword.hasError('required')) { Confirm your password. } @else if (registerForm.controls.confirmPassword.touched && registerForm.hasError('passwordMismatch')) { Passwords do not match. }</small></label>
+          <button class="auth-submit" type="submit" [disabled]="submitting"><span>{{ submitting ? 'Creating account…' : 'Create landlord account' }}</span><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
+        </form>
+      }
+      <p class="auth-terms">By continuing, you agree to use TrustRent in accordance with the platform terms.</p>
+    </div>
+    <footer class="auth-footer">© TrustRent · Landlord workspace</footer>
+  </section>
+</main>

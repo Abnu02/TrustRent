@@ -16,8 +16,13 @@
 .landlord-main { min-width: 0; }
 .landlord-topbar { position: sticky; z-index: 3; top: 0; display: flex; align-items: center; justify-content: space-between; height: 58px; padding: 0 clamp(18px, 3vw, 42px); border-bottom: 1px solid var(--stitch-line); background: rgb(255 255 255 / 96%); }
 .topbar-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 650; }
+.topbar-actions { display: flex; align-items: center; gap: 14px; }
+.topbar-user { max-width: 190px; overflow: hidden; color: var(--stitch-muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .topbar-action { display: inline-flex; align-items: center; gap: 6px; min-height: 35px; padding: 0 11px; border-radius: 6px; background: #000; color: #fff; font-size: 11px; font-weight: 650; text-decoration: none; }
 .topbar-action .material-symbols-outlined { font-size: 17px; }
+.sign-out { display: inline-flex; align-items: center; gap: 5px; padding: 6px 0; border: 0; background: transparent; color: var(--stitch-muted); font-size: 11px; cursor: pointer; }
+.sign-out:hover { color: var(--stitch-ink); }
+.sign-out .material-symbols-outlined { font-size: 17px; }
 .route-content { width: min(100%, 1240px); margin: 0 auto; padding: 27px clamp(18px, 3vw, 42px) 46px; }
 .toast-success { position: fixed; z-index: 10; top: 72px; right: 22px; display: flex; align-items: center; gap: 9px; max-width: min(420px, calc(100vw - 32px)); padding: 12px 12px 12px 14px; border: 1px solid #a7edca; border-radius: 7px; background: #ecfdf5; color: #065f46; box-shadow: 0 8px 24px rgb(11 28 48 / 12%); font-size: 12px; }
 .toast-success > .material-symbols-outlined { font-size: 18px; }
@@ -31,6 +36,10 @@
   .landlord-nav a { flex-direction: column; justify-content: center; gap: 1px; min-height: 0; border-radius: 0; font-size: 10px; }
   .landlord-nav a .material-symbols-outlined { font-size: 19px; }
   .landlord-topbar { height: 52px; }
+  .topbar-actions { gap: 8px; }
+  .topbar-user { display: none; }
+  .sign-out { gap: 0; }
+  .sign-out > span:last-child { display: none; }
   .route-content { padding: 20px 16px 30px; }
   .toast-success { top: 60px; right: 12px; }
 }

@@ -66,7 +66,7 @@ public sealed class PropertyService(
         UpdatePropertyRequest request,
         CancellationToken cancellationToken)
     {
-        var property = await propertyRepository.GetByIdAsync(propertyId, cancellationToken);
+        var property = await propertyRepository.GetByIdForUpdateAsync(propertyId, cancellationToken);
         if (property is null)
         {
             logger.LogWarning("PropertyNotFound {PropertyId}", propertyId);
