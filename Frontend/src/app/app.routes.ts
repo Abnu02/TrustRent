@@ -14,6 +14,12 @@ export const routes: Routes = [
       import('./features/tenant/tenant.routes')
         .then(m => m.TENANT_ROUTES)
   },
+   {
+    path: 'landlord',
+    loadChildren: () =>
+      import('./features/landlord/landlord.routes')
+        .then(m => m.LANDLORD_ROUTES)
+  },
 
   // {
   //   path: 'login',

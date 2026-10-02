@@ -1,0 +1,58 @@
+<aside class="landlord-sidebar">
+
+  <nav
+    class="sidebar-navigation"
+    aria-label="Landlord navigation"
+  >
+
+    <!-- Dashboard -->
+    <a
+      routerLink="/landlord/dashboard"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="sidebar-link"
+    >
+      <span class="material-symbols-outlined">
+        dashboard
+      </span>
+
+      <span class="link-text">
+        Dashboard
+      </span>
+    </a>
+
+
+    <!-- Create Property -->
+    <a
+      routerLink="/landlord/create-property"
+      routerLinkActive="active"
+      class="sidebar-link"
+    >
+      <span class="material-symbols-outlined">
+        add_home
+      </span>
+
+      <span class="link-text">
+        Create Property
+      </span>
+    </a>
+
+
+    <!-- My Properties -->
+    <a
+      routerLink="/landlord/my-properties"
+      routerLinkActive="active"
+      class="sidebar-link"
+    >
+      <span class="material-symbols-outlined">
+        home_work
+      </span>
+
+      <span class="link-text">
+        My Properties
+      </span>
+    </a>
+
+  </nav>
+
+</aside>

@@ -1,0 +1,596 @@
+<div class="create-property-page">
+
+  <!-- =========================================
+       PAGE HEADER
+       ========================================= -->
+
+  <div class="page-header">
+
+    <div>
+      <span class="page-eyebrow">
+        PROPERTY MANAGEMENT
+      </span>
+
+      <h1>
+        Create Property
+      </h1>
+
+      <p>
+        Add a new rental property to your TrustRent account.
+      </p>
+    </div>
+
+    <a
+      routerLink="/landlord/my-properties"
+      class="secondary-button"
+    >
+      <span class="material-symbols-outlined">
+        home_work
+      </span>
+
+      My Properties
+    </a>
+
+  </div>
+
+
+  <!-- =========================================
+       SUCCESS MESSAGE
+       ========================================= -->
+
+  @if (successMessage) {
+
+    <div class="alert success-alert">
+
+      <span class="material-symbols-outlined">
+        check_circle
+      </span>
+
+      <span>
+        {{ successMessage }}
+      </span>
+
+    </div>
+
+  }
+
+
+  <!-- =========================================
+       ERROR MESSAGE
+       ========================================= -->
+
+  @if (errorMessage) {
+
+    <div class="alert error-alert">
+
+      <span class="material-symbols-outlined">
+        error
+      </span>
+
+      <span>
+        {{ errorMessage }}
+      </span>
+
+    </div>
+
+  }
+
+
+  <!-- =========================================
+       FORM
+       ========================================= -->
+
+  <form
+    [formGroup]="propertyForm"
+    (ngSubmit)="onSubmit()"
+    class="property-form"
+  >
+
+
+    <!-- =======================================
+         PROPERTY IMAGE
+         ======================================= -->
+
+    <section class="form-section">
+
+      <div class="section-header">
+
+        <div class="section-icon">
+          <span class="material-symbols-outlined">
+            image
+          </span>
+        </div>
+
+        <div>
+          <h2>
+            Property Image
+          </h2>
+
+          <p>
+            Add a clear image of your property.
+          </p>
+        </div>
+
+      </div>
+
+
+      @if (imagePreview) {
+
+        <div class="image-preview-wrapper">
+
+          <img
+            [src]="imagePreview"
+            alt="Selected property preview"
+            class="image-preview"
+          />
+
+          <div class="image-actions">
+
+            <label
+              for="propertyImage"
+              class="image-action-button"
+            >
+              <span class="material-symbols-outlined">
+                edit
+              </span>
+
+              Change Image
+            </label>
+
+            <button
+              type="button"
+              class="image-action-button danger"
+              (click)="removeImage()"
+            >
+              <span class="material-symbols-outlined">
+                delete
+              </span>
+
+              Remove
+            </button>
+
+          </div>
+
+        </div>
+
+      } @else {
+
+        <label
+          for="propertyImage"
+          class="image-upload-area"
+        >
+
+          <span class="material-symbols-outlined upload-icon">
+            add_photo_alternate
+          </span>
+
+          <span class="upload-title">
+            Upload Property Image
+          </span>
+
+          <span class="upload-description">
+            Click to select an image from your computer
+          </span>
+
+          <span class="upload-hint">
+            JPG, JPEG, PNG • Maximum 5 MB
+          </span>
+
+        </label>
+
+      }
+
+
+      <input
+        id="propertyImage"
+        type="file"
+        accept="image/png,image/jpeg,image/jpg"
+        class="hidden-file-input"
+        (change)="onImageSelected($event)"
+      />
+
+      <p class="image-note">
+        Image upload will be connected to the backend later.
+      </p>
+
+    </section>
+
+
+    <!-- =======================================
+         BASIC INFORMATION
+         ======================================= -->
+
+    <section class="form-section">
+
+      <div class="section-header">
+
+        <div class="section-icon">
+          <span class="material-symbols-outlined">
+            home
+          </span>
+        </div>
+
+        <div>
+          <h2>
+            Property Information
+          </h2>
+
+          <p>
+            Provide the basic information about your property.
+          </p>
+        </div>
+
+      </div>
+
+
+      <!-- Title -->
+
+      <div class="form-field full-width">
+
+        <label for="title">
+          Property Title
+          <span>*</span>
+        </label>
+
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          placeholder="e.g. Modern 2 Bedroom Apartment"
+        />
+
+        @if (title.invalid && title.touched) {
+
+          <small class="field-error">
+
+            @if (title.errors?.['required']) {
+              Property title is required.
+            }
+
+            @if (title.errors?.['minlength']) {
+              Title must be at least 3 characters.
+            }
+
+            @if (title.errors?.['maxlength']) {
+              Title cannot exceed 150 characters.
+            }
+
+          </small>
+
+        }
+
+      </div>
+
+
+      <!-- Description -->
+
+      <div class="form-field full-width">
+
+        <label for="description">
+          Description
+          <span>*</span>
+        </label>
+
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="5"
+          placeholder="Describe the property, nearby facilities, condition, and other useful information..."
+        ></textarea>
+
+        @if (description.invalid && description.touched) {
+
+          <small class="field-error">
+
+            @if (description.errors?.['required']) {
+              Property description is required.
+            }
+
+            @if (description.errors?.['minlength']) {
+              Description must be at least 10 characters.
+            }
+
+          </small>
+
+        }
+
+      </div>
+
+
+      <!-- Property Type -->
+
+      <div class="form-field">
+
+        <label for="propertyType">
+          Property Type
+          <span>*</span>
+        </label>
+
+        <select
+          id="propertyType"
+          formControlName="propertyType"
+        >
+
+          @for (type of propertyTypes; track type) {
+
+            <option [value]="type">
+              {{ type }}
+            </option>
+
+          }
+
+        </select>
+
+      </div>
+
+
+      <!-- Location -->
+
+      <div class="form-field">
+
+        <label for="location">
+          Location
+          <span>*</span>
+        </label>
+
+        <input
+          id="location"
+          type="text"
+          formControlName="location"
+          placeholder="e.g. Bole, Addis Ababa"
+        />
+
+        @if (location.invalid && location.touched) {
+
+          <small class="field-error">
+
+            Location is required.
+
+          </small>
+
+        }
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================
+         FINANCIAL INFORMATION
+         ======================================= -->
+
+    <section class="form-section">
+
+      <div class="section-header">
+
+        <div class="section-icon">
+          <span class="material-symbols-outlined">
+            payments
+          </span>
+        </div>
+
+        <div>
+          <h2>
+            Rental Information
+          </h2>
+
+          <p>
+            Set the rent and deposit amount.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="form-grid-2">
+
+        <!-- Rent -->
+
+        <div class="form-field">
+
+          <label for="rent">
+            Monthly Rent
+            <span>*</span>
+          </label>
+
+          <div class="input-with-suffix">
+
+            <input
+              id="rent"
+              type="number"
+              formControlName="rent"
+              min="1"
+              placeholder="25000"
+            />
+
+            <span>
+              ETB
+            </span>
+
+          </div>
+
+          @if (rent.invalid && rent.touched) {
+
+            <small class="field-error">
+              Monthly rent must be greater than 0.
+            </small>
+
+          }
+
+        </div>
+
+
+        <!-- Deposit -->
+
+        <div class="form-field">
+
+          <label for="deposit">
+            Deposit
+            <span>*</span>
+          </label>
+
+          <div class="input-with-suffix">
+
+            <input
+              id="deposit"
+              type="number"
+              formControlName="deposit"
+              min="0"
+              placeholder="50000"
+            />
+
+            <span>
+              ETB
+            </span>
+
+          </div>
+
+          @if (deposit.invalid && deposit.touched) {
+
+            <small class="field-error">
+              Deposit cannot be negative.
+            </small>
+
+          }
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================
+         PROPERTY DETAILS
+         ======================================= -->
+
+    <section class="form-section">
+
+      <div class="section-header">
+
+        <div class="section-icon">
+          <span class="material-symbols-outlined">
+            bed
+          </span>
+        </div>
+
+        <div>
+          <h2>
+            Property Details
+          </h2>
+
+          <p>
+            Specify the number of bedrooms and bathrooms.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="form-grid-2">
+
+        <!-- Bedrooms -->
+
+        <div class="form-field">
+
+          <label for="bedrooms">
+            Bedrooms
+            <span>*</span>
+          </label>
+
+          <input
+            id="bedrooms"
+            type="number"
+            formControlName="bedrooms"
+            min="0"
+            max="50"
+          />
+
+          @if (bedrooms.invalid && bedrooms.touched) {
+
+            <small class="field-error">
+              Enter a valid number of bedrooms.
+            </small>
+
+          }
+
+        </div>
+
+
+        <!-- Bathrooms -->
+
+        <div class="form-field">
+
+          <label for="bathrooms">
+            Bathrooms
+            <span>*</span>
+          </label>
+
+          <input
+            id="bathrooms"
+            type="number"
+            formControlName="bathrooms"
+            min="0"
+            max="50"
+          />
+
+          @if (bathrooms.invalid && bathrooms.touched) {
+
+            <small class="field-error">
+              Enter a valid number of bathrooms.
+            </small>
+
+          }
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================
+         FORM ACTIONS
+         ======================================= -->
+
+    <div class="form-actions">
+
+      <button
+        type="button"
+        class="cancel-button"
+        (click)="cancel()"
+        [disabled]="isSubmitting"
+      >
+        Cancel
+      </button>
+
+
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="isSubmitting"
+      >
+
+        @if (isSubmitting) {
+
+          <span class="loading-spinner"></span>
+
+          Creating...
+
+        } @else {
+
+          <span class="material-symbols-outlined">
+            add_home
+          </span>
+
+          Create Property
+
+        }
+
+      </button>
+
+    </div>
+
+  </form>
+
+</div>

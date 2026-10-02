@@ -1,0 +1,77 @@
+<header class="landlord-navbar">
+
+  <!-- LEFT -->
+  <div class="navbar-left">
+
+    <a routerLink="/landlord/dashboard" class="brand">
+      <span class="material-symbols-outlined brand-icon">
+        verified_user
+      </span>
+
+      <span class="brand-name">
+        TrustRent
+      </span>
+    </a>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div class="navbar-right">
+
+    <span class="dashboard-title">
+      Landlord Dashboard
+    </span>
+
+    <div class="account-wrapper">
+
+      <button
+        type="button"
+        class="account-button"
+        (click)="toggleAccountMenu()"
+        aria-label="Account menu"
+      >
+        <span class="material-symbols-outlined">
+          person
+        </span>
+      </button>
+
+      @if (accountMenuOpen()) {
+        <div class="account-menu">
+
+          <div class="account-header">
+
+            <div class="account-avatar">
+              <span class="material-symbols-outlined">
+                person
+              </span>
+            </div>
+
+            <div>
+              <strong>Landlord Account</strong>
+              <span>Property Owner</span>
+            </div>
+
+          </div>
+
+          <div class="account-divider"></div>
+
+          <button
+            type="button"
+            class="logout-button"
+            (click)="logout()"
+          >
+            <span class="material-symbols-outlined">
+              logout
+            </span>
+
+            <span>Logout</span>
+          </button>
+
+        </div>
+      }
+
+    </div>
+
+  </div>
+
+</header>

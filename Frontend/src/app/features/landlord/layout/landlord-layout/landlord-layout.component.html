@@ -1,0 +1,33 @@
+<div class="landlord-shell">
+
+  <!-- Top Navbar -->
+  <app-landlord-navbar />
+
+  <!-- Sidebar -->
+  <app-landlord-sidebar
+    [class.sidebar-collapsed]="!sidebarOpen()"
+  />
+
+  <!-- Always-visible sidebar toggle -->
+  <button
+    type="button"
+    class="sidebar-toggle"
+    [class.sidebar-collapsed]="!sidebarOpen()"
+    (click)="toggleSidebar()"
+    aria-label="Toggle sidebar"
+    title="Toggle sidebar"
+  >
+    <span class="material-symbols-outlined">
+      menu
+    </span>
+  </button>
+
+  <!-- Main Content -->
+  <main
+    class="landlord-content"
+    [class.sidebar-collapsed]="!sidebarOpen()"
+  >
+    <router-outlet />
+  </main>
+
+</div>
