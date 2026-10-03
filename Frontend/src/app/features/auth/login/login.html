@@ -1,0 +1,128 @@
+<div class="auth-page">
+
+  <div class="auth-card">
+
+    <div class="brand">
+      <div class="brand-mark">
+        <span class="material-symbols-outlined">
+          verified_home
+        </span>
+      </div>
+
+      <div>
+        <h1>TrustRent</h1>
+        <p>Trusted rentals, verified people.</p>
+      </div>
+    </div>
+
+    <div class="auth-heading">
+      <h2>Welcome back</h2>
+      <p>Sign in to continue to your TrustRent account.</p>
+    </div>
+
+    @if (errorMessage) {
+      <div class="error-message">
+        <span class="material-symbols-outlined">error</span>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    <form
+      [formGroup]="loginForm"
+      (ngSubmit)="onSubmit()"
+    >
+
+      <div class="form-group">
+
+        <label for="email">
+          Email address
+        </label>
+
+        <div class="input-wrapper">
+
+          <span class="material-symbols-outlined">
+            mail
+          </span>
+
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+          />
+
+        </div>
+
+        @if (
+          loginForm.controls.email.touched &&
+          loginForm.controls.email.invalid
+        ) {
+          <small>Please enter a valid email address.</small>
+        }
+
+      </div>
+
+      <div class="form-group">
+
+        <label for="password">
+          Password
+        </label>
+
+        <div class="input-wrapper">
+
+          <span class="material-symbols-outlined">
+            lock
+          </span>
+
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          />
+
+        </div>
+
+      </div>
+
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="loading"
+      >
+
+        @if (loading) {
+          <span>Signing in...</span>
+        } @else {
+          <span>Sign in</span>
+          <span class="material-symbols-outlined">
+            arrow_forward
+          </span>
+        }
+
+      </button>
+
+    </form>
+
+    <div class="register-link">
+      <span>Don't have an account?</span>
+
+      <a routerLink="/register">
+        Create an account
+      </a>
+    </div>
+
+    <div class="back-home">
+      <a routerLink="/">
+        <span class="material-symbols-outlined">
+          arrow_back
+        </span>
+        Back to TrustRent
+      </a>
+    </div>
+
+  </div>
+
+</div>

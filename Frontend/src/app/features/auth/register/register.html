@@ -1,0 +1,380 @@
+<div class="auth-page">
+
+  <div class="auth-card">
+
+    <!-- Brand -->
+    <div class="brand">
+
+      <div class="brand-mark">
+        <span class="material-symbols-outlined">
+          verified_home
+        </span>
+      </div>
+
+      <div>
+        <h1>TrustRent</h1>
+        <p>Trusted rentals, verified people.</p>
+      </div>
+
+    </div>
+
+    <!-- Heading -->
+    <div class="auth-heading">
+
+      <h2>Create your account</h2>
+
+      <p>
+        Join TrustRent and experience a more trusted way
+        to find or manage rental properties.
+      </p>
+
+    </div>
+
+    <!-- Error -->
+    @if (errorMessage) {
+
+      <div class="message error-message">
+
+        <span class="material-symbols-outlined">
+          error
+        </span>
+
+        <span>{{ errorMessage }}</span>
+
+      </div>
+
+    }
+
+    <!-- Success -->
+    @if (successMessage) {
+
+      <div class="message success-message">
+
+        <span class="material-symbols-outlined">
+          check_circle
+        </span>
+
+        <span>{{ successMessage }}</span>
+
+      </div>
+
+    }
+
+    <form
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+    >
+
+      <!-- Full Name -->
+      <div class="form-group">
+
+        <label for="fullName">
+          Full name
+        </label>
+
+        <div class="input-wrapper">
+
+          <span class="material-symbols-outlined">
+            person
+          </span>
+
+          <input
+            id="fullName"
+            type="text"
+            formControlName="fullName"
+            placeholder="Enter your full name"
+            autocomplete="name"
+          />
+
+        </div>
+
+        @if (
+          registerForm.controls.fullName.touched &&
+          registerForm.controls.fullName.invalid
+        ) {
+          <small>
+            Please enter your full name.
+          </small>
+        }
+
+      </div>
+
+
+      <!-- Email -->
+      <div class="form-group">
+
+        <label for="email">
+          Email address
+        </label>
+
+        <div class="input-wrapper">
+
+          <span class="material-symbols-outlined">
+            mail
+          </span>
+
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+          />
+
+        </div>
+
+        @if (
+          registerForm.controls.email.touched &&
+          registerForm.controls.email.invalid
+        ) {
+          <small>
+            Please enter a valid email address.
+          </small>
+        }
+
+      </div>
+
+
+      <!-- Phone -->
+      <div class="form-group">
+
+        <label for="phoneNumber">
+          Phone number
+        </label>
+
+        <div class="input-wrapper">
+
+          <span class="material-symbols-outlined">
+            phone
+          </span>
+
+          <input
+            id="phoneNumber"
+            type="tel"
+            formControlName="phoneNumber"
+            placeholder="0912345678"
+            autocomplete="tel"
+          />
+
+        </div>
+
+        @if (
+          registerForm.controls.phoneNumber.touched &&
+          registerForm.controls.phoneNumber.invalid
+        ) {
+          <small>
+            Enter a valid Ethiopian phone number.
+          </small>
+        }
+
+      </div>
+
+
+      <!-- Role -->
+      <div class="form-group">
+
+        <label>
+          I want to join as
+        </label>
+
+        <div class="role-options">
+
+          <button
+            type="button"
+            class="role-card"
+            [class.selected]="
+              registerForm.controls.role.value === 'Tenant'
+            "
+            (click)="selectRole('Tenant')"
+          >
+
+            <span class="material-symbols-outlined">
+              person_search
+            </span>
+
+            <span class="role-content">
+              <strong>Tenant</strong>
+              <small>
+                Find trusted rental properties
+              </small>
+            </span>
+
+            @if (
+              registerForm.controls.role.value === 'Tenant'
+            ) {
+              <span class="material-symbols-outlined check">
+                check_circle
+              </span>
+            }
+
+          </button>
+
+
+          <button
+            type="button"
+            class="role-card"
+            [class.selected]="
+              registerForm.controls.role.value === 'Landlord'
+            "
+            (click)="selectRole('Landlord')"
+          >
+
+            <span class="material-symbols-outlined">
+              apartment
+            </span>
+
+            <span class="role-content">
+              <strong>Landlord</strong>
+              <small>
+                Manage and list your properties
+              </small>
+            </span>
+
+            @if (
+              registerForm.controls.role.value === 'Landlord'
+            ) {
+              <span class="material-symbols-outlined check">
+                check_circle
+              </span>
+            }
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- Password -->
+      <div class="form-group">
+
+        <label for="password">
+          Password
+        </label>
+
+        <div class="input-wrapper">
+
+          <span class="material-symbols-outlined">
+            lock
+          </span>
+
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Create a strong password"
+            autocomplete="new-password"
+          />
+
+        </div>
+
+        <small class="hint">
+          Minimum 8 characters with uppercase, lowercase,
+          number and special character.
+        </small>
+
+        @if (
+          registerForm.controls.password.touched &&
+          registerForm.controls.password.invalid &&
+          !registerForm.controls.password.hasError('required')
+        ) {
+          <small>
+            Password must be at least 8 characters and include uppercase,
+            lowercase, number and special character.
+          </small>
+        }
+
+      </div>
+
+
+      <!-- Confirm Password -->
+      <div class="form-group">
+
+        <label for="confirmPassword">
+          Confirm password
+        </label>
+
+        <div class="input-wrapper">
+
+          <span class="material-symbols-outlined">
+            lock_reset
+          </span>
+
+          <input
+            id="confirmPassword"
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Confirm your password"
+            autocomplete="new-password"
+          />
+
+        </div>
+
+        @if (
+          registerForm.controls.confirmPassword.touched &&
+          !passwordsMatch
+        ) {
+          <small>
+            Passwords do not match.
+          </small>
+        }
+
+      </div>
+
+
+      <!-- Submit -->
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="loading"
+      >
+
+        @if (loading) {
+
+          <span>Creating account...</span>
+
+        } @else {
+
+          <span>Create account</span>
+
+          <span class="material-symbols-outlined">
+            arrow_forward
+          </span>
+
+        }
+
+      </button>
+
+    </form>
+
+
+    <!-- Login -->
+    <div class="login-link">
+
+      <span>Already have an account?</span>
+
+      <a routerLink="/login">
+        Sign in
+      </a>
+
+    </div>
+
+
+    <!-- Back -->
+    <div class="back-home">
+
+      <a routerLink="/">
+
+        <span class="material-symbols-outlined">
+          arrow_back
+        </span>
+
+        Back to TrustRent
+
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
