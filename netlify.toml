@@ -1,0 +1,15 @@
+[build]
+base = "Frontend"
+command = "npm run build"
+publish = "dist/Frontend/browser"
+
+[[redirects]]
+from = "/api/*"
+to = "https://REPLACE_WITH_RENDER_API.onrender.com/api/:splat"
+status = 200
+force = true
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
