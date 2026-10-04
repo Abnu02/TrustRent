@@ -8,7 +8,7 @@
 # @token = replace-with-landlord-jwt
 
 # ### Create a property
-# POST {{TrustRent.Api_HostAddress}}/api/v1/properties
+# POST {{TrustRent.Api_HostAddress}}/api/v1/landlord/properties
 # Authorization: Bearer {{token}}
 # Content-Type: application/json
 
@@ -24,12 +24,12 @@
 # }
 
 # ### Get the landlord's properties
-# GET {{TrustRent.Api_HostAddress}}/api/v1/properties/my
+# GET {{TrustRent.Api_HostAddress}}/api/v1/landlord/properties/my
 # Authorization: Bearer {{token}}
 # Accept: application/json
 
 # ### Update a property
-# PUT {{TrustRent.Api_HostAddress}}/api/v1/properties/7c3a0000-0000-0000-0000-000000000001
+# PUT {{TrustRent.Api_HostAddress}}/api/v1/landlord/properties/7c3a0000-0000-0000-0000-000000000001
 # Authorization: Bearer {{token}}
 # Content-Type: application/json
 

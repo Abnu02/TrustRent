@@ -28,7 +28,7 @@ describe('PropertyService', () => {
       sortDirection: 'desc',
     }).subscribe();
 
-    const request = http.expectOne(request => request.url === '/api/v1/properties/my');
+    const request = http.expectOne(request => request.url === '/api/v1/landlord/properties/my');
     expect(request.request.method).toBe('GET');
     expect(request.request.params.get('page')).toBe('2');
     expect(request.request.params.get('pageSize')).toBe('10');
@@ -53,7 +53,7 @@ describe('PropertyService', () => {
     };
     service.create(draft).subscribe();
 
-    const request = http.expectOne('/api/v1/properties');
+    const request = http.expectOne('/api/v1/landlord/properties');
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toEqual(draft);
     expect(request.request.body.status).toBeUndefined();
@@ -74,7 +74,7 @@ describe('PropertyService', () => {
     };
     service.update('property-id', draft).subscribe();
 
-    const request = http.expectOne('/api/v1/properties/property-id');
+    const request = http.expectOne('/api/v1/landlord/properties/property-id');
     expect(request.request.method).toBe('PUT');
     expect(request.request.body).toEqual(draft);
     request.flush({ ...draft, id: 'property-id', status: 'Approved', isVerified: true });

@@ -10,9 +10,13 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
 using TrustRent.Application.Interfaces;
+using TrustRent.Application.Properties.Interfaces;
+using TrustRent.Application.Properties.Services;
 using TrustRent.Infrastructure.Authentication;
 using TrustRent.Infrastructure.Identity;
 using TrustRent.Infrastructure.Persistence;
+using TrustRent.Infrastructure.Data;
+using TrustRent.Infrastructure.Repositories;
 using TrustRent.Infrastructure.Services;
 using System.Text.Json.Serialization;
 
@@ -27,6 +31,8 @@ builder.Services.AddOpenApi();
 
 // Persistence
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<TrustRentDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Identity
@@ -71,6 +77,8 @@ builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPropertyReviewService, PropertyReviewService>();
 builder.Services.AddScoped<ILandlordReviewService, LandlordReviewService>();
+builder.Services.AddScoped<IPropertyService, PropertyService>();
+builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 
 var app = builder.Build();
 
@@ -99,6 +107,8 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
         context.Database.Migrate();
+        var propertyContext = services.GetRequiredService<TrustRentDbContext>();
+        propertyContext.Database.Migrate();
         await SeedData.InitializeAsync(services);
     }
     catch (Exception ex)

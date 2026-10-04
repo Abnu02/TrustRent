@@ -1,5 +1,5 @@
 <div class="page-heading editor-heading">
   <div><p class="page-kicker">PROPERTY MANAGEMENT</p><h1>Add Property</h1><p class="page-subtitle">Provide property information to create a new rental listing.</p></div>
-  <span class="endpoint-note"><span class="material-symbols-outlined" aria-hidden="true">verified_user</span>POST /api/v1/properties</span>
+  <span class="endpoint-note"><span class="material-symbols-outlined" aria-hidden="true">verified_user</span>POST /api/v1/landlord/properties</span>
 </div>
 <app-property-editor mode="create" [saving]="saving" [errorMessage]="errorMessage" [validationMessages]="validationMessages" (submitted)="createProperty($event)" (cancelled)="cancel()" />
