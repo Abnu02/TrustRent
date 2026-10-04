@@ -1,13 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AdminAuthSession } from '../Admin/services/admin-auth-session';
 
 type AuthMode = 'sign-in' | 'register' | 'reset';
-type AuthRole = 'tenant' | 'landlord' | 'auditor';
+type AuthRole = 'tenant' | 'landlord' | 'admin';
 
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   styleUrl: './auth.scss',
   templateUrl: './auth.html',
 })
@@ -26,7 +30,7 @@ export class Auth {
   }> = [
     { key: 'tenant', label: 'Tenant', subtitle: 'Verified rentals', icon: 'person_shield' },
     { key: 'landlord', label: 'Landlord', subtitle: 'Deed-matched units', icon: 'real_estate_agent' },
-    { key: 'auditor', label: 'Auditor', subtitle: 'County title records', icon: 'policy' },
+    { key: 'admin', label: 'Admin', subtitle: 'Property review console', icon: 'policy' },
   ];
 
   readonly trustHighlights = [
@@ -54,6 +58,12 @@ export class Auth {
   authMode: AuthMode = 'sign-in';
   showPassword = false;
   showConfirmPassword = false;
+  email = '';
+  password = '';
+  isSubmitting = false;
+  submitError = '';
+  private readonly router = inject(Router);
+  private readonly authSession = inject(AdminAuthSession);
 
   get selectedRoleMeta() {
     return this.roles.find((role) => role.key === this.selectedRole) ?? this.roles[0];
@@ -110,7 +120,25 @@ export class Auth {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
-  onSubmit(): void {
-    // Intentionally left as a UI placeholder until the authentication API is wired in.
+  async onSubmit(): Promise<void> {
+    if (this.authMode !== 'sign-in') {
+      this.submitError = 'This authentication flow is not available yet.';
+      return;
+    }
+
+    this.isSubmitting = true;
+    this.submitError = '';
+    try {
+      await this.authSession.signIn(this.email, this.password);
+      await this.router.navigateByUrl('/admin');
+    } catch (error) {
+      this.submitError = error instanceof Error && !(error instanceof HttpErrorResponse)
+        ? error.message
+        : error instanceof HttpErrorResponse && error.status === 401
+          ? 'Email or password is incorrect.'
+          : 'Unable to sign in. Please try again.';
+    } finally {
+      this.isSubmitting = false;
+    }
   }
 }

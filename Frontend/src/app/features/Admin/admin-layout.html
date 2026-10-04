@@ -1,0 +1,27 @@
+<div class="admin-shell" [class.admin-shell--collapsed]="sidebarCollapsed">
+  <app-admin-sidebar (collapsedChange)="sidebarCollapsed = $event" />
+  <div class="main-area">
+    <header class="topbar">
+      <div class="topbar__title">
+        <span class="topbar__eyebrow">TrustRent / Operations</span>
+        <strong>Admin console</strong>
+      </div>
+      <div class="topbar__actions">
+        <span class="environment">Production</span>
+        <button class="icon-button" type="button" aria-label="Notifications">
+          <app-admin-icon name="notifications" />
+          <span class="notification-dot"></span>
+        </button>
+        <div class="user-menu">
+          <span class="user-menu__avatar">AD</span>
+          <span class="user-menu__name">{{ authSession.displayName }}</span>
+          <button class="sign-out" type="button" (click)="signOut()">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

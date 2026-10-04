@@ -73,13 +73,13 @@
         </div>
       </div>
 
-      <form class="auth-form" (submit)="onSubmit()">
+      <form class="auth-form" (ngSubmit)="onSubmit()">
         <ng-container *ngIf="authMode === 'sign-in'">
           <div class="field-group">
             <label for="email">Work or Personal Email</label>
             <div class="input-shell">
               <span class="input-shell__icon">mail</span>
-              <input id="email" type="email" placeholder="identity@institutional.domain" required />
+              <input id="email" name="email" type="email" placeholder="identity@institutional.domain" [(ngModel)]="email" required />
             </div>
           </div>
 
@@ -92,8 +92,10 @@
               <span class="input-shell__icon">encrypted</span>
               <input
                 id="password"
+                name="password"
                 [type]="showPassword ? 'text' : 'password'"
-                placeholder="••••••••••••••••"
+                placeholder="Enter your password"
+                [(ngModel)]="password"
                 required
               />
               <button
@@ -200,7 +202,7 @@
               <select id="reset-role" [value]="selectedRole">
                 <option value="tenant">Tenant</option>
                 <option value="landlord">Landlord</option>
-                <option value="auditor">Auditor</option>
+                <option value="admin">Admin</option>
               </select>
             </div>
           </div>
@@ -211,7 +213,12 @@
           </div>
         </ng-container>
 
-        <button class="primary-button" type="submit">{{ ctaText }}</button>
+        @if (submitError) {
+          <p class="auth-error" role="alert">{{ submitError }}</p>
+        }
+        <button class="primary-button" type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Signing inâ€¦' : ctaText }}
+        </button>
       </form>
     </section>
 
@@ -245,14 +252,14 @@
             <strong>Deed Matched</strong>
           </div>
           <p>
-            “TrustRent saved me from a $4,800 wire scam in Austin. Knowing the landlord was deed-verified through
-            Travis County records gave me complete peace of mind before transferring funds.”
+            ï¿½TrustRent saved me from a $4,800 wire scam in Austin. Knowing the landlord was deed-verified through
+            Travis County records gave me complete peace of mind before transferring funds.ï¿½
           </p>
           <div class="testimonial__meta">
             <div class="avatar">ER</div>
             <div>
               <strong>Elena Rostova</strong>
-              <span>Verified Tenant • Downtown Loft</span>
+              <span>Verified Tenant ï¿½ Downtown Loft</span>
             </div>
           </div>
         </div>

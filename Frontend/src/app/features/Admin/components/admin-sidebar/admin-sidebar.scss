@@ -1,0 +1,20 @@
+:host { position: fixed; inset: 0 auto 0 0; z-index: 2; display: block; width: 224px; transition: width 180ms ease; }
+:host(.is-collapsed) { width: 68px; }
+.sidebar { display: flex; height: 100vh; flex-direction: column; padding: 1.35rem .8rem 1rem; border-right: 1px solid #e8ecf2; background: #fff; }
+.brand { display: flex; min-height: 2.2rem; align-items: center; gap: .55rem; padding: 0 .4rem; color: inherit; text-decoration: none; }
+.brand__mark { display: grid; width: 2rem; height: 2rem; flex: 0 0 auto; place-items: center; border-radius: .65rem; background: #14243b; color: #fff; font-weight: 700; }
+.brand__name { font-size: 1rem; font-weight: 700; letter-spacing: -.04em; }
+.brand__badge { margin-left: auto; padding: .22rem .45rem; border-radius: 999px; background: #e9f7ef; color: #18764f; font-size: .64rem; font-weight: 700; }
+.sidebar__label { margin: 2.1rem 0 .65rem; padding: 0 .65rem; color: #8994a5; font-size: .65rem; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
+.side-nav { display: grid; gap: .25rem; }
+.side-nav__link { display: flex; min-height: 2.65rem; align-items: center; gap: .7rem; padding: 0 .65rem; border-radius: .6rem; color: #667287; font-size: .8rem; font-weight: 600; text-decoration: none; transition: background 150ms ease, color 150ms ease; }
+.side-nav__link:hover, .side-nav__link.is-active { background: #edf3ff; color: #1d3559; }
+.side-nav__link.is-active { box-shadow: inset 3px 0 #2875da; }
+.is-collapsed .side-nav__link { justify-content: center; padding: 0; }
+.is-collapsed .side-nav__link.is-active { box-shadow: inset 0 -2px #2875da; }
+.sidebar__footer { display: flex; min-height: 2.5rem; align-items: center; gap: .45rem; margin-top: auto; padding: .55rem .3rem; border-top: 1px solid #edf0f5; color: #667287; font-size: .7rem; }
+.secure-dot { width: .45rem; height: .45rem; border-radius: 50%; background: #22a66a; }
+.collapse-button { display: grid; width: 1.9rem; height: 1.9rem; flex: 0 0 auto; place-items: center; margin-left: auto; border: 0; border-radius: .5rem; background: transparent; color: #667287; cursor: pointer; }
+.collapse-button:hover { background: #edf3ff; }
+.is-collapsed .collapse-button { margin: 0 auto; transform: rotate(180deg); }
+@media (max-width: 800px) { :host, :host(.is-collapsed) { position: static; width: 100%; } .sidebar { height: auto; padding: .7rem 1rem; border-right: 0; border-bottom: 1px solid #e8ecf2; } .brand { padding: 0 .1rem .55rem; } .sidebar__label, .sidebar__footer { display: none; } .side-nav { display: flex; overflow-x: auto; gap: .25rem; } .side-nav__link { flex: 0 0 auto; min-height: 2.4rem; padding: 0 .55rem; font-size: .74rem; } .is-collapsed .side-nav__link { justify-content: flex-start; padding: 0 .55rem; } }

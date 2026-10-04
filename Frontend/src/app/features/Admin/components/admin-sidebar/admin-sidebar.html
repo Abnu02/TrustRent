@@ -1,0 +1,45 @@
+<aside class="sidebar" [class.is-collapsed]="collapsed">
+  <a class="brand" routerLink="/admin" aria-label="TrustRent admin home">
+    <span class="brand__mark">T</span>
+    @if (!collapsed) {
+      <span class="brand__name">TrustRent</span>
+      <span class="brand__badge">Admin</span>
+    }
+  </a>
+
+  @if (!collapsed) {
+    <div class="sidebar__label">Workspace</div>
+  }
+  <nav class="side-nav" aria-label="Admin pages">
+    @for (item of navigation; track item.route) {
+      <a
+        class="side-nav__link"
+        [routerLink]="item.route"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: item.route === '/admin' }"
+        [attr.aria-label]="item.label"
+        [attr.title]="collapsed ? item.label : null"
+      >
+        <app-admin-icon [name]="item.icon" />
+        @if (!collapsed) { <span>{{ item.label }}</span> }
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar__footer">
+    @if (!collapsed) {
+      <span class="secure-dot"></span>
+      <span>Admin access active</span>
+    }
+    <button
+      class="collapse-button"
+      type="button"
+      (click)="toggle()"
+      [attr.aria-label]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+      [attr.title]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+      [attr.aria-expanded]="!collapsed"
+    >
+      <app-admin-icon name="chevron" />
+    </button>
+  </div>
+</aside>

@@ -14,11 +14,14 @@ using TrustRent.Infrastructure.Authentication;
 using TrustRent.Infrastructure.Identity;
 using TrustRent.Infrastructure.Persistence;
 using TrustRent.Infrastructure.Services;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
@@ -66,6 +69,7 @@ builder.Services.AddAuthorization();
 // Application Services
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPropertyReviewService, PropertyReviewService>();
 
 var app = builder.Build();
 
