@@ -1,0 +1,43 @@
+<form class="property-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  @if (errorMessage) {
+    <div class="form-error" role="alert"><strong>{{ errorMessage }}</strong>
+      @if (validationMessages.length) { <ul>@for (message of validationMessages; track $index) { <li>{{ message }}</li> }</ul> }
+    </div>
+  }
+  <fieldset [disabled]="saving">
+    <section class="form-section">
+      <h2><span class="section-mark"></span>1. Property Information</h2>
+      <div class="form-grid property-info-grid">
+        <label class="form-field title-field"><span>Property Title <b>*</b></span><input formControlName="title" maxlength="200" placeholder="e.g. Modern 2 Bedroom Apartment" autocomplete="off"><small class="field-error">@if (form.controls.title.touched && form.controls.title.hasError('required')) { Enter a property title. } @else if (form.controls.title.touched && form.controls.title.hasError('maxlength')) { Title must be 200 characters or fewer. }</small></label>
+        <label class="form-field"><span>Property Type <b>*</b></span><select formControlName="propertyType"><option value="Apartment">Apartment</option><option value="House">House</option><option value="Studio">Studio</option></select><small class="field-error"></small></label>
+        <label class="form-field form-field-wide"><span>Description <b>*</b></span><textarea formControlName="description" maxlength="2000" rows="3" placeholder="Describe your property"></textarea><small class="field-error">@if (form.controls.description.touched && form.controls.description.hasError('required')) { Add a property description. } @else if (form.controls.description.touched && form.controls.description.hasError('maxlength')) { Description must be 2,000 characters or fewer. }</small></label>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <h2><span class="section-mark"></span>2. Pricing</h2>
+      <div class="form-grid two-column-grid">
+        <label class="form-field"><span>Monthly Rent (ETB) <b>*</b></span><input formControlName="rent" type="number" min="0.01" max="9999999999.99" step="0.01" inputmode="decimal"><small class="field-error">@if (form.controls.rent.touched && form.controls.rent.hasError('min')) { Rent must be greater than zero. } @else if (form.controls.rent.touched && form.controls.rent.hasError('max')) { Rent is above the allowed maximum. }</small></label>
+        <label class="form-field"><span>Deposit (ETB) <b>*</b></span><input formControlName="deposit" type="number" min="0" max="9999999999.99" step="0.01" inputmode="decimal"><small class="field-error">@if (form.controls.deposit.touched && form.controls.deposit.hasError('min')) { Deposit cannot be negative. } @else if (form.controls.deposit.touched && form.controls.deposit.hasError('max')) { Deposit is above the allowed maximum. }</small></label>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <h2><span class="section-mark"></span>3. Location</h2>
+      <label class="form-field"><span>Address / District <b>*</b></span><input formControlName="location" maxlength="200" placeholder="e.g. Bole, Addis Ababa" autocomplete="street-address"><small class="field-error">@if (form.controls.location.touched && form.controls.location.hasError('required')) { Enter a location. } @else if (form.controls.location.touched && form.controls.location.hasError('maxlength')) { Location must be 200 characters or fewer. }</small></label>
+    </section>
+
+    <section class="form-section">
+      <h2><span class="section-mark"></span>4. Property Details</h2>
+      <div class="form-grid two-column-grid">
+        <label class="form-field"><span>Bedrooms</span><input formControlName="bedrooms" type="number" min="0" max="100" step="1" inputmode="numeric"><small class="field-error">@if (form.controls.bedrooms.touched && form.controls.bedrooms.invalid) { Enter a whole number from 0 to 100. }</small></label>
+        <label class="form-field"><span>Bathrooms</span><input formControlName="bathrooms" type="number" min="0" max="100" step="1" inputmode="numeric"><small class="field-error">@if (form.controls.bathrooms.touched && form.controls.bathrooms.invalid) { Enter a whole number from 0 to 100. }</small></label>
+      </div>
+    </section>
+  </fieldset>
+
+  <footer class="form-actions">
+    <p class="form-note">New properties start as Pending and Not Verified.</p>
+    <div><button type="button" class="button button-outline" (click)="cancelled.emit()">Cancel</button><button type="submit" class="button button-primary" [disabled]="saving"><span class="material-symbols-outlined" aria-hidden="true">{{ saving ? 'progress_activity' : mode === 'create' ? 'add_circle' : 'check' }}</span>{{ saving ? 'Saving…' : mode === 'create' ? 'Create Property' : 'Save Changes' }}</button></div>
+  </footer>
+</form>

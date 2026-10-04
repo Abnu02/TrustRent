@@ -1,0 +1,12 @@
+<div class="page-heading editor-heading">
+  <div><p class="page-kicker">PROPERTY MANAGEMENT</p><h1>Edit Property</h1><p class="page-subtitle">Update details for {{ property?.title ?? 'your property' }}.</p></div>
+  @if (property) { <a class="back-link" [routerLink]="['/landlord/properties', property.id]"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>Back to details</a> }
+</div>
+@if (loading) {
+  <div class="page-loading" aria-label="Loading property" aria-busy="true"><span class="skeleton-heading"></span><span class="skeleton-form"></span></div>
+} @else if (errorMessage && !property) {
+  <section class="page-error" role="alert"><span class="material-symbols-outlined" aria-hidden="true">error</span><div><strong>Property could not be loaded</strong><p>{{ errorMessage }}</p></div><a class="button button-outline" routerLink="/landlord/properties">Back to properties</a></section>
+} @else if (property) {
+  <section class="read-only-status"><div><span>Property Status</span><app-property-state [status]="property.status" [isVerified]="property.isVerified" /></div><p>Status and verification are controlled by the TrustRent platform.</p></section>
+  <app-property-editor mode="edit" [property]="property" [saving]="saving" [errorMessage]="errorMessage" [validationMessages]="validationMessages" (submitted)="saveProperty($event)" (cancelled)="cancel()" />
+}

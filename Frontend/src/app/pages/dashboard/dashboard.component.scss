@@ -1,0 +1,20 @@
+.summary-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border: 1px solid var(--stitch-line); border-radius: 10px; background: var(--stitch-surface); }
+.summary-card { display: grid; align-content: space-between; gap: 13px; min-height: 92px; padding: 16px 18px; border-right: 1px solid var(--stitch-line); }
+.summary-card:last-child { border-right: 0; }
+.summary-card > span { color: var(--stitch-muted); font-size: 11px; font-weight: 550; }
+.summary-card > strong { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 700; line-height: 1; }
+.dashboard-recent { margin-top: 26px; }
+.panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--stitch-line); }
+.panel-heading h2 { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; }
+.panel-heading p { margin: 4px 0 0; color: var(--stitch-muted); font-size: 11px; }
+.empty-state { display: grid; justify-items: center; gap: 9px; padding: 35px 18px; text-align: center; }
+.empty-state > .material-symbols-outlined { color: #737f90; font-size: 25px; }
+.empty-state strong { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; }
+.empty-state p { margin: 0 0 5px; color: var(--stitch-muted); font-size: 11px; }
+.skeleton-card { gap: 17px; }
+.skeleton-line, .skeleton-number { display: block; border-radius: 5px; background: linear-gradient(90deg, #edf0f5 25%, #f8f9fc 50%, #edf0f5 75%); background-size: 220% 100%; animation: shared-shimmer 1.4s infinite; }
+.skeleton-line { width: 44%; height: 10px; }
+.skeleton-number { width: 32%; height: 21px; }
+.dashboard-recent > .skeleton-line { margin: 19px; }
+@media (max-width: 900px) { .summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .summary-card:nth-child(3) { border-right: 0; } .summary-card:nth-child(n + 4) { border-top: 1px solid var(--stitch-line); } }
+@media (max-width: 620px) { .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .summary-card { min-height: 74px; padding: 12px; } .summary-card:nth-child(3) { border-right: 1px solid var(--stitch-line); } .summary-card:nth-child(even) { border-right: 0; } .summary-card:nth-child(n + 3) { border-top: 1px solid var(--stitch-line); } .summary-card:last-child { border-right: 0; } .dashboard-recent { border: 0; background: transparent; } .dashboard-recent .panel-heading { padding-inline: 0; } }
