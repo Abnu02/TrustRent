@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   RouterLink,
   RouterLinkActive
@@ -14,4 +14,11 @@ import {
   templateUrl: './landlord-sidebar.component.html',
   styleUrl: './landlord-sidebar.component.scss'
 })
-export class LandlordSidebarComponent {}
+export class LandlordSidebarComponent {
+  @Input() collapsed = false;
+
+  @Output() toggle = new EventEmitter<void>();
+
+  onToggle(): void {
+    this.toggle.emit();
+  }}

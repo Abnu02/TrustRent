@@ -63,4 +63,18 @@ export class LandlordPropertyService {
       property
     );
   }
+
+  archiveProperty(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  uploadImage(id: string, image: File): Observable<{ imageUrl: string }> {
+    const formData = new FormData();
+    formData.append('image', image);
+
+    return this.http.post<{ imageUrl: string }>(
+      `${this.apiUrl}/${id}/image`,
+      formData
+    );
+  }
 }

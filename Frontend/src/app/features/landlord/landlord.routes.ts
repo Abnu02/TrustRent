@@ -43,11 +43,12 @@ export const LANDLORD_ROUTES: Routes = [
             )
       },
 
-
-      /*
-       * We will add My Properties here
-       * in the next step.
-       */
+      {
+        path: 'my-properties',
+        loadComponent: () =>
+          import('./pages/my-properties/my-properties')
+            .then(m => m.MyPropertiesComponent)
+      }
     ]
 
   }

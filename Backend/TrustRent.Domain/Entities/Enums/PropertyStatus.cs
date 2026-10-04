@@ -5,5 +5,6 @@ public enum PropertyStatus
     Draft,
     Pending,
     Approved,
-    Rejected
+    Rejected,
+    Archived
 }

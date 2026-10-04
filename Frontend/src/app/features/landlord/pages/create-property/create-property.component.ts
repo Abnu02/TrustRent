@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -45,9 +46,9 @@ export class CreatePropertyComponent {
     'Apartment',
     'House',
     'Studio',
-    'Condominium',
-    'Villa'
-  ];
+    'Villa',
+    'Other'
+  ] as const;
 
 
   /**
@@ -165,8 +166,7 @@ export class CreatePropertyComponent {
   /**
    * Handle property image selection.
    *
-   * This is currently frontend-only.
-   * Backend image upload will be implemented later.
+   * Keep the selected image for upload after the property is created.
    */
   onImageSelected(event: Event): void {
 
@@ -177,12 +177,10 @@ export class CreatePropertyComponent {
     }
 
     const file = input.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png'];
 
-    /*
-     * Only allow common image formats.
-     */
-    if (!file.type.startsWith('image/')) {
-      this.errorMessage = 'Please select a valid image file.';
+    if (!allowedTypes.includes(file.type)) {
+      this.errorMessage = 'Please select a JPG or PNG image.';
       return;
     }
 
@@ -207,6 +205,11 @@ export class CreatePropertyComponent {
 
     reader.onload = () => {
       this.imagePreview = reader.result as string;
+    };
+
+    reader.onerror = () => {
+      this.errorMessage = 'Unable to preview the selected image.';
+      this.removeImage();
     };
 
     reader.readAsDataURL(file);
@@ -245,63 +248,38 @@ export class CreatePropertyComponent {
     this.isSubmitting = true;
 
 
-    /*
-     * IMPORTANT:
-     *
-     * We only send the fields documented by
-     * POST /api/v1/properties.
-     *
-     * The image is NOT sent yet because
-     * the backend image endpoint has not
-     * been implemented.
-     *
-     * landlordId is also NOT sent.
-     */
-    const request = this.propertyForm.getRawValue();
+    const request = {
+      ...this.propertyForm.getRawValue(),
+      propertyType: this.propertyForm.controls.propertyType.value
+    };
 
 
     this.propertyService
       .createProperty(request)
       .subscribe({
 
-        next: (response) => {
+        next: response => {
+          if (!this.selectedImage) {
+            this.finishCreation();
+            return;
+          }
 
-          this.isSubmitting = false;
-
-          this.successMessage =
-            'Property created successfully and is waiting for verification.';
-
-          /*
-           * For now the image preview is local only.
-           * Backend image support will be connected later.
-           */
-
-          console.log('Created property:', response);
-
-          /*
-           * Go to My Properties after a short delay.
-           */
-          setTimeout(() => {
-
-            this.router.navigate([
-              '/landlord/my-properties'
-            ]);
-
-          }, 1200);
+          this.propertyService
+            .uploadImage(response.id, this.selectedImage)
+            .subscribe({
+              next: () => this.finishCreation(),
+              error: error => {
+                this.isSubmitting = false;
+                this.errorMessage =
+                  this.getErrorMessage(error) +
+                  ' The property was created; you can add its image from My Properties later.';
+              }
+            });
         },
 
         error: (error) => {
-
           this.isSubmitting = false;
-
-          console.error(
-            'Create property error:',
-            error
-          );
-
-          this.errorMessage =
-            error?.error?.message ??
-            'Unable to create the property. Please try again.';
+          this.errorMessage = this.getErrorMessage(error);
         }
 
       });
@@ -316,5 +294,44 @@ export class CreatePropertyComponent {
     this.router.navigate([
       '/landlord/dashboard'
     ]);
+  }
+
+  private finishCreation(): void {
+    this.isSubmitting = false;
+    this.successMessage =
+      'Property created successfully and is waiting for verification.';
+
+    setTimeout(() => {
+      this.router.navigate(['/landlord/my-properties']);
+    }, 900);
+  }
+
+  private getErrorMessage(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      if (error.status === 0) {
+        return 'Cannot connect to the API. Check that the backend is running.';
+      }
+
+      if (error.status === 401 || error.status === 403) {
+        return error.error?.message ??
+          'Your landlord account must be verified before you can create properties.';
+      }
+
+      const validationErrors = error.error?.errors;
+      if (validationErrors && typeof validationErrors === 'object') {
+        const messages = Object.values(validationErrors)
+          .flatMap(value => Array.isArray(value) ? value : [])
+          .filter((value): value is string => typeof value === 'string');
+
+        if (messages.length > 0) {
+          return messages.join(' ');
+        }
+      }
+
+      return error.error?.message ??
+        `Unable to create the property (HTTP ${error.status}).`;
+    }
+
+    return 'Unable to create the property. Please try again.';
   }
 }

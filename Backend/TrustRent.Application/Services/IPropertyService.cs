@@ -19,6 +19,11 @@ public interface IPropertyService
         UpdatePropertyRequest request,
         CancellationToken cancellationToken);
 
+    Task ArchiveAsync(
+        Guid landlordId,
+        Guid propertyId,
+        CancellationToken cancellationToken);
+
     Task<List<PropertyListResponse>> GetPublicAsync(
         string? location,
         decimal? minRent,

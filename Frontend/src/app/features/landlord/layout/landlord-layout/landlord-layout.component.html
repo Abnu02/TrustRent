@@ -5,22 +5,9 @@
 
   <!-- Sidebar -->
   <app-landlord-sidebar
-    [class.sidebar-collapsed]="!sidebarOpen()"
+    [collapsed]="!sidebarOpen()"
+    (toggle)="toggleSidebar()"
   />
-
-  <!-- Always-visible sidebar toggle -->
-  <button
-    type="button"
-    class="sidebar-toggle"
-    [class.sidebar-collapsed]="!sidebarOpen()"
-    (click)="toggleSidebar()"
-    aria-label="Toggle sidebar"
-    title="Toggle sidebar"
-  >
-    <span class="material-symbols-outlined">
-      menu
-    </span>
-  </button>
 
   <!-- Main Content -->
   <main

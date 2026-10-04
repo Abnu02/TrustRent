@@ -24,6 +24,156 @@ public class AdminVerificationService
         _propertyRepository = propertyRepository;
     }
 
+    public async Task<List<AdminLandlordResponse>> GetLandlordsAsync(
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var landlords = await _userManager.GetUsersInRoleAsync("Landlord");
+
+        return landlords
+            .Select(ToAdminLandlordResponse)
+            .OrderBy(x => x.FullName)
+            .ToList();
+    }
+
+    public async Task<AdminLandlordResponse?> GetLandlordAsync(
+        Guid landlordId,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var landlord = await FindLandlordAsync(landlordId);
+        return landlord is null ? null : ToAdminLandlordResponse(landlord);
+    }
+
+    public async Task<AdminLandlordResponse> CreateLandlordAsync(
+        CreateLandlordRequest request,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (string.IsNullOrWhiteSpace(request.FullName) ||
+            string.IsNullOrWhiteSpace(request.Email) ||
+            string.IsNullOrWhiteSpace(request.Password))
+        {
+            throw new InvalidOperationException(
+                "Full name, email, and password are required.");
+        }
+
+        var fullName = request.FullName.Trim();
+        var email = request.Email.Trim();
+        var phoneNumber = request.PhoneNumber?.Trim() ?? string.Empty;
+
+        var landlord = new ApplicationUser
+        {
+            UserName = email,
+            Email = email,
+            PhoneNumber = phoneNumber,
+            FullName = fullName,
+            IsVerified = false,
+            LockoutEnabled = true
+        };
+
+        var createResult = await _userManager.CreateAsync(
+            landlord,
+            request.Password);
+
+        if (!createResult.Succeeded)
+        {
+            throw new InvalidOperationException(
+                string.Join("; ", createResult.Errors.Select(x => x.Description)));
+        }
+
+        var roleResult = await _userManager.AddToRoleAsync(landlord, "Landlord");
+        if (!roleResult.Succeeded)
+        {
+            var rollbackResult = await _userManager.DeleteAsync(landlord);
+            var errors = roleResult.Errors.Select(x => x.Description);
+
+            if (!rollbackResult.Succeeded)
+            {
+                errors = errors.Concat(
+                    rollbackResult.Errors.Select(
+                        x => $"Rollback failed: {x.Description}"));
+            }
+
+            throw new InvalidOperationException(string.Join("; ", errors));
+        }
+
+        return ToAdminLandlordResponse(landlord);
+    }
+
+    public async Task<AdminLandlordResponse> UpdateLandlordAsync(
+        Guid landlordId,
+        UpdateLandlordRequest request,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var landlord = await FindLandlordAsync(landlordId)
+            ?? throw new KeyNotFoundException("Landlord was not found.");
+
+        if (string.IsNullOrWhiteSpace(request.FullName) ||
+            string.IsNullOrWhiteSpace(request.Email))
+        {
+            throw new InvalidOperationException(
+                "Full name and email are required.");
+        }
+
+        var fullName = request.FullName.Trim();
+        var email = request.Email.Trim();
+
+        landlord.FullName = fullName;
+        landlord.Email = email;
+        landlord.UserName = email;
+        landlord.PhoneNumber = request.PhoneNumber?.Trim() ?? string.Empty;
+
+        var result = await _userManager.UpdateAsync(landlord);
+        if (!result.Succeeded)
+        {
+            throw new InvalidOperationException(
+                string.Join("; ", result.Errors.Select(x => x.Description)));
+        }
+
+        return ToAdminLandlordResponse(landlord);
+    }
+
+    public async Task SetLandlordActiveAsync(
+        Guid landlordId,
+        bool isActive,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var landlord = await FindLandlordAsync(landlordId)
+            ?? throw new KeyNotFoundException("Landlord was not found.");
+
+        // Identity lockout keeps the account and its properties while preventing new logins.
+        var lockoutEnabledResult =
+            await _userManager.SetLockoutEnabledAsync(landlord, true);
+
+        if (!lockoutEnabledResult.Succeeded)
+        {
+            throw new InvalidOperationException(
+                string.Join(
+                    "; ",
+                    lockoutEnabledResult.Errors.Select(x => x.Description)));
+        }
+
+        var lockoutResult = await _userManager.SetLockoutEndDateAsync(
+            landlord,
+            isActive ? null : DateTimeOffset.MaxValue);
+
+        if (!lockoutResult.Succeeded)
+        {
+            throw new InvalidOperationException(
+                string.Join(
+                    "; ",
+                    lockoutResult.Errors.Select(x => x.Description)));
+        }
+    }
+
     public async Task<List<UserResponse>>
         GetPendingLandlordsAsync(
             CancellationToken cancellationToken)
@@ -44,6 +194,34 @@ public class AdminVerificationService
                 IsVerified = x.IsVerified
             })
             .ToList();
+    }
+
+    private async Task<ApplicationUser?> FindLandlordAsync(Guid landlordId)
+    {
+        var landlord = await _userManager.FindByIdAsync(landlordId.ToString());
+
+        if (landlord is not null &&
+            !await _userManager.IsInRoleAsync(landlord, "Landlord"))
+        {
+            throw new InvalidOperationException(
+                "The selected user is not a landlord.");
+        }
+
+        return landlord;
+    }
+
+    private static AdminLandlordResponse ToAdminLandlordResponse(
+        ApplicationUser landlord)
+    {
+        return new AdminLandlordResponse
+        {
+            Id = landlord.Id,
+            FullName = landlord.FullName,
+            Email = landlord.Email ?? string.Empty,
+            PhoneNumber = landlord.PhoneNumber ?? string.Empty,
+            IsVerified = landlord.IsVerified,
+            IsActive = landlord.LockoutEnd != DateTimeOffset.MaxValue
+        };
     }
 
     public async Task VerifyLandlordAsync(
@@ -137,10 +315,58 @@ public class AdminVerificationService
                 Title = x.Title,
                 PropertyType = x.PropertyType,
                 Rent = x.Rent,
+                Deposit = x.Deposit,
                 Location = x.Location,
+                Bedrooms = x.Bedrooms,
+                Bathrooms = x.Bathrooms,
                 Status = x.Status,
                 IsVerified = x.IsVerified,
                 ImageUrl = x.ImageUrl
+            })
+            .ToList();
+    }
+
+    public async Task<List<AdminPropertyResponse>> GetAllPropertiesAsync(
+        CancellationToken cancellationToken)
+    {
+        var properties = await _propertyRepository.GetAllAsync(cancellationToken);
+        if (properties.Count == 0)
+        {
+            return [];
+        }
+
+        var landlords = await _userManager.GetUsersInRoleAsync("Landlord");
+        var landlordsById = landlords.ToDictionary(x => x.Id);
+
+        return properties
+            .Select(property =>
+            {
+                landlordsById.TryGetValue(property.LandlordId, out var landlord);
+
+                return new AdminPropertyResponse
+                {
+                    Id = property.Id,
+                    Title = property.Title,
+                    Description = property.Description,
+                    PropertyType = property.PropertyType,
+                    Rent = property.Rent,
+                    Deposit = property.Deposit,
+                    Location = property.Location,
+                    Bedrooms = property.Bedrooms,
+                    Bathrooms = property.Bathrooms,
+                    Status = property.Status,
+                    IsVerified = property.IsVerified,
+                    CreatedAt = property.CreatedAt,
+                    ImageUrl = property.ImageUrl,
+                    Landlord = new AdminPropertyLandlordResponse
+                    {
+                        Id = property.LandlordId,
+                        FullName = landlord?.FullName ?? "Unknown landlord",
+                        PhoneNumber = landlord?.PhoneNumber ?? string.Empty,
+                        Email = landlord?.Email ?? string.Empty,
+                        IsVerified = landlord?.IsVerified ?? false
+                    }
+                };
             })
             .ToList();
     }

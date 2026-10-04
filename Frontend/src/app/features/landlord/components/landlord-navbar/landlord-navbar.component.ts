@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-landlord-navbar',
@@ -9,6 +10,8 @@ import { RouterLink } from '@angular/router';
   styleUrl: './landlord-navbar.component.scss'
 })
 export class LandlordNavbarComponent {
+  private readonly authService = inject(AuthService);
+
   accountMenuOpen = signal(false);
 
   toggleAccountMenu(): void {
@@ -20,7 +23,11 @@ export class LandlordNavbarComponent {
   }
 
   logout(): void {
-    // Authentication service will be connected later.
-    console.log('Logout clicked');
+    this.accountMenuOpen.set(false);
+    this.authService.logout();
+  }
+
+  get currentUser() {
+    return this.authService.currentUser();
   }
 }

@@ -23,7 +23,8 @@ export interface LandlordProperty {
   propertyType: string;
   rent: number;
   location: string;
-  status: 'Pending' | 'Approved' | 'Rejected';
+  status: 'Draft' | 'Pending' | 'Approved' | 'Rejected' | 'Archived';
   isVerified: boolean;
   imageUrl?: string;
+  createdAt?: string;
 }

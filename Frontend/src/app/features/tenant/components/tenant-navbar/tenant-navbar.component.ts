@@ -1,9 +1,10 @@
 import {
   Component,
   HostListener,
+  inject,
   signal
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-tenant-navbar',
@@ -13,28 +14,20 @@ import { Router } from '@angular/router';
 })
 export class TenantNavbarComponent {
 
+  private readonly authService = inject(AuthService);
   readonly menuOpen = signal(false);
 
-  readonly user = {
-    fullName: 'Alex',
-    email: 'alex@example.com',
-    role: 'Tenant',
-    isVerified: true
-  };
-
-  constructor(
-    private readonly router: Router
-  ) {}
+  get user() {
+    return this.authService.currentUser();
+  }
 
   toggleMenu(): void {
     this.menuOpen.update(value => !value);
   }
 
   logout(): void {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
-
-    this.router.navigate(['/login']);
+    this.menuOpen.set(false);
+    this.authService.logout();
   }
 
   @HostListener('document:click', ['$event'])

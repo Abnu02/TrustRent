@@ -1,5 +1,12 @@
 <section class="dashboard-page">
 
+  @if (errorMessage()) {
+    <div class="dashboard-error" role="alert">
+      {{ errorMessage() }}
+      <button type="button" (click)="loadProperties()">Retry</button>
+    </div>
+  }
+
   <!-- PAGE HEADER -->
 
   <div class="page-header">
@@ -172,151 +179,24 @@
 
     <!-- PROPERTY LIST -->
 
-    <div class="property-list">
-
-      @for (property of recentProperties(); track property.id) {
-
-        <article class="property-card">
-
-          <!-- IMAGE -->
-
-          <div class="property-image">
-
-            @if (property.imageUrl) {
-
-              <img
-                [src]="property.imageUrl"
-                [alt]="property.title"
-              />
-
-            } @else {
-
-              <div class="image-placeholder">
-
-                <span class="material-symbols-outlined">
-                  image
-                </span>
-
-              </div>
-
-            }
-
-          </div>
-
-
-          <!-- INFORMATION -->
-
-          <div class="property-information">
-
-            <div class="property-main">
-
-              <h3>
-                {{ property.title }}
-              </h3>
-
-              <span class="property-type">
-                {{ property.propertyType }}
-              </span>
-
-            </div>
-
-
-            <div class="property-details">
-
-              <span>
-                <span class="material-symbols-outlined">
-                  location_on
-                </span>
-
-                {{ property.location }}
-              </span>
-
-              <span>
-                <span class="material-symbols-outlined">
-                  payments
-                </span>
-
-                {{ property.rent | number }} ETB
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <!-- STATUS -->
-
-          <div class="property-status">
-
-            <span
-              class="status-badge"
-              [class]="getStatusClass(property.status)"
-            >
-
-              @if (property.status === 'Approved') {
-
-                <span class="material-symbols-outlined">
-                  verified
-                </span>
-
-              } @else if (property.status === 'Rejected') {
-
-                <span class="material-symbols-outlined">
-                  cancel
-                </span>
-
-              } @else {
-
-                <span class="material-symbols-outlined">
-                  schedule
-                </span>
-
-              }
-
-              {{ property.status }}
-
-            </span>
-
-            @if (property.isVerified) {
-
-              <span class="verified-text">
-                Verified
-              </span>
-
-            } @else {
-
-              <span class="unverified-text">
-                Not verified
-              </span>
-
-            }
-
-          </div>
-
-        </article>
-
-      }
-
-    </div>
-
-
-    <!-- EMPTY STATE -->
-
-    @if (properties().length === 0) {
-
+    @if (loading()) {
       <div class="empty-state">
-
+        <p>Loading your properties...</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="empty-state" role="alert">
+        <p>{{ errorMessage() }}</p>
+        <button type="button" class="primary-button" (click)="loadProperties()">
+          Retry
+        </button>
+      </div>
+    } @else if (properties().length === 0) {
+      <div class="empty-state">
         <div class="empty-icon">
-
-          <span class="material-symbols-outlined">
-            home_work
-          </span>
-
+          <span class="material-symbols-outlined">home_work</span>
         </div>
 
-        <h3>
-          No properties yet
-        </h3>
+        <h3>No properties yet</h3>
 
         <p>
           Create your first property to start managing your rental listings.
@@ -328,9 +208,65 @@
         >
           Create Property
         </a>
-
       </div>
+    } @else {
+      <div class="property-list">
+        @for (property of recentProperties(); track property.id) {
+          <article class="property-card">
+            <div class="property-image">
+              @if (property.imageUrl) {
+                <img [src]="property.imageUrl" [alt]="property.title" />
+              } @else {
+                <div class="image-placeholder">
+                  <span class="material-symbols-outlined">image</span>
+                </div>
+              }
+            </div>
 
+            <div class="property-information">
+              <div class="property-main">
+                <h3>{{ property.title }}</h3>
+                <span class="property-type">{{ property.propertyType }}</span>
+              </div>
+
+              <div class="property-details">
+                <span>
+                  <span class="material-symbols-outlined">location_on</span>
+                  {{ property.location }}
+                </span>
+                <span>
+                  <span class="material-symbols-outlined">payments</span>
+                  {{ property.rent | number }} ETB
+                </span>
+              </div>
+            </div>
+
+            <div class="property-status">
+              <span
+                class="status-badge"
+                [class]="getStatusClass(property.status)"
+              >
+                @if (property.status === 'Approved') {
+                  <span class="material-symbols-outlined">verified</span>
+                } @else if (property.status === 'Rejected') {
+                  <span class="material-symbols-outlined">cancel</span>
+                } @else if (property.status === 'Archived') {
+                  <span class="material-symbols-outlined">archive</span>
+                } @else {
+                  <span class="material-symbols-outlined">schedule</span>
+                }
+                {{ property.status }}
+              </span>
+
+              @if (property.isVerified) {
+                <span class="verified-text">Verified</span>
+              } @else {
+                <span class="unverified-text">Not verified</span>
+              }
+            </div>
+          </article>
+        }
+      </div>
     }
 
   </section>

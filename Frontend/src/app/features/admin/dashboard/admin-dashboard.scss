@@ -1,0 +1,124 @@
+.dashboard {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+
+  color: #16834b;
+
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+h1 {
+  margin: 0;
+
+  color: #17251f;
+
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.7px;
+}
+
+.subtitle {
+  margin: 8px 0 0;
+
+  color: #748079;
+  font-size: 14px;
+}
+
+.verification-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.verification-card {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  min-height: 125px;
+  padding: 22px;
+
+  background: #ffffff;
+  border: 1px solid #e4eae7;
+  border-radius: 14px;
+
+  text-decoration: none;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.verification-card:hover {
+  transform: translateY(-2px);
+
+  border-color: #cddbd3;
+
+  box-shadow: 0 10px 25px rgba(30, 55, 43, 0.08);
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  background: #eaf5ef;
+  color: #16834b;
+}
+
+.card-icon .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.verification-card h2 {
+  margin: 0 0 5px;
+
+  color: #1d2b25;
+
+  font-size: 17px;
+}
+
+.verification-card p {
+  margin: 0;
+
+  color: #77847e;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.arrow {
+  margin-left: auto;
+  color: #9aa59f;
+}
+
+@media (max-width: 700px) {
+  .verification-grid {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+}

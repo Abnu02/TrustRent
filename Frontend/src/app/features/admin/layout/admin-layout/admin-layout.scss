@@ -1,0 +1,49 @@
+:host {
+  display: block;
+}
+
+.admin-shell {
+  min-height: 100vh;
+
+  background: #f6f8f7;
+}
+
+
+/* =========================
+   MAIN CONTENT
+   ========================= */
+
+.admin-content {
+  min-height: 100vh;
+
+  margin-left: 240px;
+
+  padding: 88px 32px 32px;
+
+  transition: margin-left 0.25s ease;
+}
+
+
+/* Collapsed sidebar */
+
+.admin-content.sidebar-collapsed {
+  margin-left: 72px;
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 768px) {
+
+  .admin-content {
+    margin-left: 72px;
+
+    padding: 84px 18px 24px;
+  }
+
+  .admin-content.sidebar-collapsed {
+    margin-left: 72px;
+  }
+}

@@ -1,0 +1,174 @@
+.admin-sidebar {
+  position: fixed;
+
+  top: 64px;
+  left: 0;
+  bottom: 0;
+
+  width: 240px;
+
+  background: #ffffff;
+  border-right: 1px solid #e6ebe8;
+
+  z-index: 900;
+
+  transition: width 0.25s ease;
+
+  overflow-x: hidden;
+}
+
+/* Collapsed sidebar */
+.admin-sidebar.collapsed {
+  width: 72px;
+}
+
+
+/* =========================
+   MENU BUTTON
+   ========================= */
+
+.sidebar-menu-button {
+  width: 44px;
+  height: 44px;
+
+  margin: 16px auto 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #e1e7e4;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #33423b;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.sidebar-menu-button:hover {
+  background: #f0f5f2;
+}
+
+.sidebar-menu-button .material-symbols-outlined {
+  font-size: 24px;
+}
+
+
+/* =========================
+   NAVIGATION
+   ========================= */
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+
+  padding: 0 12px;
+}
+
+
+/* Navigation item */
+
+.nav-item {
+  display: flex;
+  align-items: center;
+
+  height: 48px;
+
+  padding: 0 14px;
+
+  border-radius: 9px;
+
+  text-decoration: none;
+
+  color: #64716b;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+
+/* Icon */
+
+.nav-icon {
+  flex-shrink: 0;
+
+  font-size: 22px;
+}
+
+
+/* Text */
+
+.nav-label {
+  margin-left: 13px;
+
+  white-space: nowrap;
+
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+}
+
+
+/* Hover */
+
+.nav-item:hover {
+  background: #f1f6f3;
+  color: #16834b;
+}
+
+
+/* Active */
+
+.nav-item.active {
+  background: #e8f4ed;
+  color: #16834b;
+
+  font-weight: 600;
+}
+
+
+/* =========================
+   COLLAPSED STATE
+   ========================= */
+
+.admin-sidebar.collapsed .nav-item {
+  justify-content: center;
+
+  padding: 0;
+}
+
+.admin-sidebar.collapsed .nav-label {
+  width: 0;
+
+  margin-left: 0;
+
+  opacity: 0;
+  visibility: hidden;
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 768px) {
+
+  .admin-sidebar {
+    width: 240px;
+  }
+
+  .admin-sidebar.collapsed {
+    width: 72px;
+  }
+}

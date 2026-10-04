@@ -15,7 +15,7 @@
       </span>
 
       <h1>
-        Welcome back, Alex
+        Welcome back, {{ userName }}
       </h1>
 
       <p>
@@ -191,7 +191,24 @@
     </div>
 
 
-    @if (filteredProperties().length > 0) {
+    @if (loading()) {
+
+      <div class="empty-state" role="status">
+        <div class="empty-icon">⌂</div>
+        <h3>Loading verified properties</h3>
+        <p>Please wait while we find available homes.</p>
+      </div>
+
+    } @else if (errorMessage()) {
+
+      <div class="empty-state error-state" role="alert">
+        <div class="empty-icon">!</div>
+        <h3>We couldn’t load properties</h3>
+        <p>{{ errorMessage() }}</p>
+        <button type="button" (click)="loadProperties()">Try again</button>
+      </div>
+
+    } @else if (filteredProperties().length > 0) {
 
       <div class="property-grid">
 

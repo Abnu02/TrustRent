@@ -1,0 +1,86 @@
+<section class="my-properties-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Landlord Portal</p>
+      <h1>My Properties</h1>
+      <p>Manage listings and see their verification status.</p>
+    </div>
+    <a class="primary-button" routerLink="/landlord/create-property">
+      <span class="material-symbols-outlined">add_home</span>
+      Create property
+    </a>
+  </header>
+
+  @if (errorMessage()) {
+    <div class="alert error" role="alert">
+      {{ errorMessage() }}
+      <button type="button" (click)="loadProperties()">Retry</button>
+    </div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert success" role="status">
+      {{ successMessage() }}
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="state-card">Loading your properties...</div>
+  } @else if (!errorMessage() && properties().length === 0) {
+    <div class="state-card">
+      <span class="material-symbols-outlined">home_work</span>
+      <h2>No properties yet</h2>
+      <p>Create your first listing to see it here.</p>
+      <a class="primary-button" routerLink="/landlord/create-property">
+        Create property
+      </a>
+    </div>
+  } @else {
+    <div class="property-grid">
+      @for (property of properties(); track property.id) {
+        <article class="property-card">
+          @if (property.imageUrl) {
+            <img [src]="property.imageUrl" [alt]="property.title" />
+          } @else {
+            <div class="image-placeholder">
+              <span class="material-symbols-outlined">home_work</span>
+            </div>
+          }
+
+          <div class="property-content">
+            <div class="title-row">
+              <h2>{{ property.title }}</h2>
+              <span class="status" [class]="statusClass(property.status)">
+                {{ property.status }}
+              </span>
+            </div>
+            <p class="property-type">{{ property.propertyType }}</p>
+            <p class="location">
+              <span class="material-symbols-outlined">location_on</span>
+              {{ property.location }}
+            </p>
+            <strong class="rent">{{ property.rent | number }} ETB / month</strong>
+            @if (!property.isVerified) {
+              @if (property.status === 'Archived') {
+                <p class="verification-note">Archived and hidden from tenants</p>
+              } @else {
+                <p class="verification-note">Waiting for admin verification</p>
+              }
+            }
+            @if (property.status !== 'Archived') {
+              <button
+                type="button"
+                class="archive-button"
+                [disabled]="archivingId() === property.id"
+                (click)="archiveProperty(property)"
+              >
+                <span class="material-symbols-outlined">archive</span>
+                {{ archivingId() === property.id ? 'Archiving...' : 'Archive listing' }}
+              </button>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

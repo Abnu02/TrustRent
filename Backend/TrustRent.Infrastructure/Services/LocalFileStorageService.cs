@@ -1,5 +1,6 @@
 using TrustRent.Application.Abstractions.Storage;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 
 
 namespace TrustRent.Infrastructure.Services;
@@ -7,6 +8,7 @@ namespace TrustRent.Infrastructure.Services;
 public class LocalFileStorageService : IFileStorageService
 {
     private readonly string _webRootPath;
+    private readonly string _legacyWebRootPath;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     private static readonly string[] AllowedExtensions =
@@ -21,10 +23,15 @@ public class LocalFileStorageService : IFileStorageService
         5 * 1024 * 1024;
 
     public LocalFileStorageService(
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IWebHostEnvironment hostingEnvironment)
     {
-        _webRootPath = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+        _webRootPath = hostingEnvironment.WebRootPath ??
+            Path.Combine(hostingEnvironment.ContentRootPath, "wwwroot");
+        _legacyWebRootPath = Path.Combine(AppContext.BaseDirectory, "wwwroot");
         _httpContextAccessor = httpContextAccessor;
+
+        MigrateLegacyPropertyImages();
     }
 
     public async Task<string> SavePropertyImageAsync(
@@ -101,5 +108,38 @@ public class LocalFileStorageService : IFileStorageService
             File.Delete(path);
 
         return Task.CompletedTask;
+    }
+
+    private void MigrateLegacyPropertyImages()
+    {
+        var legacyFolder = Path.Combine(
+            _legacyWebRootPath,
+            "uploads",
+            "properties");
+
+        if (!Directory.Exists(legacyFolder) ||
+            string.Equals(
+                Path.GetFullPath(legacyFolder),
+                Path.GetFullPath(Path.Combine(_webRootPath, "uploads", "properties")),
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        var destinationFolder = Path.Combine(
+            _webRootPath,
+            "uploads",
+            "properties");
+        Directory.CreateDirectory(destinationFolder);
+
+        foreach (var legacyFile in Directory.EnumerateFiles(legacyFolder))
+        {
+            var destinationFile = Path.Combine(
+                destinationFolder,
+                Path.GetFileName(legacyFile));
+
+            if (!File.Exists(destinationFile))
+                File.Copy(legacyFile, destinationFile);
+        }
     }
 }

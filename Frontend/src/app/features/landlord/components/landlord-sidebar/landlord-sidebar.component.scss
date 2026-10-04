@@ -2,249 +2,107 @@
    HOST
    ========================================= */
 
-:host {
-  display: block;
-
-  width: 245px;
-
-  transition: width 0.25s ease;
-}
-
-
-/* =========================================
-   SIDEBAR
-   ========================================= */
-
 .landlord-sidebar {
-  width: 245px;
-
-  height: calc(100vh - 72px);
-
   position: fixed;
-
   left: 0;
-  top: 72px;
-
+  top: 64px;
+  bottom: 0;
+  width: 240px;
   background: #ffffff;
-
   border-right: 1px solid #e5e7eb;
-
-  padding: 20px 14px;
-
   z-index: 900;
-
   box-sizing: border-box;
-
   overflow-y: auto;
-
-  transition:
-    width 0.25s ease,
-    transform 0.25s ease;
+  transition: width 0.25s ease;
+  overflow-x: hidden;
 }
 
-
-/* =========================================
-   SIDEBAR HEADER
-   ========================================= */
-
-.sidebar-header {
-  height: 48px;
-
+.sidebar-menu-button {
+  width: 44px;
+  height: 44px;
+  margin: 16px auto 18px;
   display: flex;
-
   align-items: center;
-
-  padding: 0 12px 18px;
-
-  box-sizing: border-box;
-}
-
-
-/* =========================================
-   MENU / SIDEBAR TOGGLE BUTTON
-   ========================================= */
-
-.sidebar-toggle {
-  width: 40px;
-  height: 40px;
-
-  border: none;
-
-  border-radius: 9px;
-
-  background: transparent;
-
-  color: #475569;
-
-  display: flex;
-
-  align-items: center;
-
   justify-content: center;
-
+  border: 1px solid #e1e7e4;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #33423b;
   cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
+  transition: background 0.2s ease;
 }
 
-
-.sidebar-toggle:hover {
-  background: #ecfdf5;
-
-  color: #0f766e;
+.sidebar-menu-button:hover {
+  background: #f0f5f2;
 }
 
-
-.sidebar-toggle:active {
-  transform: scale(0.96);
-}
-
-
-.sidebar-toggle .material-symbols-outlined {
+.sidebar-menu-button .material-symbols-outlined {
   font-size: 24px;
-
   line-height: 1;
 }
-
-
-/* =========================================
-   NAVIGATION
-   ========================================= */
 
 .sidebar-navigation {
   display: flex;
-
   flex-direction: column;
-
   gap: 5px;
+  padding: 0 12px;
 }
-
-
-/* =========================================
-   NAVIGATION LINK
-   ========================================= */
 
 .sidebar-link {
   display: flex;
-
   align-items: center;
-
   gap: 13px;
-
   min-height: 48px;
-
   padding: 0 14px;
-
   border-radius: 10px;
-
   text-decoration: none;
-
   color: #475569;
-
   font-size: 14px;
-
   font-weight: 600;
-
   white-space: nowrap;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 }
-
-
-/* Hover */
 
 .sidebar-link:hover {
   background: #f0fdfa;
-
   color: #0f766e;
 }
-
-
-/* Active */
 
 .sidebar-link.active {
   background: #ecfdf5;
-
   color: #0f766e;
 }
 
-
-/* Icons */
-
 .sidebar-link .material-symbols-outlined {
   font-size: 21px;
-
   line-height: 1;
-
   flex-shrink: 0;
 }
-
-
-/* Text */
 
 .link-text {
   transition: opacity 0.2s ease;
 }
 
-
-/* =========================================
-   COLLAPSED SIDEBAR
-   ========================================= */
-
-:host(.sidebar-collapsed) {
-  width: 0;
+.landlord-sidebar.collapsed {
+  width: 72px;
 }
 
-
-:host(.sidebar-collapsed) .landlord-sidebar {
-  width: 0;
-
-  padding-left: 0;
-  padding-right: 0;
-
-  border-right: none;
-
-  overflow: hidden;
+.landlord-sidebar.collapsed .sidebar-link {
+  justify-content: center;
+  padding: 0;
 }
 
+.landlord-sidebar.collapsed .link-text {
+  display: none;
+}
 
-/* =========================================
-   TABLET
-   ========================================= */
-
-@media (max-width: 900px) {
-
+@media (max-width: 768px) {
   .landlord-sidebar {
+    width: 240px;
     box-shadow: 4px 0 15px rgba(15, 23, 42, 0.08);
   }
 
-}
-
-
-/* =========================================
-   MOBILE
-   ========================================= */
-
-@media (max-width: 600px) {
-
-  .landlord-sidebar {
-    width: 245px;
-
-    height: calc(100vh - 64px);
-
-    top: 64px;
+  .landlord-sidebar.collapsed {
+    width: 72px;
   }
-
-  :host(.sidebar-collapsed) .landlord-sidebar {
-    width: 0;
-  }
-
-  .sidebar-header {
-    padding-top: 4px;
-  }
-
 }

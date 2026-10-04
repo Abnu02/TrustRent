@@ -1,0 +1,79 @@
+<header class="admin-navbar">
+
+  <!-- Brand -->
+  <a
+    class="brand"
+    routerLink="/admin/dashboard"
+  >
+    <div class="brand-mark">
+      <span class="material-symbols-outlined">
+        home
+      </span>
+    </div>
+
+    <span class="brand-name">
+      TrustRent
+    </span>
+  </a>
+
+  <!-- Account -->
+  <div class="account-wrapper">
+
+    <button
+      type="button"
+      class="account-button"
+      (click)="toggleAccount()"
+      aria-label="Admin account"
+    >
+      <span class="material-symbols-outlined">
+        account_circle
+      </span>
+
+      <span class="material-symbols-outlined arrow">
+        expand_more
+      </span>
+    </button>
+
+    @if (accountOpen()) {
+      <div class="account-menu">
+
+        <div class="account-info">
+
+          <div class="account-avatar">
+            <span class="material-symbols-outlined">
+              person
+            </span>
+          </div>
+
+          <div>
+            <strong>
+              {{ currentUser?.fullName || 'Admin' }}
+            </strong>
+
+            <span>
+              {{ currentUser?.email || '' }}
+            </span>
+          </div>
+
+        </div>
+
+        <div class="menu-divider"></div>
+
+        <button
+          type="button"
+          class="logout-button"
+          (click)="logout()"
+        >
+          <span class="material-symbols-outlined">
+            logout
+          </span>
+
+          Logout
+        </button>
+
+      </div>
+    }
+
+  </div>
+
+</header>

@@ -6,6 +6,27 @@ namespace TrustRent.Application.Services;
 
 public interface IAdminVerificationService
 {
+    Task<List<AdminLandlordResponse>> GetLandlordsAsync(
+        CancellationToken cancellationToken);
+
+    Task<AdminLandlordResponse?> GetLandlordAsync(
+        Guid landlordId,
+        CancellationToken cancellationToken);
+
+    Task<AdminLandlordResponse> CreateLandlordAsync(
+        CreateLandlordRequest request,
+        CancellationToken cancellationToken);
+
+    Task<AdminLandlordResponse> UpdateLandlordAsync(
+        Guid landlordId,
+        UpdateLandlordRequest request,
+        CancellationToken cancellationToken);
+
+    Task SetLandlordActiveAsync(
+        Guid landlordId,
+        bool isActive,
+        CancellationToken cancellationToken);
+
     Task<List<UserResponse>> GetPendingLandlordsAsync(
         CancellationToken cancellationToken);
 
@@ -19,6 +40,9 @@ public interface IAdminVerificationService
         CancellationToken cancellationToken);
 
     Task<List<PropertyListResponse>> GetPendingPropertiesAsync(
+        CancellationToken cancellationToken);
+
+    Task<List<AdminPropertyResponse>> GetAllPropertiesAsync(
         CancellationToken cancellationToken);
 
     Task<VerificationResponse> ApprovePropertyAsync(

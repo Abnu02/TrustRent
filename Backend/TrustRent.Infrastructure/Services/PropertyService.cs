@@ -119,6 +119,32 @@ public class PropertyService : Application.Services.IPropertyService
             cancellationToken);
     }
 
+    public async Task ArchiveAsync(
+        Guid landlordId,
+        Guid propertyId,
+        CancellationToken cancellationToken)
+    {
+        var property =
+            await _repository.GetByIdAsync(
+                propertyId,
+                cancellationToken);
+
+        if (property is null)
+            throw new KeyNotFoundException(
+                "Property was not found.");
+
+        if (property.LandlordId != landlordId)
+            throw new UnauthorizedAccessException(
+                "You can only archive your own properties.");
+
+        if (property.Status == PropertyStatus.Archived)
+            return;
+
+        property.Archive();
+        _repository.Update(property);
+        await _repository.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<List<PropertyListResponse>> GetPublicAsync(
         string? location,
         decimal? minRent,
@@ -277,7 +303,10 @@ public class PropertyService : Application.Services.IPropertyService
             Title = property.Title,
             PropertyType = property.PropertyType,
             Rent = property.Rent,
+            Deposit = property.Deposit,
             Location = property.Location,
+            Bedrooms = property.Bedrooms,
+            Bathrooms = property.Bathrooms,
             Status = property.Status,
             IsVerified = property.IsVerified,
             ImageUrl = property.ImageUrl

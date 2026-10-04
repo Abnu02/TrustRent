@@ -29,7 +29,7 @@ POST /api/v1/auth/register
   "password": "Password123!",
   "role": "Landlord"
 }
-```
+```tt
 
 **Allowed Roles**
 
@@ -367,9 +367,78 @@ Authorization: Bearer <admin_access_token>
 
 ---
 
-## 5.1 Get Pending Landlords
+## 5.1 Landlord Account Management
 
-**Endpoint**
+The administration page uses `GET /api/v1/admin/landlords` to list all landlord accounts.
+The legacy pending-only endpoint remains available.
+
+## 5.1.1 List All Landlords
+
+```http
+GET /api/v1/admin/landlords
+```
+
+Each result includes `isVerified` and `isActive` so administrators can manage
+approval and account access independently.
+
+## 5.1.2 Get Landlord
+
+```http
+GET /api/v1/admin/landlords/{id}
+```
+
+## 5.1.3 Create Landlord
+
+```http
+POST /api/v1/admin/landlords
+Content-Type: application/json
+```
+
+```json
+{
+  "fullName": "Abreham Bekele",
+  "email": "abreham@example.com",
+  "phoneNumber": "0912345678",
+  "password": "StrongPassword1!"
+}
+```
+
+Newly created landlords start unverified and active.
+
+## 5.1.4 Update Landlord
+
+```http
+PUT /api/v1/admin/landlords/{id}
+Content-Type: application/json
+```
+
+```json
+{
+  "fullName": "Abreham Bekele",
+  "email": "abreham@example.com",
+  "phoneNumber": "0912345678"
+}
+```
+
+## 5.1.5 Deactivate or Reactivate Landlord
+
+`DELETE` deactivates the account rather than deleting its database record, preserving
+the landlord's properties. Reactivation uses the `active` endpoint.
+
+```http
+DELETE /api/v1/admin/landlords/{id}
+PUT /api/v1/admin/landlords/{id}/active
+Content-Type: application/json
+```
+
+```json
+{ "isActive": true }
+```
+
+Deactivation returns `204 No Content`. A landlord can also be approved or have
+approval revoked using the verification endpoints below.
+
+### List Pending Landlords (legacy)
 
 ```http
 GET /api/v1/admin/landlords/pending
@@ -384,8 +453,7 @@ GET /api/v1/admin/landlords/pending
     "fullName": "Abreham Bekele",
     "email": "abreham@example.com",
     "phoneNumber": "0912345678",
-    "isVerified": false,
-    "verificationStatus": "Pending"
+    "isVerified": false
   }
 ]
 ```
@@ -448,7 +516,20 @@ PUT /api/v1/admin/landlords/{id}/reject
 
 # 6. Admin — Property Verification
 
-## 6.1 Get Pending Properties
+## 6.1 List All Properties
+
+**Endpoint**
+
+```http
+GET /api/v1/admin/properties
+```
+
+Returns all properties, regardless of `Draft`, `Pending`, `Approved`, or
+`Rejected` status, including property details and landlord information. This is
+the endpoint used by the admin property-management page; the details dialog uses
+the returned property data so unapproved listings remain reviewable.
+
+## 6.2 Get Pending Properties (legacy)
 
 **Endpoint**
 
@@ -477,7 +558,7 @@ GET /api/v1/admin/properties/pending
 
 ---
 
-## 6.2 Approve Property
+## 6.3 Approve Property
 
 **Endpoint**
 
@@ -504,7 +585,7 @@ PUT /api/v1/admin/properties/{id}/approve
 
 ---
 
-## 6.3 Reject Property
+## 6.4 Reject Property
 
 **Endpoint**
 
@@ -545,14 +626,21 @@ PUT /api/v1/admin/properties/{id}/reject
 | 6 | `PUT` | `/api/v1/properties/{id}` | Landlord |
 | 7 | `GET` | `/api/v1/properties` | Public/Tenant |
 | 8 | `GET` | `/api/v1/properties/{id}` | Public/Tenant |
-| 9 | `GET` | `/api/v1/admin/landlords/pending` | Admin |
-| 10 | `PUT` | `/api/v1/admin/landlords/{id}/verify` | Admin |
-| 11 | `PUT` | `/api/v1/admin/landlords/{id}/reject` | Admin |
-| 12 | `GET` | `/api/v1/admin/properties/pending` | Admin |
-| 13 | `PUT` | `/api/v1/admin/properties/{id}/approve` | Admin |
-| 14 | `PUT` | `/api/v1/admin/properties/{id}/reject` | Admin |
+| 9 | `GET` | `/api/v1/admin/landlords` | Admin |
+| 10 | `GET` | `/api/v1/admin/landlords/{id}` | Admin |
+| 11 | `POST` | `/api/v1/admin/landlords` | Admin |
+| 12 | `PUT` | `/api/v1/admin/landlords/{id}` | Admin |
+| 13 | `DELETE` | `/api/v1/admin/landlords/{id}` (deactivate) | Admin |
+| 14 | `PUT` | `/api/v1/admin/landlords/{id}/active` | Admin |
+| 15 | `GET` | `/api/v1/admin/landlords/pending` | Admin |
+| 16 | `PUT` | `/api/v1/admin/landlords/{id}/verify` | Admin |
+| 17 | `PUT` | `/api/v1/admin/landlords/{id}/reject` | Admin |
+| 18 | `GET` | `/api/v1/admin/properties` | Admin |
+| 19 | `GET` | `/api/v1/admin/properties/pending` (legacy) | Admin |
+| 20 | `PUT` | `/api/v1/admin/properties/{id}/approve` | Admin |
+| 21 | `PUT` | `/api/v1/admin/properties/{id}/reject` | Admin |
 
-**Total: 14 endpoints**
+**Total: 21 endpoints**
 
 ---
 

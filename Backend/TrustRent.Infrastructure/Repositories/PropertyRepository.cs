@@ -46,6 +46,15 @@ public class PropertyRepository : IPropertyRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<List<Property>> GetAllAsync(
+        CancellationToken cancellationToken)
+    {
+        return await _db.Properties
+            .AsNoTracking()
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<List<Property>> GetPublicAsync(
         string? location,
         decimal? minRent,

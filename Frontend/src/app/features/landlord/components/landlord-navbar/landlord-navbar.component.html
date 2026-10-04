@@ -47,8 +47,8 @@
             </div>
 
             <div>
-              <strong>Landlord Account</strong>
-              <span>Property Owner</span>
+              <strong>{{ currentUser?.fullName || 'Landlord Account' }}</strong>
+              <span>{{ currentUser?.email || 'Property Owner' }}</span>
             </div>
 
           </div>

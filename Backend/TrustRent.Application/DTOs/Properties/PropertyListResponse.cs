@@ -12,7 +12,13 @@ public sealed class PropertyListResponse
 
     public decimal Rent { get; init; }
 
+    public decimal Deposit { get; init; }
+
     public string Location { get; init; } = string.Empty;
+
+    public int Bedrooms { get; init; }
+
+    public int Bathrooms { get; init; }
 
     public PropertyStatus Status { get; init; }
 

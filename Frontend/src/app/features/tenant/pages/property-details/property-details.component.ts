@@ -6,11 +6,12 @@ import {
   signal
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { DecimalPipe } from '@angular/common';
 
 import { PropertyDetails } from '../../../../core/models/property.model';
-import { PropertiesStore } from '../../store/properties.store';
 import { TenantNavbarComponent } from '../../components/tenant-navbar/tenant-navbar.component';
+import { TenantPropertyService } from '../../services/tenant-property.service';
 
 @Component({
   selector: 'app-property-details',
@@ -27,9 +28,11 @@ export class PropertyDetailsComponent implements OnInit {
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly store = inject(PropertiesStore);
+  private readonly propertyService = inject(TenantPropertyService);
 
   readonly property = signal<PropertyDetails | null>(null);
+  readonly loading = signal(true);
+  readonly errorMessage = signal('');
 
   ngOnInit(): void {
 
@@ -41,36 +44,38 @@ export class PropertyDetailsComponent implements OnInit {
       return;
     }
 
-    const property =
-      this.store.getPropertyById(id);
-
-    if (!property) {
-      this.router.navigate(['/tenant']);
-      return;
-    }
-
-    this.property.set({
-      ...property,
-
-      description:
-        `Clean and spacious ${property.propertyType.toLowerCase()} located in ${property.location}. Perfect for comfortable modern living with convenient access to nearby services.`,
-
-      status: 'Approved',
-
-      verifiedAt:
-        '2026-10-01T09:15:00Z',
-
-      landlord: {
-        id: 'landlord-001',
-        fullName: 'Abreham Bekele',
-        phoneNumber: '0912345678',
-        email: 'abreham@example.com',
-        isVerified: true
+    this.loading.set(true);
+    this.propertyService.getVerifiedProperty(id).subscribe({
+      next: property => {
+        this.property.set(property);
+        this.loading.set(false);
+      },
+      error: error => {
+        this.errorMessage.set(this.getErrorMessage(error));
+        this.loading.set(false);
       }
     });
   }
 
   goBack(): void {
     this.router.navigate(['/tenant']);
+  }
+
+  private getErrorMessage(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      if (error.status === 0) {
+        return 'Unable to connect to the property service. Check that the backend is running.';
+      }
+      if (error.status === 404) {
+        return 'This property is no longer available or has not been verified.';
+      }
+      if (error.status === 401 || error.status === 403) {
+        return 'Your session is no longer valid. Please sign in again.';
+      }
+      return error.error?.message ??
+        `Unable to load property details (HTTP ${error.status}).`;
+    }
+
+    return 'Unable to load property details.';
   }
 }

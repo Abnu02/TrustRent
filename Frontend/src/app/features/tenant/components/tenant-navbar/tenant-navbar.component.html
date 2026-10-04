@@ -24,11 +24,11 @@
       <span class="status-dot"></span>
 
       <span class="verified-text">
-        Verified Tenant
+        {{ user?.isVerified ? 'Verified Tenant' : 'Tenant' }}
       </span>
 
       <span class="avatar">
-        {{ user.fullName.charAt(0) }}
+        {{ user?.fullName?.charAt(0) || 'T' }}
       </span>
 
     </button>
@@ -41,16 +41,16 @@
         <div class="profile-header">
 
           <div class="large-avatar">
-            {{ user.fullName.charAt(0) }}
+            {{ user?.fullName?.charAt(0) || 'T' }}
           </div>
 
           <div>
             <strong>
-              {{ user.fullName }}
+              {{ user?.fullName || 'Tenant Account' }}
             </strong>
 
             <span>
-              {{ user.email }}
+              {{ user?.email }}
             </span>
           </div>
 
@@ -61,13 +61,13 @@
 
           <div>
             <span>Role</span>
-            <strong>{{ user.role }}</strong>
+            <strong>{{ user?.role || 'Tenant' }}</strong>
           </div>
 
           <div>
             <span>Verification</span>
-            <strong class="verified">
-              ✓ Verified
+            <strong [class.verified]="user?.isVerified">
+              {{ user?.isVerified ? '✓ Verified' : 'Pending' }}
             </strong>
           </div>
 

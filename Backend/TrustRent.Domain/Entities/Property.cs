@@ -115,4 +115,12 @@ public class Property
         VerifiedAt = null;
         VerifiedBy = null;
     }
+
+    public void Archive()
+    {
+        Status = PropertyStatus.Archived;
+        IsVerified = false;
+        VerifiedAt = null;
+        VerifiedBy = null;
+    }
 }

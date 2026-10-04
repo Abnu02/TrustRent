@@ -1,4 +1,14 @@
-<aside class="landlord-sidebar">
+<aside class="landlord-sidebar" [class.collapsed]="collapsed">
+
+  <button
+    type="button"
+    class="sidebar-menu-button"
+    (click)="onToggle()"
+    aria-label="Toggle sidebar"
+    title="Toggle sidebar"
+  >
+    <span class="material-symbols-outlined">menu</span>
+  </button>
 
   <nav
     class="sidebar-navigation"

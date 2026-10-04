@@ -16,6 +16,9 @@ public interface IPropertyRepository
     Task<List<Property>> GetPendingAsync(
         CancellationToken cancellationToken);
 
+    Task<List<Property>> GetAllAsync(
+        CancellationToken cancellationToken);
+
     Task<List<Property>> GetPublicAsync(
         string? location,
         decimal? minRent,

@@ -4,77 +4,7 @@
 
 .landlord-shell {
   min-height: 100vh;
-  background: #f8fafc;
-}
-
-
-/* =========================================
-   SIDEBAR TOGGLE
-   ========================================= */
-
-.sidebar-toggle {
-  position: fixed;
-
-  top: 88px;
-  left: 258px;
-
-  width: 40px;
-  height: 40px;
-
-  border: none;
-  border-radius: 9px;
-
-  background: #ffffff;
-  color: #475569;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-
-  z-index: 1001;
-
-  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.08);
-
-  transition:
-    left 0.25s ease,
-    background 0.2s ease,
-    color 0.2s ease;
-}
-
-
-/*
-  Sidebar OPEN
-
-  Button stays in the same position
-  where the old MENU text was.
-*/
-.sidebar-toggle:hover {
-  background: #ecfdf5;
-  color: #0f766e;
-}
-
-
-.sidebar-toggle:active {
-  transform: scale(0.96);
-}
-
-
-.sidebar-toggle .material-symbols-outlined {
-  font-size: 24px;
-  line-height: 1;
-}
-
-
-/*
-  Sidebar CLOSED
-
-  Move the button to the left side so
-  it remains visible after sidebar closes.
-*/
-.sidebar-toggle.sidebar-collapsed {
-  left: 16px;
+  background: #f6f8f7;
 }
 
 
@@ -83,14 +13,10 @@
    ========================================= */
 
 .landlord-content {
-  margin-left: 245px;
-
-  min-height: calc(100vh - 72px);
-
-  padding: 30px;
-
+  min-height: 100vh;
+  margin-left: 240px;
+  padding: 88px 32px 32px;
   box-sizing: border-box;
-
   transition: margin-left 0.25s ease;
 }
 
@@ -99,7 +25,7 @@
   Sidebar closed
 */
 .landlord-content.sidebar-collapsed {
-  margin-left: 0;
+  margin-left: 72px;
 }
 
 
@@ -107,26 +33,16 @@
    TABLET
    ========================================= */
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
 
   .landlord-content {
-    margin-left: 0;
-
-    padding: 22px 16px 80px;
+    margin-left: 72px;
+    padding: 84px 18px 24px;
   }
 
-  .sidebar-toggle {
-    left: 16px;
+  .landlord-content.sidebar-collapsed {
+    margin-left: 72px;
   }
-
-  /*
-    When sidebar is open, put the button
-    just outside the sidebar.
-  */
-  .sidebar-toggle:not(.sidebar-collapsed) {
-    left: 258px;
-  }
-
 }
 
 
@@ -136,21 +52,8 @@
 
 @media (max-width: 600px) {
 
-  .sidebar-toggle {
-    top: 80px;
-
-    left: 16px;
-
-    width: 42px;
-    height: 42px;
-  }
-
-  .sidebar-toggle:not(.sidebar-collapsed) {
-    left: 258px;
-  }
-
   .landlord-content {
-    padding: 20px 14px 70px;
+    padding: 84px 14px 24px;
   }
 
 }

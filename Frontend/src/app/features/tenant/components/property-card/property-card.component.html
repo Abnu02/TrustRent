@@ -2,11 +2,17 @@
 
   <div class="image-container">
 
-    <img
-      [src]="property.imageUrl"
-      [alt]="property.title"
-      loading="lazy"
-    />
+    @if (property.imageUrl) {
+      <img
+        [src]="property.imageUrl"
+        [alt]="property.title"
+        loading="lazy"
+      />
+    } @else {
+      <div class="image-placeholder" aria-label="No property image">
+        <span>TrustRent</span>
+      </div>
+    }
 
     <div class="verified-badge">
       <span>✓</span>

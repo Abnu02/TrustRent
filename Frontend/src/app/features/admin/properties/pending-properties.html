@@ -1,0 +1,421 @@
+<section class="verification-page">
+
+  <div class="page-header">
+
+    <div>
+      <p class="eyebrow">Administration</p>
+
+      <h1>Properties</h1>
+
+      <p class="subtitle">
+        Review every property listing and manage its approval status.
+      </p>
+    </div>
+
+    <div class="pending-count">
+      {{ properties.length }} Total · {{ pendingCount }} Pending
+    </div>
+
+  </div>
+
+
+  @if (successMessage) {
+    <div class="alert success">
+      {{ successMessage }}
+    </div>
+  }
+
+
+  @if (errorMessage) {
+    <div class="alert error">
+      {{ errorMessage }}
+    </div>
+  }
+
+
+  @if (loading) {
+
+    <div class="state-card">
+
+      <span class="material-symbols-outlined loading-icon">
+        progress_activity
+      </span>
+
+      <p>Loading all properties...</p>
+
+    </div>
+
+  } @else if (properties.length === 0) {
+
+    <div class="state-card">
+
+      <span class="material-symbols-outlined empty-icon">
+        apartment
+      </span>
+
+      <h2>No properties found</h2>
+
+      <p>
+        Properties submitted by landlords will appear here.
+      </p>
+
+    </div>
+
+  } @else {
+
+    <div class="table-card">
+
+      <div class="table-wrapper">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Location</th>
+              <th>Rent</th>
+              <th>Landlord</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            @for (property of properties; track property.id) {
+
+              <tr>
+
+                <td>
+                  <strong class="property-title">
+                    {{ property.title }}
+                  </strong>
+                </td>
+
+                <td>
+                  {{ property.location }}
+                </td>
+
+                <td>
+                  {{ property.rent | number }} ETB
+                </td>
+
+                <td>
+                  <div class="landlord-cell">
+
+                    <strong>
+                      {{ property.landlord.fullName }}
+                    </strong>
+
+                    @if (property.landlord.isVerified) {
+                      <span class="verified-small">
+                        <span class="material-symbols-outlined">
+                          verified
+                        </span>
+                        Verified
+                      </span>
+                    }
+
+                  </div>
+                </td>
+
+                <td>
+                  <span class="status" [ngClass]="statusClass(property.status)">
+                    {{ property.status }}
+                  </span>
+                </td>
+
+                <td>
+
+                  <div class="actions">
+
+                    <button
+                      type="button"
+                      class="details-button"
+                      (click)="viewDetails(property)"
+                    >
+                      <span class="material-symbols-outlined">
+                        visibility
+                      </span>
+
+                      Details
+                    </button>
+
+                    @if (property.status === 'Pending') {
+                      <button
+                        type="button"
+                        class="approve-button"
+                        [disabled]="processingId === property.id || !property.landlord.isVerified"
+                        [title]="property.landlord.isVerified ? 'Approve property' : 'Approve the landlord account first'"
+                        (click)="approve(property)"
+                      >
+                        <span class="material-symbols-outlined">check</span>
+                        Approve
+                      </button>
+
+                      <button
+                        type="button"
+                        class="reject-button"
+                        [disabled]="processingId === property.id"
+                        (click)="openReject(property)"
+                      >
+                        Reject
+                      </button>
+                    }
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  }
+
+
+  <!-- PROPERTY DETAILS -->
+
+  @if (showDetails && selectedProperty) {
+
+    <div
+      class="dialog-backdrop"
+      (click)="closeDetails()"
+    >
+
+      <div
+        class="details-dialog"
+        (click)="$event.stopPropagation()"
+      >
+
+        <div class="details-header">
+
+          <div>
+            <p class="eyebrow">
+              Property Details
+            </p>
+
+            <h2>
+              {{ selectedProperty.title }}
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            class="close-button"
+            (click)="closeDetails()"
+          >
+            <span class="material-symbols-outlined">
+              close
+            </span>
+          </button>
+
+        </div>
+
+        @if (errorMessage) {
+          <div class="alert error" role="alert">{{ errorMessage }}</div>
+        }
+
+        @if (selectedProperty.imageUrl) {
+          <img
+            class="details-image"
+            [src]="selectedProperty.imageUrl"
+            [alt]="selectedProperty.title"
+          />
+        }
+
+        <div class="details-grid">
+
+          <div>
+            <span>Status</span>
+            <strong>{{ selectedProperty.status }}</strong>
+          </div>
+
+          <div>
+            <span>Submitted</span>
+            <strong>{{ selectedProperty.createdAt | date:'medium' }}</strong>
+          </div>
+
+          <div>
+            <span>Property Type</span>
+            <strong>
+              {{ selectedProperty.propertyType }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Location</span>
+            <strong>
+              {{ selectedProperty.location }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Rent</span>
+            <strong>
+              {{ selectedProperty.rent | number }} ETB
+            </strong>
+          </div>
+
+          <div>
+            <span>Deposit</span>
+            <strong>
+              {{ selectedProperty.deposit | number }} ETB
+            </strong>
+          </div>
+
+          <div>
+            <span>Bedrooms</span>
+            <strong>
+              {{ selectedProperty.bedrooms }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Bathrooms</span>
+            <strong>
+              {{ selectedProperty.bathrooms }}
+            </strong>
+          </div>
+
+        </div>
+
+
+        <div class="description">
+
+          <span>Description</span>
+
+          <p>
+            {{ selectedProperty.description }}
+          </p>
+
+        </div>
+
+
+        <div class="landlord-details">
+
+          <h3>Landlord</h3>
+
+          <p>
+            <strong>
+              {{ selectedProperty.landlord.fullName }}
+            </strong>
+          </p>
+
+          <p>
+            {{ selectedProperty.landlord.phoneNumber }}
+          </p>
+
+          <p>
+            {{ selectedProperty.landlord.email }}
+          </p>
+
+          <span
+            class="verified-badge"
+            [class.unverified-badge]="!selectedProperty.landlord.isVerified"
+          >
+            <span class="material-symbols-outlined">
+              {{ selectedProperty.landlord.isVerified ? 'verified' : 'info' }}
+            </span>
+
+            {{ selectedProperty.landlord.isVerified ? 'Verified Landlord' : 'Unverified Landlord' }}
+          </span>
+
+        </div>
+
+        @if (selectedProperty.status === 'Pending') {
+          <div class="details-actions">
+            <button
+              type="button"
+              class="approve-button"
+              [disabled]="processingId === selectedProperty.id || !selectedProperty.landlord.isVerified"
+              [title]="selectedProperty.landlord.isVerified ? 'Approve property' : 'Approve the landlord account first'"
+              (click)="approve(selectedProperty)"
+            >
+              Approve property
+            </button>
+            <button
+              type="button"
+              class="reject-button"
+              [disabled]="processingId === selectedProperty.id"
+              (click)="closeDetails(); openReject(selectedProperty)"
+            >
+              Reject property
+            </button>
+          </div>
+        }
+        @if (selectedProperty.status === 'Pending' && !selectedProperty.landlord.isVerified) {
+          <p class="approval-note">
+            Approve this landlord's account before approving their property.
+          </p>
+        }
+
+      </div>
+
+    </div>
+
+  }
+
+
+  <!-- REJECT PROPERTY -->
+
+  @if (showRejectDialog) {
+
+    <div
+      class="dialog-backdrop"
+      (click)="closeReject()"
+    >
+
+      <div
+        class="dialog"
+        (click)="$event.stopPropagation()"
+      >
+
+        <h2>Reject property</h2>
+
+        <p>
+          Please provide a reason for rejecting this property.
+        </p>
+
+        <textarea
+          [(ngModel)]="rejectionReason"
+          rows="4"
+          placeholder="Enter rejection reason..."
+        ></textarea>
+
+        <div class="dialog-actions">
+
+          <button
+            type="button"
+            class="cancel-button"
+            (click)="closeReject()"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="reject-confirm-button"
+            [disabled]="!rejectionReason.trim()"
+            (click)="reject()"
+          >
+            Reject Property
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+</section>

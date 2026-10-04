@@ -1,6 +1,22 @@
 <app-tenant-navbar />
 
-@if (property(); as property) {
+@if (loading()) {
+
+  <main class="details-page details-state" role="status">
+    <p>Loading property details...</p>
+  </main>
+
+} @else if (errorMessage()) {
+
+  <main class="details-page details-state" role="alert">
+    <h2>Property unavailable</h2>
+    <p>{{ errorMessage() }}</p>
+    <button type="button" class="back-button" (click)="goBack()">
+      Back to properties
+    </button>
+  </main>
+
+} @else if (property(); as property) {
 
   <main class="details-page">
 
@@ -18,10 +34,16 @@
 
       <div class="hero-image">
 
-        <img
-          [src]="property.imageUrl"
-          [alt]="property.title"
-        />
+        @if (property.imageUrl) {
+          <img
+            [src]="property.imageUrl"
+            [alt]="property.title"
+          />
+        } @else {
+          <div class="image-placeholder" aria-label="No property image">
+            TrustRent
+          </div>
+        }
 
         <div class="verified-badge">
           ✓ Platform Verified

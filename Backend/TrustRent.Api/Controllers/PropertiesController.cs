@@ -71,6 +71,36 @@ public class PropertiesController : ControllerBase
         });
     }
 
+    [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Landlord")]
+    public async Task<IActionResult> Archive(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var landlordId = GetCurrentUserId();
+
+        try
+        {
+            await _propertyService.ArchiveAsync(
+                landlordId,
+                id,
+                cancellationToken);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new
+            {
+                message = "Property was not found."
+            });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Forbid();
+        }
+
+        return NoContent();
+    }
+
     [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> GetPublic(

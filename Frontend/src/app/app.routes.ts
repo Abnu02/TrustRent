@@ -52,17 +52,17 @@ export const routes: Routes = [
         .then(m => m.LANDLORD_ROUTES)
   },
 
-  // // Admin
-  // {
-  //   path: 'admin',
-  //   canActivate: [
-  //     authGuard,
-  //     roleGuard(['Admin'])
-  //   ],
-  //   loadChildren: () =>
-  //     import('./features/admin/admin.routes')
-  //       .then(m => m.ADMIN_ROUTES)
-  // },
+  // Admin
+  {
+    path: 'admin',
+    canActivate: [
+      authGuard,
+      roleGuard(['Admin'])
+    ],
+    loadChildren: () =>
+      import('./features/admin/admin.routes')
+        .then(m => m.ADMIN_ROUTES)
+  },
 
   // Unknown route
   {

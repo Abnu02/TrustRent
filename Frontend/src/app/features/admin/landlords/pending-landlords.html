@@ -1,0 +1,204 @@
+<section class="verification-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Administration</p>
+      <h1>Landlord accounts</h1>
+      <p class="subtitle">
+        Manage landlord details, account access, and verification.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <div class="pending-count">{{ pendingCount }} awaiting approval</div>
+      <button class="add-button" type="button" (click)="openCreate()">
+        <span class="material-symbols-outlined">person_add</span>
+        Add landlord
+      </button>
+    </div>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert success" role="status">{{ successMessage }}</div>
+  }
+
+  @if (errorMessage) {
+    <div class="alert error" role="alert">{{ errorMessage }}</div>
+  }
+
+  @if (loading) {
+    <div class="state-card">
+      <span class="material-symbols-outlined loading-icon">progress_activity</span>
+      <p>Loading landlord accounts...</p>
+    </div>
+  } @else if (landlords.length === 0) {
+    <div class="state-card">
+      <span class="material-symbols-outlined empty-icon">groups</span>
+      <h2>No landlord accounts yet</h2>
+      <p>Landlords who register or are added by an admin will appear here.</p>
+    </div>
+  } @else {
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Landlord</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Verification</th>
+              <th>Account</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (landlord of landlords; track landlord.id) {
+              <tr>
+                <td>
+                  <div class="person-cell">
+                    <div class="avatar">
+                      {{ landlord.fullName.charAt(0).toUpperCase() }}
+                    </div>
+                    <strong>{{ landlord.fullName }}</strong>
+                  </div>
+                </td>
+                <td>{{ landlord.email }}</td>
+                <td>{{ landlord.phoneNumber || '-' }}</td>
+                <td>
+                  <span
+                    class="status"
+                    [class.approved]="landlord.isVerified"
+                    [class.pending]="!landlord.isVerified"
+                  >
+                    {{ landlord.isVerified ? 'Approved' : 'Pending' }}
+                  </span>
+                </td>
+                <td>
+                  <span
+                    class="status"
+                    [class.active]="landlord.isActive"
+                    [class.inactive]="!landlord.isActive"
+                  >
+                    {{ landlord.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="actions">
+                    <button
+                      class="edit-button"
+                      type="button"
+                      [disabled]="processingId === landlord.id"
+                      (click)="openEdit(landlord)"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      [class.verify-button]="!landlord.isVerified"
+                      [class.reject-button]="landlord.isVerified"
+                      type="button"
+                      [disabled]="processingId === landlord.id"
+                      (click)="setVerification(landlord)"
+                    >
+                      {{ landlord.isVerified ? 'Revoke approval' : 'Approve' }}
+                    </button>
+
+                    <button
+                      [class.deactivate-button]="landlord.isActive"
+                      [class.activate-button]="!landlord.isActive"
+                      type="button"
+                      [disabled]="processingId === landlord.id"
+                      (click)="toggleActive(landlord)"
+                    >
+                      {{ landlord.isActive ? 'Deactivate' : 'Reactivate' }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  @if (editorMode) {
+    <div class="dialog-backdrop" (click)="closeEditor()">
+      <div
+        class="dialog editor-dialog"
+        role="dialog"
+        aria-modal="true"
+        [attr.aria-labelledby]="'landlord-editor-title'"
+        (click)="$event.stopPropagation()"
+      >
+        <h2 id="landlord-editor-title">
+          {{ editorMode === 'create' ? 'Add landlord' : 'Edit landlord' }}
+        </h2>
+        <p>
+          {{
+            editorMode === 'create'
+              ? 'Create a landlord account. It will need approval before verification is complete.'
+              : "Update this landlord's contact and account details."
+          }}
+        </p>
+
+        @if (errorMessage) {
+          <div class="alert error" role="alert">{{ errorMessage }}</div>
+        }
+
+        <label for="landlord-name">Full name</label>
+        <input
+          id="landlord-name"
+          type="text"
+          [(ngModel)]="formFullName"
+          autocomplete="name"
+        />
+
+        <label for="landlord-email">Email</label>
+        <input
+          id="landlord-email"
+          type="email"
+          [(ngModel)]="formEmail"
+          autocomplete="email"
+        />
+
+        <label for="landlord-phone">Phone number</label>
+        <input
+          id="landlord-phone"
+          type="tel"
+          [(ngModel)]="formPhoneNumber"
+          autocomplete="tel"
+        />
+
+        @if (editorMode === 'create') {
+          <label for="landlord-password">Initial password</label>
+          <input
+            id="landlord-password"
+            type="password"
+            [(ngModel)]="formPassword"
+            required
+            autocomplete="new-password"
+          />
+        }
+
+        <div class="dialog-actions">
+          <button
+            class="cancel-button"
+            type="button"
+            [disabled]="saving"
+            (click)="closeEditor()"
+          >
+            Cancel
+          </button>
+          <button
+            class="save-button"
+            type="button"
+            [disabled]="saving"
+            (click)="saveLandlord()"
+          >
+            {{ saving ? 'Saving...' : 'Save account' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</section>

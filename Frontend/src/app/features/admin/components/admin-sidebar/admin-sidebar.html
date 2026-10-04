@@ -1,0 +1,72 @@
+<aside
+  class="admin-sidebar"
+  [class.collapsed]="collapsed"
+>
+
+  <!-- Menu -->
+  <button
+    type="button"
+    class="sidebar-menu-button"
+    (click)="onToggle()"
+    aria-label="Toggle sidebar"
+    title="Toggle sidebar"
+  >
+    <span class="material-symbols-outlined">
+      menu
+    </span>
+  </button>
+
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+
+    <!-- Dashboard -->
+    <a
+      routerLink="/admin/dashboard"
+      routerLinkActive="active"
+      class="nav-item"
+    >
+      <span class="material-symbols-outlined nav-icon">
+        dashboard
+      </span>
+
+      <span class="nav-label">
+        Dashboard
+      </span>
+    </a>
+
+
+    <!-- Landlords -->
+    <a
+      routerLink="/admin/landlords"
+      routerLinkActive="active"
+      class="nav-item"
+    >
+      <span class="material-symbols-outlined nav-icon">
+        manage_accounts
+      </span>
+
+      <span class="nav-label">
+        Landlords
+      </span>
+    </a>
+
+
+    <!-- Properties -->
+    <a
+      routerLink="/admin/properties"
+      routerLinkActive="active"
+      class="nav-item"
+    >
+      <span class="material-symbols-outlined nav-icon">
+        apartment
+      </span>
+
+      <span class="nav-label">
+        Properties
+      </span>
+    </a>
+
+  </nav>
+
+</aside>

@@ -65,10 +65,7 @@ export class AuthService {
   }
 
   logout(): void {
-    this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
-      next: () => this.clearSession(),
-      error: () => this.clearSession()
-    });
+    this.clearSession();
   }
 
   clearSession(): void {
