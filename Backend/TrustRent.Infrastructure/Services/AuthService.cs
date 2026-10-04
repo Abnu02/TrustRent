@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using TrustRent.Application.Auth;
 using TrustRent.Application.Auth.DTOs;
 using TrustRent.Application.Interfaces;
 using TrustRent.Infrastructure.Identity;
@@ -56,7 +57,7 @@ public class AuthService : IAuthService
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
         {
-            throw new Exception("Invalid email or password.");
+            throw new InvalidCredentialsException();
         }
 
         var roles = await _userManager.GetRolesAsync(user);

@@ -19,4 +19,7 @@ td:first-child { display: flex; align-items: center; gap: .55rem; }
 .event--flagged { background: #fff0ef; color: #ad4139; }
 .strong { color: #1a2b44; font-weight: 600; }
 .reference { color: #53627a; font-family: ui-monospace, monospace; font-size: .68rem; }
+.actor-email { display: block; margin-top: .2rem; color: #8994a5; font-size: .65rem; }
+.feedback { margin: 0 0 1rem; padding: .75rem 1rem; border-radius: .55rem; font-size: .78rem; }
+.feedback--error { background: #fff0ef; color: #ad4139; }
 @media (max-width: 650px) { .page-heading, .panel__heading { align-items: flex-start; flex-direction: column; } }

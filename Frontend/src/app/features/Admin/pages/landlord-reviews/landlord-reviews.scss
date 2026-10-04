@@ -19,17 +19,22 @@ td { padding: .85rem 1rem; border-top: 1px solid #eff1f5; color: #667287; font-s
 .person strong { color: #1a2b44; font-size: .75rem; }
 .person small { color: #8994a5; font-size: .65rem; }
 .avatar { display: grid; width: 2rem; height: 2rem; place-items: center; border-radius: 50%; background: #e5edfa; color: #31547f; font-size: .68rem; font-weight: 700; }
-.check-cell { color: #188154; font-weight: 600; }
-.check-cell--warning, .text-bad { color: #b1443b; }
-.text-good { color: #188154; font-weight: 600; }
 .state { padding: .25rem .5rem; border-radius: 999px; background: #fff3d9; color: #966617; font-size: .66rem; }
 .state--verified { background: #e5f6ec; color: #18764f; }
 .state--rejected { background: #fff0ef; color: #ad4139; }
 .actions { display: flex; align-items: center; gap: .4rem; }
+.reject-form { display: flex; align-items: center; gap: .35rem; }
+.reject-form input { width: 10rem; padding: .4rem; border: 1px solid #e5e9f0; border-radius: .4rem; font: inherit; font-size: .68rem; }
 .approve, .reject { display: inline-flex; min-height: 1.9rem; align-items: center; justify-content: center; padding: 0 .55rem; border: 0; border-radius: .45rem; font: inherit; font-size: .68rem; font-weight: 700; cursor: pointer; }
 .approve { background: #168458; color: #fff; }
 .approve:disabled { background: #dfe5ed; color: #8994a5; cursor: not-allowed; }
 .reject { width: 1.9rem; background: #fff0ef; color: #ad4139; }
+.reject-form .reject { width: auto; background: #fff0ef; }
+.cancel { border: 0; background: transparent; color: #667287; font: inherit; font-size: .68rem; cursor: pointer; }
+.approve:disabled, .reject:disabled, .cancel:disabled { cursor: wait; opacity: .65; }
 .action-result { color: #778398; font-size: .68rem; }
 .panel__footer { display: flex; justify-content: space-between; padding: .85rem 1rem; border-top: 1px solid #eff1f5; color: #778398; font-size: .7rem; }
+.feedback { margin: 0 0 1rem; padding: .75rem 1rem; border-radius: .55rem; font-size: .78rem; }
+.feedback--error { background: #fff0ef; color: #ad4139; }
+.feedback--success { background: #e5f6ec; color: #18764f; }
 @media (max-width: 650px) { .page-heading { align-items: flex-start; flex-direction: column; } .panel__heading { align-items: flex-start; flex-direction: column; } }

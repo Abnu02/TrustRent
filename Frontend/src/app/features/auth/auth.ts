@@ -4,6 +4,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AdminAuthSession } from '../Admin/services/admin-auth-session';
+import { AuthIcon, AuthIconName } from './auth-icon';
 
 type AuthMode = 'sign-in' | 'register' | 'reset';
 type AuthRole = 'tenant' | 'landlord' | 'admin';
@@ -11,50 +12,46 @@ type AuthRole = 'tenant' | 'landlord' | 'admin';
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  styleUrl: './auth.scss',
+  imports: [CommonModule, FormsModule, AuthIcon],
   templateUrl: './auth.html',
 })
 export class Auth {
-  readonly authModes: ReadonlyArray<{ key: AuthMode; label: string; description: string }> = [
-    { key: 'sign-in', label: 'Sign in', description: 'Access your verified tenant dashboard.' },
-    { key: 'register', label: 'Create account', description: 'Set up a new TrustRent identity.' },
-    { key: 'reset', label: 'Reset password', description: 'Recover a lost or expired passcode.' },
+  readonly authModes: ReadonlyArray<{ key: AuthMode; label: string; description: string; icon: AuthIconName }> = [
+    { key: 'sign-in', label: 'Sign in', description: 'Access your TrustRent account.', icon: 'login' },
+    { key: 'register', label: 'Create account', description: 'Set up a new TrustRent account.', icon: 'person_add' },
+    { key: 'reset', label: 'Reset password', description: 'Recover access to your account.', icon: 'lock_reset' },
   ];
 
   readonly roles: ReadonlyArray<{
     key: AuthRole;
     label: string;
     subtitle: string;
-    icon: string;
+    icon: AuthIconName;
   }> = [
-    { key: 'tenant', label: 'Tenant', subtitle: 'Verified rentals', icon: 'person_shield' },
-    { key: 'landlord', label: 'Landlord', subtitle: 'Deed-matched units', icon: 'real_estate_agent' },
-    { key: 'admin', label: 'Admin', subtitle: 'Property review console', icon: 'policy' },
+    { key: 'tenant', label: 'Tenant', subtitle: 'Find a place to rent', icon: 'person' },
+    { key: 'landlord', label: 'Landlord', subtitle: 'Manage your listings', icon: 'home_work' },
+    { key: 'admin', label: 'Admin', subtitle: 'Review submissions', icon: 'admin_panel_settings' },
   ];
 
-  readonly trustHighlights = [
+  readonly trustHighlights: ReadonlyArray<{ title: string; description: string; icon: AuthIconName }> = [
     {
-      title: '100% Deed-Authenticated Properties',
-      description:
-        'Zero phantom listings, algorithmic duplicate sweeps, and guaranteed prevention of bait-and-switch leases.',
-      icon: 'domain_verification',
-    },
-    {
-      title: 'Bank-Grade Escrow Protection',
-      description:
-        'Application deposits, security holds, and first-month disbursements remain locked in FDIC-insured trust vaults.',
-      icon: 'account_balance',
-    },
-    {
-      title: 'Auditor Inspection Guarantee',
-      description:
-        'Automated continuous sync with county CAD deed title filings across 1,800+ jurisdictions.',
+      title: 'Property review',
+      description: 'Property submissions are reviewed before they are approved for listing.',
       icon: 'fact_check',
     },
+    {
+      title: 'Clear decisions',
+      description: 'Review outcomes and requests are recorded so important changes are easy to follow.',
+      icon: 'rule',
+    },
+    {
+      title: 'One connected workspace',
+      description: 'Keep account access and property review information together in one place.',
+      icon: 'dashboard',
+    },
   ];
 
-  selectedRole: AuthRole = 'tenant';
+  selectedRole: AuthRole = 'admin';
   authMode: AuthMode = 'sign-in';
   showPassword = false;
   showConfirmPassword = false;
@@ -96,11 +93,11 @@ export class Auth {
   get authDescription(): string {
     switch (this.authMode) {
       case 'register':
-        return 'Set up a secure account and start managing verified rentals, leases, and compliance records.';
+        return 'Create a TrustRent account to get started with property information and reviews.';
       case 'reset':
-        return 'Choose the role tied to your existing TrustRent identity and receive a secure recovery link.';
+        return 'Enter your account email to get help restoring access to TrustRent.';
       default:
-        return 'Access your verified tenant dashboard, property portfolio, or deed audit workstation.';
+        return 'Sign in to your TrustRent account and continue to the workspace for your role.';
     }
   }
 
@@ -110,6 +107,11 @@ export class Auth {
 
   setMode(mode: AuthMode): void {
     this.authMode = mode;
+    if (mode === 'sign-in') {
+      this.selectedRole = 'admin';
+    } else if (this.selectedRole === 'admin') {
+      this.selectedRole = 'tenant';
+    }
   }
 
   togglePasswordVisibility(): void {
@@ -132,11 +134,15 @@ export class Auth {
       await this.authSession.signIn(this.email, this.password);
       await this.router.navigateByUrl('/admin');
     } catch (error) {
-      this.submitError = error instanceof Error && !(error instanceof HttpErrorResponse)
-        ? error.message
-        : error instanceof HttpErrorResponse && error.status === 401
-          ? 'Email or password is incorrect.'
-          : 'Unable to sign in. Please try again.';
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        this.submitError = 'Email or password is incorrect.';
+      } else if (error instanceof HttpErrorResponse && error.status >= 500) {
+        this.submitError = 'The sign-in service is unavailable. Please check the backend database connection and try again.';
+      } else if (error instanceof Error && !(error instanceof HttpErrorResponse)) {
+        this.submitError = error.message;
+      } else {
+        this.submitError = 'Unable to sign in. Please try again.';
+      }
     } finally {
       this.isSubmitting = false;
     }

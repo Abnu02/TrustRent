@@ -94,12 +94,12 @@ public sealed record PropertyReviewSummaryResponse(
 /// <summary>Audit entry for a property submission or review decision.</summary>
 public sealed record PropertyReviewEventResponse(
     Guid Id,
-    Guid PropertyId,
+    Guid? PropertyId,
     string Action,
     string Subject,
     string ActorName,
     string ActorEmail,
-    PropertyReviewStatus Status,
+    string Status,
     string Reference,
     string? Note,
     DateTimeOffset OccurredAt);

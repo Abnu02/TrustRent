@@ -70,6 +70,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPropertyReviewService, PropertyReviewService>();
+builder.Services.AddScoped<ILandlordReviewService, LandlordReviewService>();
 
 var app = builder.Build();
 

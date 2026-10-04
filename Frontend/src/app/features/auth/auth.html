@@ -1,24 +1,20 @@
 <header class="topbar">
   <div class="topbar__inner">
-    <a class="brand" href="#" aria-label="TrustRent home">
-      <img
-        class="brand__logo"
-        alt="TrustRent logo"
-        src="https://lh3.googleusercontent.com/aida/AEtjO1VfWQm9VvF26CBaUJ0H4H7D42pLD4zIvmJ1qxyt_8Y905fDsBzX9wZc_ieERImB69YraGTwDJvsenMVVT0-vBB-i03lVmpazyxnnBwKc-dI1HJIJFQC-vH-MbftGDcf37R1mPm3qEYnOMTW7A2P8j_OOzGfsIQLGA22li8j2mDIeiqs7vHLv1QO9fKhPKEMC2OeYrzxwLNKLiWygQltpLOPFLeIO2O6mETIZ7WkU8ZBeAwqK5ei9i-lXdAT"
-      />
+    <a class="brand" href="/" aria-label="TrustRent home">
+      <span class="brand__logo"><app-auth-icon name="verified_user" /></span>
       <span class="brand__title">TrustRent</span>
       <span class="brand__badge">Institutional</span>
     </a>
 
     <div class="topbar__meta">
       <span class="status-pill">
-        <span class="status-pill__icon">lock</span>
-        256-Bit Escrow Encrypted
+        <app-auth-icon class="status-pill__icon" name="lock" />
+        Secure account access
       </span>
-      <a class="topbar__link" href="#">
-        <span class="status-pill__icon">arrow_back</span>
-        Back to Explore Rentals
-      </a>
+      <span class="topbar__help">
+        <app-auth-icon class="status-pill__icon" name="support_agent" />
+        TrustRent account
+      </span>
     </div>
   </div>
 </header>
@@ -28,12 +24,12 @@
     <section class="auth-shell__content">
       <div class="status-row">
         <span class="status-badge">
-          <span class="status-badge__icon">verified</span>
-          Institutional Verification Standard
+          <app-auth-icon class="status-badge__icon" name="verified" />
+          Property verification
         </span>
         <span class="status-live">
           <span class="status-live__dot"></span>
-          Gateway v4.2 Status: Active
+          Secure sign-in
         </span>
       </div>
 
@@ -42,33 +38,37 @@
         <p>{{ authDescription }}</p>
       </div>
 
-      <div class="auth-controls" aria-label="Authentication page selector">
+      <div class="auth-controls" role="group" aria-label="Choose an account action">
         <button
           *ngFor="let mode of authModes"
           type="button"
           class="mode-button"
           [class.is-active]="mode.key === authMode"
+          [attr.aria-pressed]="mode.key === authMode"
           (click)="setMode(mode.key)"
         >
+          <app-auth-icon [name]="mode.icon" />
           {{ mode.label }}
         </button>
       </div>
 
       <div class="role-selector" aria-label="Choose account role">
-        <label class="role-selector__label">Select Credential Tier</label>
+        <label class="role-selector__label">Continue as</label>
         <div class="role-selector__options">
           <button
             *ngFor="let role of roles"
             type="button"
             class="role-option"
             [class.is-active]="role.key === selectedRole"
+            [attr.aria-pressed]="role.key === selectedRole"
             (click)="selectRole(role.key)"
           >
-            <span class="role-option__header">
-              <span class="material-symbols">{{ role.icon }}</span>
-              <span>{{ role.label }}</span>
+            <span class="role-option__icon"><app-auth-icon [name]="role.icon" /></span>
+            <span class="role-option__copy">
+              <span class="role-option__header">{{ role.label }}</span>
+              <span class="role-option__subtext">{{ role.subtitle }}</span>
             </span>
-            <span class="role-option__subtext">{{ role.subtitle }}</span>
+            <app-auth-icon class="role-option__check" name="check_circle" />
           </button>
         </div>
       </div>
@@ -76,25 +76,26 @@
       <form class="auth-form" (ngSubmit)="onSubmit()">
         <ng-container *ngIf="authMode === 'sign-in'">
           <div class="field-group">
-            <label for="email">Work or Personal Email</label>
+            <label for="email">Email address</label>
             <div class="input-shell">
-              <span class="input-shell__icon">mail</span>
-              <input id="email" name="email" type="email" placeholder="identity@institutional.domain" [(ngModel)]="email" required />
+              <app-auth-icon class="input-shell__icon" name="mail" />
+              <input id="email" name="email" type="email" autocomplete="username" placeholder="you@example.com" [(ngModel)]="email" required />
             </div>
           </div>
 
           <div class="field-group">
             <div class="field-group__header">
-              <label for="password">Security Passcode</label>
+              <label for="password">Password</label>
               <button class="text-link" type="button" (click)="setMode('reset')">Forgot password?</button>
             </div>
             <div class="input-shell input-shell--password">
-              <span class="input-shell__icon">encrypted</span>
+              <app-auth-icon class="input-shell__icon" name="lock" />
               <input
                 id="password"
                 name="password"
                 [type]="showPassword ? 'text' : 'password'"
                 placeholder="Enter your password"
+                autocomplete="current-password"
                 [(ngModel)]="password"
                 required
               />
@@ -104,45 +105,44 @@
                 (click)="togglePasswordVisibility()"
                 [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
               >
-                <span class="material-symbols">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+                <app-auth-icon [name]="showPassword ? 'visibility_off' : 'visibility'" />
               </button>
             </div>
           </div>
 
           <div class="checkbox-row">
-            <label class="checkbox-label">
-              <input type="checkbox" />
-              <span>Keep me signed in</span>
-            </label>
+            <span class="supporting-text"><app-auth-icon name="shield" /> Your account is protected</span>
             <button class="text-link" type="button" (click)="setMode('register')">Create account</button>
           </div>
         </ng-container>
 
         <ng-container *ngIf="authMode === 'register'">
           <div class="field-group">
-            <label for="full-name">Full Name</label>
+            <label for="full-name">Full name</label>
             <div class="input-shell">
-              <span class="input-shell__icon">person</span>
-              <input id="full-name" type="text" placeholder="Jordan Mitchell" required />
+              <app-auth-icon class="input-shell__icon" name="person" />
+              <input id="full-name" name="fullName" type="text" autocomplete="name" placeholder="Your full name" required />
             </div>
           </div>
 
           <div class="field-group">
-            <label for="register-email">Business or Personal Email</label>
+            <label for="register-email">Email address</label>
             <div class="input-shell">
-              <span class="input-shell__icon">mail</span>
-              <input id="register-email" type="email" placeholder="jordan@trustrent.example" required />
+              <app-auth-icon class="input-shell__icon" name="mail" />
+              <input id="register-email" name="registerEmail" type="email" autocomplete="email" placeholder="you@example.com" required />
             </div>
           </div>
 
           <div class="field-group">
-            <label for="register-password">Create password</label>
+            <label for="register-password">Password</label>
             <div class="input-shell input-shell--password">
-              <span class="input-shell__icon">lock</span>
+              <app-auth-icon class="input-shell__icon" name="lock" />
               <input
                 id="register-password"
+                name="registerPassword"
                 [type]="showPassword ? 'text' : 'password'"
-                placeholder="At least 12 characters"
+                autocomplete="new-password"
+                placeholder="Create a password"
                 required
               />
               <button
@@ -151,7 +151,7 @@
                 (click)="togglePasswordVisibility()"
                 [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
               >
-                <span class="material-symbols">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+                <app-auth-icon [name]="showPassword ? 'visibility_off' : 'visibility'" />
               </button>
             </div>
           </div>
@@ -159,10 +159,12 @@
           <div class="field-group">
             <label for="confirm-password">Confirm password</label>
             <div class="input-shell input-shell--password">
-              <span class="input-shell__icon">done</span>
+              <app-auth-icon class="input-shell__icon" name="check_circle" />
               <input
                 id="confirm-password"
+                name="confirmPassword"
                 [type]="showConfirmPassword ? 'text' : 'password'"
+                autocomplete="new-password"
                 placeholder="Repeat your password"
                 required
               />
@@ -172,7 +174,7 @@
                 (click)="toggleConfirmPasswordVisibility()"
                 [attr.aria-label]="showConfirmPassword ? 'Hide confirmation password' : 'Show confirmation password'"
               >
-                <span class="material-symbols">{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</span>
+                <app-auth-icon [name]="showConfirmPassword ? 'visibility_off' : 'visibility'" />
               </button>
             </div>
           </div>
@@ -188,17 +190,17 @@
 
         <ng-container *ngIf="authMode === 'reset'">
           <div class="field-group">
-            <label for="reset-email">Account email</label>
+            <label for="reset-email">Email address</label>
             <div class="input-shell">
-              <span class="input-shell__icon">mail</span>
-              <input id="reset-email" type="email" placeholder="identity@institutional.domain" required />
+              <app-auth-icon class="input-shell__icon" name="mail" />
+              <input id="reset-email" name="resetEmail" type="email" autocomplete="email" placeholder="you@example.com" required />
             </div>
           </div>
 
           <div class="field-group field-group--compact">
             <label for="reset-role">Linked credential tier</label>
             <div class="input-shell input-shell--select">
-              <span class="input-shell__icon">badge</span>
+              <app-auth-icon class="input-shell__icon" name="badge" />
               <select id="reset-role" [value]="selectedRole">
                 <option value="tenant">Tenant</option>
                 <option value="landlord">Landlord</option>
@@ -214,10 +216,11 @@
         </ng-container>
 
         @if (submitError) {
-          <p class="auth-error" role="alert">{{ submitError }}</p>
+          <p class="auth-error" role="alert"><app-auth-icon name="error" />{{ submitError }}</p>
         }
         <button class="primary-button" type="submit" [disabled]="isSubmitting">
           {{ isSubmitting ? 'Signing in…' : ctaText }}
+          <app-auth-icon [name]="isSubmitting ? 'progress_activity' : 'arrow_forward'" />
         </button>
       </form>
     </section>
@@ -225,20 +228,17 @@
     <aside class="auth-shell__aside">
       <div class="aside-content">
         <div class="side-header">
-          <span class="side-header__badge">TrustRent Escrow</span>
-          <h2>Zero-Fraud Rental Ecosystem</h2>
+          <span class="side-header__badge"><app-auth-icon name="verified_user" /> A more confident rental journey</span>
+          <h2>Find your next place with confidence.</h2>
         </div>
 
         <p class="aside-copy">
-          Every lease, property credential, and transactional deposit executed via TrustRent is cryptographically
-          reconciled against certified municipal tax assessors.
+          TrustRent brings property information and review status together, helping renters and property owners make informed decisions.
         </p>
 
         <div class="trust-list">
           <article *ngFor="let item of trustHighlights" class="trust-card">
-            <div class="trust-card__icon">
-              <span class="material-symbols">{{ item.icon }}</span>
-            </div>
+            <div class="trust-card__icon"><app-auth-icon [name]="item.icon" /></div>
             <div>
               <h3>{{ item.title }}</h3>
               <p>{{ item.description }}</p>
@@ -247,27 +247,26 @@
         </div>
 
         <div class="testimonial">
-          <div class="testimonial__stars" aria-label="5 star rating">
-            <span>star</span><span>star</span><span>star</span><span>star</span><span>star</span>
-            <strong>Deed Matched</strong>
+          <div class="testimonial__stars" aria-label="Trusted property review">
+            <app-auth-icon name="verified" />
+            <strong>Reviewed with care</strong>
           </div>
           <p>
-            �TrustRent saved me from a $4,800 wire scam in Austin. Knowing the landlord was deed-verified through
-            Travis County records gave me complete peace of mind before transferring funds.�
+            Keep property details and review outcomes together, so it is easier to understand what has been checked and what happens next.
           </p>
           <div class="testimonial__meta">
-            <div class="avatar">ER</div>
+            <div class="avatar"><app-auth-icon name="home_work" /></div>
             <div>
-              <strong>Elena Rostova</strong>
-              <span>Verified Tenant � Downtown Loft</span>
+              <strong>Built around clearer decisions</strong>
+              <span>Property details and review history</span>
             </div>
           </div>
         </div>
 
         <div class="compliance-row">
-          <span><span class="material-symbols">verified</span> SOC2 Type II</span>
-          <span><span class="material-symbols">lock</span> NIST 800-63B Identity</span>
-          <span><span class="material-symbols">database</span> CAD Registry Synced</span>
+          <span><app-auth-icon name="fact_check" /> Property review</span>
+          <span><app-auth-icon name="lock" /> Account protection</span>
+          <span><app-auth-icon name="support_agent" /> Here to help</span>
         </div>
       </div>
     </aside>
@@ -277,13 +276,13 @@
 <footer class="footer">
   <div class="footer__inner">
     <div class="footer__meta">
-      <span class="material-symbols">verified_user</span>
-      <span>Institutional Identity &amp; Title Verification Gateway</span>
+      <app-auth-icon name="verified_user" />
+      <span>TrustRent · A clearer way to rent</span>
     </div>
     <div class="footer__links">
-      <a href="#">Privacy Architecture</a>
-      <a href="#">Terms of Service</a>
-      <a href="#">Security Verification</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Help</a>
     </div>
   </div>
 </footer>

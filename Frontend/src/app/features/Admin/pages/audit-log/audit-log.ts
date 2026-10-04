@@ -1,19 +1,35 @@
-import { Component } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit, inject } from '@angular/core';
 import { AdminIcon } from '../../components/admin-icon/admin-icon';
+import { AdminAuditApi, AuditLogEntry } from '../../services/admin-audit-api';
 
 @Component({
   selector: 'app-admin-audit-log',
   standalone: true,
-  imports: [AdminIcon],
+  imports: [AdminIcon, DatePipe],
   templateUrl: './audit-log.html',
   styleUrl: './audit-log.scss',
 })
-export class AuditLog {
-  readonly entries = [
-    { action: 'Property approved', subject: '5402 Avenue F', actor: 'Admin', time: 'Today, 10:42 AM', reference: 'TR-2023-A5402', kind: 'approved' },
-    { action: 'Landlord verification requested', subject: 'Elena Rostova', actor: 'Admin', time: 'Today, 09:18 AM', reference: 'LV-2024-0198', kind: 'pending' },
-    { action: 'Documents submitted', subject: '1904 Guadalupe St #3', actor: 'Jonathan Miller', time: 'Yesterday, 04:32 PM', reference: 'TR-2024-B1904', kind: 'submitted' },
-    { action: 'Property flagged', subject: '3300 Palm Way #402', actor: 'Automated review', time: 'Yesterday, 02:05 PM', reference: 'TR-2024-C3300', kind: 'flagged' },
-    { action: 'Landlord verified', subject: 'Priya Shah', actor: 'Admin', time: 'Oct 28, 11:14 AM', reference: 'LV-2024-0186', kind: 'approved' },
-  ];
+export class AuditLog implements OnInit {
+  private readonly api = inject(AdminAuditApi);
+  entries: AuditLogEntry[] = [];
+  loading = true;
+  errorMessage = '';
+
+  async ngOnInit(): Promise<void> {
+    try {
+      this.entries = await this.api.getRecent();
+    } catch (error) {
+      this.errorMessage = error instanceof HttpErrorResponse && error.status === 0
+        ? 'Could not connect to the TrustRent API. Check that the backend is running.'
+        : error instanceof HttpErrorResponse && error.status === 401
+          ? 'Your session expired. Sign in again.'
+          : error instanceof HttpErrorResponse && error.status === 403
+            ? 'Admin access is required to view the audit log.'
+            : 'Audit history could not be loaded.';
+    } finally {
+      this.loading = false;
+    }
+  }
 }

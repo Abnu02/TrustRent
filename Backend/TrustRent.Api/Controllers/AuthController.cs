@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using TrustRent.Application.Auth;
 using TrustRent.Application.Auth.DTOs;
 using TrustRent.Application.Interfaces;
 
@@ -42,9 +43,9 @@ public class AuthController : ControllerBase
             var response = await _authService.LoginAsync(request);
             return Ok(response);
         }
-        catch (Exception ex)
+        catch (InvalidCredentialsException)
         {
-            return Unauthorized(new { Error = ex.Message });
+            return Unauthorized(new { Error = "Invalid email or password." });
         }
     }
 

@@ -7,6 +7,10 @@
   <span class="record-count"><app-admin-icon name="audit" /> {{ entries.length }} recent events</span>
 </section>
 
+@if (errorMessage) {
+  <p class="feedback feedback--error" role="alert">{{ errorMessage }}</p>
+}
+
 <section class="panel">
   <div class="panel__heading">
     <div><h2>Activity</h2><span>Latest changes across reviews</span></div>
@@ -16,14 +20,21 @@
     <table>
       <thead><tr><th>Activity</th><th>Subject</th><th>Actor</th><th>Time</th><th>Reference</th></tr></thead>
       <tbody>
-        @for (entry of entries; track entry.reference) {
+        @if (loading) {
+          <tr><td colspan="5">Loading audit history…</td></tr>
+        } @else if (errorMessage) {
+          <tr><td colspan="5">Audit history could not be loaded.</td></tr>
+        } @else if (!entries.length) {
+          <tr><td colspan="5">No review activity has been recorded yet.</td></tr>
+        }
+        @for (entry of entries; track entry.id) {
           <tr>
-            <td><span class="event" [class.event--approved]="entry.kind === 'approved'" [class.event--flagged]="entry.kind === 'flagged'">
-              <app-admin-icon [name]="entry.kind === 'approved' ? 'check' : entry.kind === 'flagged' ? 'close' : 'document'" />
+            <td><span class="event" [class.event--approved]="entry.status === 'Approved' || entry.status === 'Verified'" [class.event--flagged]="entry.status === 'Rejected'">
+              <app-admin-icon [name]="entry.status === 'Approved' || entry.status === 'Verified' ? 'check' : entry.status === 'Rejected' ? 'close' : 'document'" />
             </span>{{ entry.action }}</td>
             <td class="strong">{{ entry.subject }}</td>
-            <td>{{ entry.actor }}</td>
-            <td>{{ entry.time }}</td>
+            <td>{{ entry.actorName }}<small class="actor-email">{{ entry.actorEmail }}</small></td>
+            <td>{{ entry.occurredAt | date: 'medium' }}</td>
             <td class="reference">{{ entry.reference }}</td>
           </tr>
         }

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using TrustRent.Infrastructure.Identity;
 using TrustRent.Domain.Properties;
+using TrustRent.Domain.Users;
 
 namespace TrustRent.Infrastructure.Persistence;
 
@@ -11,6 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
 {
     public DbSet<PropertyListing> PropertyListings => Set<PropertyListing>();
     public DbSet<PropertyReviewEvent> PropertyReviewEvents => Set<PropertyReviewEvent>();
+    public DbSet<LandlordReviewEvent> LandlordReviewEvents => Set<LandlordReviewEvent>();
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -20,6 +22,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.Entity<ApplicationUser>(entity =>
+        {
+            entity.Property(user => user.LandlordVerificationStatus).HasConversion<string>().HasMaxLength(32);
+            entity.Property(user => user.LandlordVerificationNote).HasMaxLength(2000);
+            entity.HasIndex(user => user.LandlordVerificationStatus);
+            entity.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(user => user.LandlordReviewedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
         builder.Entity<PropertyListing>(entity =>
         {
             entity.HasKey(property => property.Id);
@@ -52,6 +64,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
                 .WithMany()
                 .HasForeignKey(reviewEvent => reviewEvent.PropertyId)
                 .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(reviewEvent => reviewEvent.ActorUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+        builder.Entity<LandlordReviewEvent>(entity =>
+        {
+            entity.HasKey(reviewEvent => reviewEvent.Id);
+            entity.Property(reviewEvent => reviewEvent.Status).HasConversion<string>().HasMaxLength(32);
+            entity.Property(reviewEvent => reviewEvent.Note).HasMaxLength(2000);
+            entity.HasIndex(reviewEvent => reviewEvent.OccurredAt);
+            entity.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(reviewEvent => reviewEvent.LandlordUserId)
+                .OnDelete(DeleteBehavior.Restrict);
             entity.HasOne<ApplicationUser>()
                 .WithMany()
                 .HasForeignKey(reviewEvent => reviewEvent.ActorUserId)

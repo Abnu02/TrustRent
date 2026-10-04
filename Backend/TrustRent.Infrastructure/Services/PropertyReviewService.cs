@@ -4,6 +4,7 @@ using TrustRent.Application.Properties;
 using TrustRent.Domain.Properties;
 using TrustRent.Infrastructure.Identity;
 using TrustRent.Infrastructure.Persistence;
+using TrustRent.Domain.Users;
 
 namespace TrustRent.Infrastructure.Services;
 
@@ -129,7 +130,7 @@ public sealed class PropertyReviewService(ApplicationDbContext dbContext) : IPro
 
     public async Task<IReadOnlyList<PropertyReviewEventResponse>> GetAuditLogAsync(CancellationToken cancellationToken)
     {
-        var events = await dbContext.PropertyReviewEvents
+        var propertyEvents = await dbContext.PropertyReviewEvents
             .AsNoTracking()
             .Join(dbContext.PropertyListings, reviewEvent => reviewEvent.PropertyId, listing => listing.Id,
                 (reviewEvent, listing) => new { reviewEvent, listing })
@@ -139,17 +140,45 @@ public sealed class PropertyReviewService(ApplicationDbContext dbContext) : IPro
             .Take(50)
             .ToListAsync(cancellationToken);
 
-        return events.Select(item => new PropertyReviewEventResponse(
+        var landlordEvents = await dbContext.LandlordReviewEvents
+            .AsNoTracking()
+            .Join(dbContext.Users, reviewEvent => reviewEvent.LandlordUserId, landlord => landlord.Id,
+                (reviewEvent, landlord) => new { reviewEvent, landlord })
+            .Join(dbContext.Users, item => item.reviewEvent.ActorUserId, actor => actor.Id,
+                (item, actor) => new { item.reviewEvent, item.landlord, actor })
+            .OrderByDescending(item => item.reviewEvent.OccurredAt)
+            .Take(50)
+            .ToListAsync(cancellationToken);
+
+        var propertyEntries = propertyEvents.Select(item => new PropertyReviewEventResponse(
             item.reviewEvent.Id,
             item.reviewEvent.PropertyId,
             GetAction(item.reviewEvent.Status),
             item.listing.Address,
             item.actor.FullName,
             item.actor.Email ?? string.Empty,
-            item.reviewEvent.Status,
+            item.reviewEvent.Status.ToString(),
             item.listing.DeedFileNumber,
             item.reviewEvent.Note,
-            item.reviewEvent.OccurredAt)).ToArray();
+            item.reviewEvent.OccurredAt));
+        var landlordEntries = landlordEvents.Select(item => new PropertyReviewEventResponse(
+            item.reviewEvent.Id,
+            null,
+            item.reviewEvent.Status == LandlordVerificationStatus.Verified
+                ? "Landlord verified"
+                : "Landlord verification rejected",
+            item.landlord.FullName,
+            item.actor.FullName,
+            item.actor.Email ?? string.Empty,
+            item.reviewEvent.Status.ToString(),
+            item.landlord.Id.ToString(),
+            item.reviewEvent.Note,
+            item.reviewEvent.OccurredAt));
+
+        return propertyEntries.Concat(landlordEntries)
+            .OrderByDescending(entry => entry.OccurredAt)
+            .Take(50)
+            .ToArray();
     }
 
     private static string GetAction(PropertyReviewStatus status) => status switch

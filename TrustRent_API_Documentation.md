@@ -384,8 +384,10 @@ GET /api/v1/admin/landlords/pending
     "fullName": "Abreham Bekele",
     "email": "abreham@example.com",
     "phoneNumber": "0912345678",
-    "isVerified": false,
-    "verificationStatus": "Pending"
+    "verificationStatus": "Pending",
+    "createdAt": "2026-10-01T10:30:00Z",
+    "reviewedAt": null,
+    "reviewNote": null
   }
 ]
 ```
@@ -410,9 +412,14 @@ PUT /api/v1/admin/landlords/{id}/verify
 
 ```json
 {
-  "message": "Landlord verified successfully.",
-  "landlordId": "landlord-id",
-  "isVerified": true
+  "id": "landlord-id",
+  "fullName": "Abreham Bekele",
+  "email": "abreham@example.com",
+  "phoneNumber": "0912345678",
+  "verificationStatus": "Verified",
+  "createdAt": "2026-10-01T10:30:00Z",
+  "reviewedAt": "2026-10-02T10:30:00Z",
+  "reviewNote": null
 }
 ```
 
@@ -438,15 +445,56 @@ PUT /api/v1/admin/landlords/{id}/reject
 
 ```json
 {
-  "message": "Landlord verification rejected.",
-  "landlordId": "landlord-id",
-  "isVerified": false
+  "id": "landlord-id",
+  "fullName": "Abreham Bekele",
+  "email": "abreham@example.com",
+  "phoneNumber": "0912345678",
+  "verificationStatus": "Rejected",
+  "createdAt": "2026-10-01T10:30:00Z",
+  "reviewedAt": "2026-10-02T10:30:00Z",
+  "reviewNote": "Identity information could not be verified."
 }
 ```
 
 ---
 
-# 6. Admin — Property Verification
+# 6. Admin — Audit Log
+
+**Endpoint**
+
+```http
+GET /api/v1/admin/audit-log
+```
+
+**Authentication:** Required
+
+**Role:** `Admin`
+
+Returns up to 50 most recent property and landlord submission/review events.
+`propertyId` is `null` for landlord verification events.
+
+**Response — 200 OK**
+
+```json
+[
+  {
+    "id": "event-id",
+    "propertyId": null,
+    "action": "Landlord verified",
+    "subject": "Abreham Bekele",
+    "actorName": "System Administrator",
+    "actorEmail": "admin@trustrent.com",
+    "status": "Verified",
+    "reference": "landlord-id",
+    "note": null,
+    "occurredAt": "2026-10-02T10:30:00Z"
+  }
+]
+```
+
+---
+
+# 7. Admin — Property Verification
 
 ## 6.1 Get Pending Properties
 
@@ -533,7 +581,7 @@ PUT /api/v1/admin/properties/{id}/reject
 
 ---
 
-# 7. Endpoint Summary
+# 8. Endpoint Summary
 
 | # | Method | Endpoint | Role |
 |---|---|---|---|
@@ -551,12 +599,13 @@ PUT /api/v1/admin/properties/{id}/reject
 | 12 | `GET` | `/api/v1/admin/properties/pending` | Admin |
 | 13 | `PUT` | `/api/v1/admin/properties/{id}/approve` | Admin |
 | 14 | `PUT` | `/api/v1/admin/properties/{id}/reject` | Admin |
+| 15 | `GET` | `/api/v1/admin/audit-log` | Admin |
 
-**Total: 14 endpoints**
+**Total: 15 endpoints**
 
 ---
 
-# 8. Verification Flow
+# 9. Verification Flow
 
 ```text
 LANDLORD
@@ -598,7 +647,7 @@ TENANT
 
 ---
 
-# 9. MVP Business Rules
+# 10. MVP Business Rules
 
 1. A user can register as either `Tenant` or `Landlord`.
 2. A landlord starts as **unverified**.
