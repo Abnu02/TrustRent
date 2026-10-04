@@ -3,14 +3,15 @@ import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
-import { toApiErrorMessage } from '../../api-error';
-import { PropertyService, DashboardSnapshot } from '../../property.service';
-import { PropertyStateComponent } from '../../shared/property-state.component';
+import { toApiErrorMessage } from '../../services/api-error';
+import { PropertyService, DashboardSnapshot } from '../../services/property.service';
+import { PropertyStateComponent } from '../../components/property-state.component';
+import { LandlordIconComponent } from '../../components/landlord-icon.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [DecimalPipe, RouterLink, PropertyStateComponent],
+  imports: [DecimalPipe, RouterLink, PropertyStateComponent, LandlordIconComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

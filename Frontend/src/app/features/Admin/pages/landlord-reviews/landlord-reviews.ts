@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AdminIcon } from '../../components/admin-icon/admin-icon';
 import { LandlordReview, LandlordReviewApi } from '../../services/landlord-review-api';
@@ -14,83 +14,83 @@ import { LandlordReview, LandlordReviewApi } from '../../services/landlord-revie
 })
 export class LandlordReviews implements OnInit {
   private readonly api = inject(LandlordReviewApi);
-  submissions: LandlordReview[] = [];
-  loading = true;
-  savingId: string | null = null;
-  rejectionId: string | null = null;
-  rejectionReason = '';
-  errorMessage = '';
-  successMessage = '';
-  searchQuery = '';
+  readonly submissions = signal<LandlordReview[]>([]);
+  readonly loading = signal(true);
+  readonly savingId = signal<string | null>(null);
+  readonly rejectionId = signal<string | null>(null);
+  readonly rejectionReason = signal('');
+  readonly errorMessage = signal('');
+  readonly successMessage = signal('');
+  readonly searchQuery = signal('');
 
   async ngOnInit(): Promise<void> {
     await this.load();
   }
 
   async verify(submission: LandlordReview): Promise<void> {
-    this.savingId = submission.id;
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.savingId.set(submission.id);
+    this.errorMessage.set('');
+    this.successMessage.set('');
     try {
       await this.api.verify(submission.id);
       this.removeFromQueue(submission.id);
-      this.successMessage = `${submission.fullName} was verified.`;
+      this.successMessage.set(`${submission.fullName} was verified.`);
     } catch (error) {
-      this.errorMessage = this.getErrorMessage(error);
+      this.errorMessage.set(this.getErrorMessage(error));
     } finally {
-      this.savingId = null;
+      this.savingId.set(null);
     }
   }
 
   beginReject(submission: LandlordReview): void {
-    this.rejectionId = submission.id;
-    this.rejectionReason = '';
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.rejectionId.set(submission.id);
+    this.rejectionReason.set('');
+    this.errorMessage.set('');
+    this.successMessage.set('');
   }
 
   cancelReject(): void {
-    this.rejectionId = null;
-    this.rejectionReason = '';
+    this.rejectionId.set(null);
+    this.rejectionReason.set('');
   }
 
   async reject(submission: LandlordReview): Promise<void> {
-    this.savingId = submission.id;
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.savingId.set(submission.id);
+    this.errorMessage.set('');
+    this.successMessage.set('');
     try {
-      await this.api.reject(submission.id, this.rejectionReason.trim());
+      await this.api.reject(submission.id, this.rejectionReason().trim());
       this.removeFromQueue(submission.id);
-      this.successMessage = `${submission.fullName} was rejected.`;
+      this.successMessage.set(`${submission.fullName} was rejected.`);
       this.cancelReject();
     } catch (error) {
-      this.errorMessage = this.getErrorMessage(error);
+      this.errorMessage.set(this.getErrorMessage(error));
     } finally {
-      this.savingId = null;
+      this.savingId.set(null);
     }
   }
 
   get filteredSubmissions(): LandlordReview[] {
-    const query = this.searchQuery.trim().toLocaleLowerCase();
-    return this.submissions.filter((submission) =>
+    const query = this.searchQuery().trim().toLocaleLowerCase();
+    return this.submissions().filter((submission) =>
       `${submission.fullName} ${submission.email} ${submission.phoneNumber}`.toLocaleLowerCase().includes(query),
     );
   }
 
   private async load(): Promise<void> {
-    this.loading = true;
-    this.errorMessage = '';
+    this.loading.set(true);
+    this.errorMessage.set('');
     try {
-      this.submissions = await this.api.getPending();
+      this.submissions.set(await this.api.getPending());
     } catch (error) {
-      this.errorMessage = this.getErrorMessage(error);
+      this.errorMessage.set(this.getErrorMessage(error));
     } finally {
-      this.loading = false;
+      this.loading.set(false);
     }
   }
 
   private removeFromQueue(id: string): void {
-    this.submissions = this.submissions.filter((submission) => submission.id !== id);
+    this.submissions.update(submissions => submissions.filter(submission => submission.id !== id));
   }
 
   private getErrorMessage(error: unknown): string {
@@ -105,7 +105,7 @@ export class LandlordReviews implements OnInit {
 
   setSearchQuery(event: Event): void {
     if (event.target instanceof HTMLInputElement) {
-      this.searchQuery = event.target.value;
+      this.searchQuery.set(event.target.value);
     }
   }
 }

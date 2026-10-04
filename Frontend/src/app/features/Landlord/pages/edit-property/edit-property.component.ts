@@ -2,11 +2,11 @@ import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angul
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, EMPTY, finalize, switchMap, tap } from 'rxjs';
-import { ApiErrorMessage, toApiErrorMessage } from '../../api-error';
-import { FeedbackService } from '../../feedback.service';
-import { Property, PropertyDraft, PropertyService } from '../../property.service';
-import { PropertyStateComponent } from '../../shared/property-state.component';
-import { PropertyEditorComponent } from '../../shared/property-editor.component';
+import { ApiErrorMessage, toApiErrorMessage } from '../../services/api-error';
+import { FeedbackService } from '../../services/feedback.service';
+import { Property, PropertyDraft, PropertyService } from '../../services/property.service';
+import { PropertyStateComponent } from '../../components/property-state.component';
+import { PropertyEditorComponent } from '../../components/property-editor.component';
 
 @Component({
   selector: 'app-edit-property',

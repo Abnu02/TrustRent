@@ -2,13 +2,14 @@ import { Component, DestroyRef, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, finalize, of } from 'rxjs';
-import { FeedbackService } from '../feedback.service';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../../auth/auth.service';
+import { FeedbackService } from './services/feedback.service';
+import { LandlordIconComponent } from './components/landlord-icon.component';
 
 @Component({
   selector: 'app-landlord-layout',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, LandlordIconComponent],
   templateUrl: './landlord-layout.component.html',
   styleUrl: './landlord-layout.component.scss',
 })

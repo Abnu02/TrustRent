@@ -33,4 +33,10 @@ describe('App', () => {
       '', 'dashboard', 'properties/new', 'properties/:id/edit', 'properties/:id', 'properties',
     ]);
   });
+
+  it('should protect the tenant coming-soon route', () => {
+    const tenantRoute = routes.find(route => route.path === 'tenant');
+    expect(tenantRoute?.canActivate).toBeTruthy();
+    expect(tenantRoute?.component).toBeTruthy();
+  });
 });

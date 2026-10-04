@@ -4,26 +4,26 @@
     <h1>Landlord reviews</h1>
     <p>Review landlord accounts and record verification decisions.</p>
   </div>
-  <span class="queue-count"><app-admin-icon name="clock" /> {{ submissions.length }} awaiting review</span>
+  <span class="queue-count"><app-admin-icon name="clock" /> {{ submissions().length }} awaiting review</span>
 </section>
 
-@if (errorMessage) {
-  <p class="feedback feedback--error" role="alert">{{ errorMessage }}</p>
+@if (errorMessage(); as error) {
+  <p class="feedback feedback--error" role="alert">{{ error }}</p>
 }
-@if (successMessage) {
-  <p class="feedback feedback--success" role="status">{{ successMessage }}</p>
+@if (successMessage(); as success) {
+  <p class="feedback feedback--success" role="status">{{ success }}</p>
 }
 
 <section class="panel">
   <div class="panel__heading">
-    <div><h2>Verification queue</h2><span>{{ submissions.length }} pending accounts</span></div>
+    <div><h2>Verification queue</h2><span>{{ submissions().length }} pending accounts</span></div>
     <label class="search">
       <app-admin-icon name="search" />
       <input
         type="search"
         placeholder="Search landlords"
         aria-label="Search landlords"
-        [value]="searchQuery"
+        [value]="searchQuery()"
         (input)="setSearchQuery($event)"
       />
     </label>
@@ -32,12 +32,12 @@
     <table>
       <thead><tr><th>Landlord</th><th>Registered</th><th>Phone</th><th>Status</th><th>Actions</th></tr></thead>
       <tbody>
-        @if (loading) {
+        @if (loading()) {
           <tr><td colspan="5">Loading landlord accounts…</td></tr>
-        } @else if (errorMessage) {
+        } @else if (errorMessage()) {
           <tr><td colspan="5">Landlord accounts could not be loaded.</td></tr>
         } @else if (!filteredSubmissions.length) {
-          <tr><td colspan="5">{{ submissions.length ? 'No landlords match your search.' : 'There are no landlord accounts awaiting review.' }}</td></tr>
+          <tr><td colspan="5">{{ submissions().length ? 'No landlords match your search.' : 'There are no landlord accounts awaiting review.' }}</td></tr>
         }
         @for (submission of filteredSubmissions; track submission.id) {
           <tr>
@@ -46,26 +46,27 @@
             <td>{{ submission.phoneNumber || 'Not provided' }}</td>
             <td><span class="state">{{ submission.verificationStatus }}</span></td>
             <td>
-              @if (rejectionId === submission.id) {
+              @if (rejectionId() === submission.id) {
                 <div class="reject-form">
                   <input
                     type="text"
                     maxlength="2000"
                     placeholder="Reason (optional)"
                     aria-label="Reason for rejection"
-                    [(ngModel)]="rejectionReason"
+                    [ngModel]="rejectionReason()"
+                    (ngModelChange)="rejectionReason.set($event)"
                   />
-                  <button class="reject" type="button" (click)="reject(submission)" [disabled]="savingId === submission.id">
-                    {{ savingId === submission.id ? 'Saving…' : 'Confirm' }}
+                  <button class="reject" type="button" (click)="reject(submission)" [disabled]="savingId() === submission.id">
+                    {{ savingId() === submission.id ? 'Saving…' : 'Confirm' }}
                   </button>
-                  <button class="cancel" type="button" (click)="cancelReject()" [disabled]="savingId === submission.id">Cancel</button>
+                  <button class="cancel" type="button" (click)="cancelReject()" [disabled]="savingId() === submission.id">Cancel</button>
                 </div>
               } @else {
                 <div class="actions">
-                  <button class="approve" type="button" (click)="verify(submission)" [disabled]="savingId !== null">
-                    {{ savingId === submission.id ? 'Saving…' : 'Verify' }}
+                  <button class="approve" type="button" (click)="verify(submission)" [disabled]="savingId() !== null">
+                    {{ savingId() === submission.id ? 'Saving…' : 'Verify' }}
                   </button>
-                  <button class="reject" type="button" (click)="beginReject(submission)" [disabled]="savingId !== null" [attr.aria-label]="'Reject ' + submission.fullName"><app-admin-icon name="close" /></button>
+                  <button class="reject" type="button" (click)="beginReject(submission)" [disabled]="savingId() !== null" [attr.aria-label]="'Reject ' + submission.fullName"><app-admin-icon name="close" /></button>
                 </div>
               }
             </td>
@@ -74,5 +75,5 @@
       </tbody>
     </table>
   </div>
-  <div class="panel__footer">Showing {{ filteredSubmissions.length }} of {{ submissions.length }} pending landlords</div>
+  <div class="panel__footer">Showing {{ filteredSubmissions.length }} of {{ submissions().length }} pending landlords</div>
 </section>

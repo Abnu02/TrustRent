@@ -39,7 +39,7 @@ describe('AuthService and authInterceptor', () => {
     expect(sessionStorage.getItem('trustrent.accessToken')).toBe(token);
   });
 
-  it('registers only a landlord with the API request shape', () => {
+  it('registers a landlord with the API request shape', () => {
     service.register({
       fullName: 'Landlord Example',
       email: 'landlord@example.test',

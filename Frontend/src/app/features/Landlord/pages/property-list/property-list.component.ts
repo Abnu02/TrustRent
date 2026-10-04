@@ -4,9 +4,9 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, Subject, catchError, debounceTime, finalize, merge, startWith, switchMap, tap } from 'rxjs';
-import { toApiErrorMessage } from '../../api-error';
-import { Property, PropertyQuery, PropertyService, PropertyStatus, PropertyType } from '../../property.service';
-import { PropertyStateComponent } from '../../shared/property-state.component';
+import { toApiErrorMessage } from '../../services/api-error';
+import { Property, PropertyQuery, PropertyService, PropertyStatus, PropertyType } from '../../services/property.service';
+import { PropertyStateComponent } from '../../components/property-state.component';
 
 type SortOption = 'title-asc' | 'title-desc' | 'location-asc' | 'location-desc' | 'rent-asc' | 'rent-desc';
 

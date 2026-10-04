@@ -1,0 +1,107 @@
+<div class="dashboard-page">
+  <header class="page-heading dashboard-heading">
+    <div class="dashboard-heading__copy">
+      <p class="page-kicker"><app-landlord-icon name="dashboard" /> LANDLORD OVERVIEW</p>
+      <h1>Landlord Dashboard</h1>
+      <p class="page-subtitle">A clear view of your properties, reviews, and verification status.</p>
+    </div>
+    <a class="button button-primary dashboard-add-button" routerLink="/landlord/properties/new">
+      <app-landlord-icon name="plus-circle" />
+      Add Property
+      <app-landlord-icon class="dashboard-add-button__arrow" name="arrow-right" />
+    </a>
+  </header>
+
+  @if (loading) {
+    <div class="summary-grid" aria-label="Loading property summary" aria-busy="true">
+      @for (item of [1, 2, 3, 4, 5]; track item) { <div class="summary-card skeleton-card"><span class="skeleton-heading"></span><span class="skeleton-row"></span></div> }
+    </div>
+    <div class="panel dashboard-recent" aria-busy="true"><span class="skeleton-heading"></span><span class="skeleton-row"></span><span class="skeleton-row"></span><span class="skeleton-row"></span></div>
+  } @else if (errorMessage) {
+    <section class="page-error" role="alert">
+      <app-landlord-icon name="cloud-off" />
+      <div><strong>Dashboard data is unavailable</strong><p>{{ errorMessage }}</p></div>
+      <button type="button" class="button button-outline" (click)="loadDashboard()">
+        <app-landlord-icon name="refresh" />Try again
+      </button>
+    </section>
+  } @else if (snapshot) {
+    <section class="summary-grid" aria-label="Property summary">
+      <article class="summary-card summary-card--total">
+        <span class="summary-icon"><app-landlord-icon name="buildings" /></span>
+        <span class="summary-label">Total Properties</span>
+        <strong>{{ snapshot.total }}</strong>
+        <span class="summary-caption">In your portfolio</span>
+      </article>
+      <article class="summary-card summary-card--pending">
+        <span class="summary-icon"><app-landlord-icon name="clock" /></span>
+        <span class="summary-label">Pending Review</span>
+        <strong>{{ snapshot.pending }}</strong>
+        <span class="summary-caption">Awaiting a decision</span>
+      </article>
+      <article class="summary-card summary-card--approved">
+        <span class="summary-icon"><app-landlord-icon name="check-circle" /></span>
+        <span class="summary-label">Approved</span>
+        <strong>{{ snapshot.approved }}</strong>
+        <span class="summary-caption">Approved listings</span>
+      </article>
+      <article class="summary-card summary-card--rejected">
+        <span class="summary-icon"><app-landlord-icon name="x-circle" /></span>
+        <span class="summary-label">Rejected</span>
+        <strong>{{ snapshot.rejected }}</strong>
+        <span class="summary-caption">Review required</span>
+      </article>
+      <article class="summary-card summary-card--verified">
+        <span class="summary-icon"><app-landlord-icon name="shield-check" /></span>
+        <span class="summary-label">Verified</span>
+        <strong>{{ snapshot.verified }}</strong>
+        <span class="summary-caption">Trust verified</span>
+      </article>
+    </section>
+
+    <section class="panel dashboard-recent">
+      <div class="panel-heading">
+        <div class="panel-heading__copy">
+          <p class="panel-kicker"><app-landlord-icon name="buildings" /> PROPERTY MANAGEMENT</p>
+          <h2>Your Properties</h2>
+          <p>A quick look at your listings and their review status.</p>
+        </div>
+        <a routerLink="/landlord/properties" class="inline-link dashboard-view-all">
+          View all properties
+          <app-landlord-icon name="arrow-right" />
+        </a>
+      </div>
+      @if (snapshot.recentProperties.length === 0) {
+        <div class="empty-state">
+          <span class="empty-state-icon"><app-landlord-icon name="home" /></span>
+          <strong>No properties yet</strong>
+          <p>Your portfolio is ready for its first listing. Add a property to start managing your rentals here.</p>
+          <a class="button button-primary" routerLink="/landlord/properties/new">
+            <app-landlord-icon name="plus-circle" />Add Property
+          </a>
+        </div>
+      } @else {
+        <div class="table-scroll">
+          <table class="property-table">
+            <thead><tr><th>Property</th><th>Location</th><th>Rent</th><th>Status</th><th>Verification</th><th>Action</th></tr></thead>
+            <tbody>
+              @for (property of snapshot.recentProperties; track property.id) {
+                <tr>
+                  <td data-label="Property">
+                    <span class="property-cell-icon"><app-landlord-icon name="home" /></span>
+                    <a class="property-title-link" [routerLink]="['/landlord/properties', property.id]">{{ property.title }}</a>
+                  </td>
+                  <td data-label="Location"><span class="table-cell-detail"><app-landlord-icon name="location" />{{ property.location }}</span></td>
+                  <td data-label="Rent"><span class="rent-value"><app-landlord-icon name="money" />{{ property.rent | number }} ETB</span></td>
+                  <td data-label="Status"><app-property-state [status]="property.status" [isVerified]="property.isVerified" /></td>
+                  <td data-label="Verification"><span class="verification-label" [class.is-verified]="property.isVerified"><app-landlord-icon [name]="property.isVerified ? 'shield-check' : 'clock'" />{{ property.isVerified ? 'Verified' : 'Not Verified' }}</span></td>
+                  <td data-label="Action"><a class="inline-link row-view-link" [routerLink]="['/landlord/properties', property.id]">View details<app-landlord-icon name="arrow-right" /></a></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</div>

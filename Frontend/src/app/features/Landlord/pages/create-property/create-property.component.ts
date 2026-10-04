@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, DestroyRef, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { PropertyService, PropertyDraft } from '../../property.service';
-import { FeedbackService } from '../../feedback.service';
-import { ApiErrorMessage, toApiErrorMessage } from '../../api-error';
-import { PropertyEditorComponent } from '../../shared/property-editor.component';
+import { ApiErrorMessage, toApiErrorMessage } from '../../services/api-error';
+import { FeedbackService } from '../../services/feedback.service';
+import { PropertyService, PropertyDraft } from '../../services/property.service';
+import { PropertyEditorComponent } from '../../components/property-editor.component';
 
 @Component({
   selector: 'app-create-property',

@@ -3,9 +3,9 @@ import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angul
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, EMPTY, finalize, switchMap, tap } from 'rxjs';
-import { toApiErrorMessage } from '../../api-error';
-import { Property, PropertyService } from '../../property.service';
-import { PropertyStateComponent } from '../../shared/property-state.component';
+import { toApiErrorMessage } from '../../services/api-error';
+import { Property, PropertyService } from '../../services/property.service';
+import { PropertyStateComponent } from '../../components/property-state.component';
 
 @Component({
   selector: 'app-property-details',

@@ -28,6 +28,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
+builder.Services.AddProblemDetails();
 
 // Persistence
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -87,7 +88,6 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
-    app.MapScalarApiReference();
 }
 
 app.UseExceptionHandler();
@@ -113,8 +113,8 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        // Log error
-        Console.WriteLine($"An error occurred while seeding the database: {ex.Message}");
+        app.Logger.LogCritical(ex, "Database migration or seeding failed.");
+        throw;
     }
 }
 

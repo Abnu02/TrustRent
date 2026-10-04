@@ -46,7 +46,7 @@ public sealed class AdminLandlordsController(ILandlordReviewService landlordRevi
         string? note,
         CancellationToken cancellationToken)
     {
-        var reviewerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var reviewerId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
         if (!Guid.TryParse(reviewerId, out var reviewerUserId))
         {
             return Unauthorized();

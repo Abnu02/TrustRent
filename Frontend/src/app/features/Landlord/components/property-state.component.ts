@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { PropertyStatus } from '../property.service';
+import { PropertyStatus } from '../services/property.service';
 
 @Component({
   selector: 'app-property-state',

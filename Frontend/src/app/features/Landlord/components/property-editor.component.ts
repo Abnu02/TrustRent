@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Property, PropertyDraft, PropertyType } from '../property.service';
+import { Property, PropertyDraft, PropertyType } from '../services/property.service';
 
 const MAX_PROPERTY_VALUE = 9_999_999_999.99;
 

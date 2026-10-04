@@ -1,0 +1,12 @@
+<main class="tenant-coming-soon">
+  <section class="coming-soon-card" aria-labelledby="coming-soon-title">
+    <div class="coming-soon-icon" aria-hidden="true">TR</div>
+    <p class="eyebrow">Tenant workspace</p>
+    <h1 id="coming-soon-title">Coming soon</h1>
+    <p class="description">
+      Hi{{ user()?.fullName ? ', ' + user()?.fullName : '' }}. Your tenant workspace is being prepared.
+      Please check back soon.
+    </p>
+    <button type="button" (click)="signOut()">Sign out</button>
+  </section>
+</main>

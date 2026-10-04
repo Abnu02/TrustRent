@@ -55,21 +55,23 @@
       <div class="role-selector" aria-label="Choose account role">
         <label class="role-selector__label">Continue as</label>
         <div class="role-selector__options">
-          <button
-            *ngFor="let role of roles"
-            type="button"
-            class="role-option"
-            [class.is-active]="role.key === selectedRole"
-            [attr.aria-pressed]="role.key === selectedRole"
-            (click)="selectRole(role.key)"
-          >
-            <span class="role-option__icon"><app-auth-icon [name]="role.icon" /></span>
-            <span class="role-option__copy">
-              <span class="role-option__header">{{ role.label }}</span>
-              <span class="role-option__subtext">{{ role.subtitle }}</span>
-            </span>
-            <app-auth-icon class="role-option__check" name="check_circle" />
-          </button>
+          <ng-container *ngFor="let role of roles">
+            <button
+              *ngIf="authMode !== 'register' || role.key !== 'admin'"
+              type="button"
+              class="role-option"
+              [class.is-active]="role.key === selectedRole"
+              [attr.aria-pressed]="role.key === selectedRole"
+              (click)="selectRole(role.key)"
+            >
+              <span class="role-option__icon"><app-auth-icon [name]="role.icon" /></span>
+              <span class="role-option__copy">
+                <span class="role-option__header">{{ role.label }}</span>
+                <span class="role-option__subtext">{{ role.subtitle }}</span>
+              </span>
+              <app-auth-icon class="role-option__check" name="check_circle" />
+            </button>
+          </ng-container>
         </div>
       </div>
 
@@ -121,7 +123,15 @@
             <label for="full-name">Full name</label>
             <div class="input-shell">
               <app-auth-icon class="input-shell__icon" name="person" />
-              <input id="full-name" name="fullName" type="text" autocomplete="name" placeholder="Your full name" required />
+              <input id="full-name" name="fullName" type="text" autocomplete="name" placeholder="Your full name" [(ngModel)]="fullName" required />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="phone-number">Phone number</label>
+            <div class="input-shell">
+              <app-auth-icon class="input-shell__icon" name="phone" />
+              <input id="phone-number" name="phoneNumber" type="tel" autocomplete="tel" placeholder="Your phone number" [(ngModel)]="phoneNumber" required />
             </div>
           </div>
 
@@ -129,7 +139,7 @@
             <label for="register-email">Email address</label>
             <div class="input-shell">
               <app-auth-icon class="input-shell__icon" name="mail" />
-              <input id="register-email" name="registerEmail" type="email" autocomplete="email" placeholder="you@example.com" required />
+              <input id="register-email" name="registerEmail" type="email" autocomplete="email" placeholder="you@example.com" [(ngModel)]="email" required />
             </div>
           </div>
 
@@ -143,6 +153,8 @@
                 [type]="showPassword ? 'text' : 'password'"
                 autocomplete="new-password"
                 placeholder="Create a password"
+                minlength="8"
+                [(ngModel)]="password"
                 required
               />
               <button
@@ -166,6 +178,7 @@
                 [type]="showConfirmPassword ? 'text' : 'password'"
                 autocomplete="new-password"
                 placeholder="Repeat your password"
+                [(ngModel)]="confirmPassword"
                 required
               />
               <button
@@ -218,8 +231,11 @@
         @if (submitError) {
           <p class="auth-error" role="alert"><app-auth-icon name="error" />{{ submitError }}</p>
         }
+        @if (submitSuccess) {
+          <p class="auth-success" role="status">{{ submitSuccess }}</p>
+        }
         <button class="primary-button" type="submit" [disabled]="isSubmitting">
-          {{ isSubmitting ? 'Signing in…' : ctaText }}
+          {{ isSubmitting ? (authMode === 'register' ? 'Creating account…' : 'Signing in…') : ctaText }}
           <app-auth-icon [name]="isSubmitting ? 'progress_activity' : 'arrow_forward'" />
         </button>
       </form>

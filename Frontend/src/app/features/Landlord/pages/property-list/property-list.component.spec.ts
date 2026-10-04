@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { throwError } from 'rxjs';
-import { PropertyService } from '../../property.service';
+import { PropertyService } from '../../services/property.service';
 import { PropertyListComponent } from './property-list.component';
 
 describe('PropertyListComponent', () => {

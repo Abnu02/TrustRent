@@ -20,7 +20,7 @@ export interface RegisterRequest {
   email: string;
   phoneNumber: string;
   password: string;
-  role: 'Landlord';
+  role: 'Tenant' | 'Landlord';
 }
 
 export interface AuthResponse {

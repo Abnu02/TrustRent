@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { landlordGuard } from './auth/landlord.guard';
+import { tenantGuard } from './auth/tenant.guard';
 import { Auth } from './features/auth/auth';
 import { AdminLayout } from './features/Admin/admin-layout';
 import { AdminOverview } from './features/Admin/pages/overview/overview';
@@ -8,12 +9,13 @@ import { LandlordReviews } from './features/Admin/pages/landlord-reviews/landlor
 import { AuditLog } from './features/Admin/pages/audit-log/audit-log';
 import { PropertyDetail } from './features/Admin/pages/property-detail/property-detail';
 import { adminAuthGuard } from './features/Admin/services/admin-auth.guard';
-import { LandlordLayoutComponent } from './layouts/landlord-layout.component';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { CreatePropertyComponent } from './pages/create-property/create-property.component';
-import { EditPropertyComponent } from './pages/edit-property/edit-property.component';
-import { PropertyDetailsComponent } from './pages/property-details/property-details.component';
-import { PropertyListComponent } from './pages/property-list/property-list.component';
+import { LandlordLayoutComponent } from './features/Landlord/landlord-layout.component';
+import { DashboardComponent } from './features/Landlord/pages/dashboard/dashboard.component';
+import { CreatePropertyComponent } from './features/Landlord/pages/create-property/create-property.component';
+import { EditPropertyComponent } from './features/Landlord/pages/edit-property/edit-property.component';
+import { PropertyDetailsComponent } from './features/Landlord/pages/property-details/property-details.component';
+import { PropertyListComponent } from './features/Landlord/pages/property-list/property-list.component';
+import { TenantComingSoonComponent } from './pages/tenant-coming-soon/tenant-coming-soon.component';
 
 export const routes: Routes = [
   { path: '', component: Auth },
@@ -43,6 +45,11 @@ export const routes: Routes = [
       { path: 'properties/:id', component: PropertyDetailsComponent },
       { path: 'properties', component: PropertyListComponent },
     ],
+  },
+  {
+    path: 'tenant',
+    component: TenantComingSoonComponent,
+    canActivate: [tenantGuard],
   },
   { path: '**', redirectTo: '' },
 ];

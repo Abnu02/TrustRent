@@ -3,7 +3,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AdminAuthSession } from '../Admin/services/admin-auth-session';
+import { firstValueFrom } from 'rxjs';
+import { AuthService, RegisterRequest } from '../../auth/auth.service';
 import { AuthIcon, AuthIconName } from './auth-icon';
 
 type AuthMode = 'sign-in' | 'register' | 'reset';
@@ -55,12 +56,16 @@ export class Auth {
   authMode: AuthMode = 'sign-in';
   showPassword = false;
   showConfirmPassword = false;
+  fullName = '';
   email = '';
+  phoneNumber = '';
   password = '';
+  confirmPassword = '';
   isSubmitting = false;
   submitError = '';
+  submitSuccess = '';
   private readonly router = inject(Router);
-  private readonly authSession = inject(AdminAuthSession);
+  private readonly authService = inject(AuthService);
 
   get selectedRoleMeta() {
     return this.roles.find((role) => role.key === this.selectedRole) ?? this.roles[0];
@@ -107,9 +112,9 @@ export class Auth {
 
   setMode(mode: AuthMode): void {
     this.authMode = mode;
-    if (mode === 'sign-in') {
-      this.selectedRole = 'admin';
-    } else if (this.selectedRole === 'admin') {
+    this.submitError = '';
+    this.submitSuccess = '';
+    if (mode !== 'sign-in' && this.selectedRole === 'admin') {
       this.selectedRole = 'tenant';
     }
   }
@@ -123,18 +128,51 @@ export class Auth {
   }
 
   async onSubmit(): Promise<void> {
-    if (this.authMode !== 'sign-in') {
+    if (this.authMode === 'reset') {
       this.submitError = 'This authentication flow is not available yet.';
       return;
     }
 
     this.isSubmitting = true;
     this.submitError = '';
+    this.submitSuccess = '';
     try {
-      await this.authSession.signIn(this.email, this.password);
-      await this.router.navigateByUrl('/admin');
+      if (this.authMode === 'register') {
+        if (this.password !== this.confirmPassword) {
+          this.submitError = 'Passwords do not match.';
+          return;
+        }
+
+        const request: RegisterRequest = {
+          fullName: this.fullName.trim(),
+          email: this.email.trim(),
+          phoneNumber: this.phoneNumber.trim(),
+          password: this.password,
+          role: this.selectedRole === 'landlord' ? 'Landlord' : 'Tenant',
+        };
+        await firstValueFrom(this.authService.register(request));
+        this.submitSuccess = 'Your account was created. You can now sign in.';
+        this.password = '';
+        this.confirmPassword = '';
+        return;
+      }
+
+      const response = await firstValueFrom(
+        this.authService.login({ email: this.email.trim(), password: this.password }),
+      );
+      const role = response.user.role.toLowerCase();
+      if (role !== this.selectedRole) {
+        this.authService.clearSession();
+        this.submitError = `This account is registered as ${response.user.role}. Select that role and try again.`;
+        return;
+      }
+
+      const destination = role === 'admin' ? '/admin' : role === 'landlord' ? '/landlord' : '/tenant';
+      await this.router.navigateByUrl(destination);
     } catch (error) {
-      if (error instanceof HttpErrorResponse && error.status === 401) {
+      if (this.authMode === 'register' && error instanceof HttpErrorResponse) {
+        this.submitError = getRegistrationErrorMessage(error);
+      } else if (error instanceof HttpErrorResponse && error.status === 401) {
         this.submitError = 'Email or password is incorrect.';
       } else if (error instanceof HttpErrorResponse && error.status >= 500) {
         this.submitError = 'The sign-in service is unavailable. Please check the backend database connection and try again.';
@@ -147,4 +185,23 @@ export class Auth {
       this.isSubmitting = false;
     }
   }
+}
+
+function getRegistrationErrorMessage(error: HttpErrorResponse): string {
+  const response = error.error;
+  if (typeof response === 'object' && response !== null) {
+    const body = response as Record<string, unknown>;
+    const message = body['error'] ?? body['Error'];
+    if (typeof message === 'string' && message.length > 0) {
+      return message;
+    }
+  }
+
+  if (error.status === 0) {
+    return 'Unable to reach the registration service. Check the backend connection and try again.';
+  }
+  if (error.status >= 500) {
+    return 'The registration service encountered an error. Please try again later.';
+  }
+  return 'Unable to create the account. Check the submitted details and try again.';
 }

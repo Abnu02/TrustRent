@@ -498,6 +498,13 @@ app-auth-icon,
   font-size: 1rem;
 }
 
+.auth-success {
+  margin: 0;
+  color: #087443;
+  font-size: .8rem;
+  line-height: 1.5;
+}
+
 .auth-shell__aside {
   position: relative;
   display: flex;
