@@ -1,14 +1,1 @@
 .docs/
-
-# Build artifacts
-**/bin/
-**/obj/
-**/.vs/
-Frontend/node_modules/
-Frontend/dist/
-
-# Local uploads and developer-only environment files
-Backend/TrustRent.Api/wwwroot/uploads/
-.env
-.env.*
-!.env.example

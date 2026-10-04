@@ -32,19 +32,6 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(
     builder.Configuration);
 
-var allowedOrigins =
-    builder.Configuration
-        .GetSection("Cors:AllowedOrigins")
-        .Get<string[]>() ?? [];
-
-if (builder.Environment.IsDevelopment())
-{
-    allowedOrigins = allowedOrigins
-        .Append("http://localhost:4200")
-        .Distinct(StringComparer.OrdinalIgnoreCase)
-        .ToArray();
-}
-
 // --------------------------------------------------
 // OpenAPI
 // --------------------------------------------------
@@ -78,7 +65,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AngularClient", policy =>
     {
         policy
-            .WithOrigins(allowedOrigins)
+            .WithOrigins(
+                "http://localhost:4200")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -94,11 +82,6 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-
-    var dbContext =
-        services.GetRequiredService<TrustRentDbContext>();
-
-    await dbContext.Database.MigrateAsync();
 
     var roleManager =
         services.GetRequiredService<
@@ -130,10 +113,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
+app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
