@@ -2,4 +2,5 @@
   <Project Path="TrustRent.Api/TrustRent.Api.csproj" />
   <Project Path="TrustRent.Application/TrustRent.Application.csproj" />
   <Project Path="TrustRent.Domain/TrustRent.Domain.csproj" />
+  <Project Path="TrustRent.Infrastructure/TrustRent.Infrastructure.csproj" />
 </Solution>
