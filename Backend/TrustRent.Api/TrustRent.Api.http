@@ -1,6 +1,45 @@
-@TrustRent.Api_HostAddress = http://localhost:5151
+# @TrustRent.Api_HostAddress = http://localhost:5151
 
-GET {{TrustRent.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+# GET {{TrustRent.Api_HostAddress}}/weatherforecast/
+# Accept: application/json
 
-###
+# ###
+
+# @token = replace-with-landlord-jwt
+
+# ### Create a property
+# POST {{TrustRent.Api_HostAddress}}/api/v1/properties
+# Authorization: Bearer {{token}}
+# Content-Type: application/json
+
+# {
+# 	"title": "Modern 2 Bedroom Apartment",
+# 	"description": "Updated description.",
+# 	"propertyType": "Apartment",
+# 	"rent": 25000,
+# 	"deposit": 50000,
+# 	"location": "Bole, Addis Ababa",
+# 	"bedrooms": 2,
+# 	"bathrooms": 2
+# }
+
+# ### Get the landlord's properties
+# GET {{TrustRent.Api_HostAddress}}/api/v1/properties/my
+# Authorization: Bearer {{token}}
+# Accept: application/json
+
+# ### Update a property
+# PUT {{TrustRent.Api_HostAddress}}/api/v1/properties/7c3a0000-0000-0000-0000-000000000001
+# Authorization: Bearer {{token}}
+# Content-Type: application/json
+
+# {
+# 	"title": "Modern 2 Bedroom Apartment",
+# 	"description": "Updated description.",
+# 	"propertyType": "Apartment",
+# 	"rent": 27000,
+# 	"deposit": 54000,
+# 	"location": "Bole, Addis Ababa",
+# 	"bedrooms": 2,
+# 	"bathrooms": 2
+# }

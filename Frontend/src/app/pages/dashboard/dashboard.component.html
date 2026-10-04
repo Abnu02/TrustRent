@@ -1,0 +1,38 @@
+<div class="page-heading">
+  <div>
+    <p class="page-kicker">OVERVIEW</p>
+    <h1>Landlord Dashboard</h1>
+    <p class="page-subtitle">Manage your rental properties.</p>
+  </div>
+  <a class="button button-primary" routerLink="/landlord/properties/new"><span class="material-symbols-outlined" aria-hidden="true">add</span>Add Property</a>
+</div>
+
+@if (loading) {
+  <div class="summary-grid" aria-label="Loading property summary" aria-busy="true">
+    @for (item of [1, 2, 3, 4, 5]; track item) { <div class="summary-card skeleton-card"><span class="skeleton-line"></span><span class="skeleton-number"></span></div> }
+  </div>
+  <div class="panel dashboard-recent" aria-busy="true"><span class="skeleton-line"></span><span class="skeleton-row"></span><span class="skeleton-row"></span><span class="skeleton-row"></span></div>
+} @else if (errorMessage) {
+  <section class="page-error" role="alert"><span class="material-symbols-outlined" aria-hidden="true">cloud_off</span><div><strong>Dashboard data is unavailable</strong><p>{{ errorMessage }}</p></div><button type="button" class="button button-outline" (click)="loadDashboard()">Try again</button></section>
+} @else if (snapshot) {
+  <section class="summary-grid" aria-label="Property summary">
+    <div class="summary-card"><span>Total Properties</span><strong>{{ snapshot.total }}</strong></div>
+    <div class="summary-card"><span>Pending</span><strong>{{ snapshot.pending }}</strong></div>
+    <div class="summary-card"><span>Approved</span><strong>{{ snapshot.approved }}</strong></div>
+    <div class="summary-card"><span>Rejected</span><strong>{{ snapshot.rejected }}</strong></div>
+    <div class="summary-card"><span>Verified</span><strong>{{ snapshot.verified }}</strong></div>
+  </section>
+
+  <section class="panel dashboard-recent">
+    <div class="panel-heading"><div><h2>Your Properties</h2><p>Property records from your account</p></div><a routerLink="/landlord/properties" class="inline-link">View all <span aria-hidden="true">→</span></a></div>
+    @if (snapshot.recentProperties.length === 0) {
+      <div class="empty-state"><span class="material-symbols-outlined" aria-hidden="true">home_work</span><strong>No properties yet</strong><p>Add your first property to begin managing your rentals.</p><a class="button button-primary" routerLink="/landlord/properties/new">Add Property</a></div>
+    } @else {
+      <div class="table-scroll"><table class="property-table"><thead><tr><th>Property</th><th>Location</th><th>Rent</th><th>Status</th><th>Verification</th><th>Action</th></tr></thead><tbody>
+        @for (property of snapshot.recentProperties; track property.id) {
+          <tr><td data-label="Property"><a class="property-title-link" [routerLink]="['/landlord/properties', property.id]">{{ property.title }}</a></td><td data-label="Location">{{ property.location }}</td><td data-label="Rent">{{ property.rent | number }} ETB</td><td data-label="Status"><app-property-state [status]="property.status" [isVerified]="property.isVerified" /></td><td data-label="Verification">{{ property.isVerified ? 'Verified' : 'Not Verified' }}</td><td data-label="Action"><a class="inline-link" [routerLink]="['/landlord/properties', property.id]">View</a></td></tr>
+        }
+      </tbody></table></div>
+    }
+  </section>
+}

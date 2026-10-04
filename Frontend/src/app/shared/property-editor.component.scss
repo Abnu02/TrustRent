@@ -1,0 +1,23 @@
+:host { display: block; }
+.property-form { border: 1px solid #dfe5ef; border-radius: 11px; background: #fff; box-shadow: 0 2px 5px rgb(11 28 48 / 5%); }
+.property-form fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.form-section { padding: 17px 20px; border-bottom: 1px solid #e5eaf2; }
+.form-section h2 { display: flex; align-items: center; gap: 9px; margin: 0 0 13px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; }
+.section-mark { width: 5px; height: 14px; border-radius: 3px; background: #000; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 15px; }
+.property-info-grid { grid-template-columns: minmax(0, 1fr) minmax(170px, .32fr); }
+.form-field { display: grid; align-content: start; gap: 5px; color: #313b4b; font-size: 11px; font-weight: 600; }
+.form-field-wide { grid-column: 1 / -1; }
+.form-field b { color: #b42318; }
+.form-field input, .form-field select, .form-field textarea { width: 100%; min-width: 0; min-height: 39px; padding: 8px 11px; border: 1px solid #c6cbd5; border-radius: 7px; outline: 0; background: #f8f9ff; color: var(--stitch-ink); font-size: 12px; font-weight: 400; }
+.form-field textarea { min-height: 74px; resize: vertical; }
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: #1a2b40; box-shadow: 0 0 0 2px rgb(11 28 48 / 10%); }
+.form-field input.ng-invalid.ng-touched, .form-field textarea.ng-invalid.ng-touched, .form-field select.ng-invalid.ng-touched { border-color: #b42318; }
+.field-error { min-height: 12px; color: #a42323; font-size: 9px; font-weight: 450; }
+.form-actions { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 20px; }
+.form-actions > div { display: flex; gap: 8px; }
+.form-note { margin: 0; color: var(--stitch-muted); font-size: 10px; }
+.form-error { margin: 14px 16px 0; padding: 10px 12px; border: 1px solid #f2c5bf; border-radius: 7px; background: #fff6f4; color: #842b22; font-size: 11px; }
+.form-error ul { margin: 7px 0 0; padding-left: 17px; }
+.form-error li + li { margin-top: 3px; }
+@media (max-width: 650px) { .form-section { padding: 14px; } .property-info-grid { grid-template-columns: minmax(0, 1fr); } .form-field-wide { grid-column: auto; } .form-actions { align-items: flex-start; flex-direction: column; padding: 13px 14px; } .form-actions > div { width: 100%; justify-content: flex-end; } .form-note { line-height: 1.5; } }
