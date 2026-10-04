@@ -95,8 +95,32 @@ public static class DependencyInjection
         services.AddScoped<IAdminVerificationService,
             AdminVerificationService>();
 
-        services.AddScoped<IFileStorageService,
-            LocalFileStorageService>();
+        var cloudinaryValues = new[]
+        {
+            configuration["Cloudinary:CloudName"],
+            configuration["Cloudinary:ApiKey"],
+            configuration["Cloudinary:ApiSecret"]
+        };
+        var cloudinaryConfigured = cloudinaryValues.Any(
+            value => !string.IsNullOrWhiteSpace(value));
+
+        if (cloudinaryConfigured)
+        {
+            if (cloudinaryValues.Any(
+                    string.IsNullOrWhiteSpace))
+            {
+                throw new InvalidOperationException(
+                    "Cloudinary requires CloudName, ApiKey and ApiSecret configuration.");
+            }
+
+            services.AddHttpClient<IFileStorageService,
+                CloudinaryFileStorageService>();
+        }
+        else
+        {
+            services.AddScoped<IFileStorageService,
+                LocalFileStorageService>();
+        }
 
         return services;
     }
