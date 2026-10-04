@@ -1,3 +1,4 @@
+using PropertyCreateRequest = TrustRent.Application.Properties.DTOs.CreatePropertyRequest;
 using TrustRent.Application.Properties.DTOs;
 
 namespace TrustRent.Application.Properties.Services;
@@ -6,7 +7,7 @@ public interface IPropertyService
 {
     Task<PropertyDto> CreatePropertyAsync(
         Guid landlordId,
-        CreatePropertyRequest request,
+        PropertyCreateRequest request,
         CancellationToken cancellationToken);
 
     Task<PagedResult<PropertyDto>> GetByLandlordAsync(

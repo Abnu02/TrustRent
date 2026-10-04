@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using TrustRent.Application.Properties.DTOs;
 using TrustRent.Application.Properties.Interfaces;
 using TrustRent.Domain.Entities;
+using PropertyCreateRequest = TrustRent.Application.Properties.DTOs.CreatePropertyRequest;
 
 namespace TrustRent.Application.Properties.Services;
 
@@ -11,7 +12,7 @@ public sealed class PropertyService(
 {
     public async Task<PropertyDto> CreatePropertyAsync(
         Guid landlordId,
-        CreatePropertyRequest request,
+        PropertyCreateRequest request,
         CancellationToken cancellationToken)
     {
         var property = new Property

@@ -24,7 +24,7 @@ internal sealed class PropertyBearerSecuritySchemeTransformer : IOpenApiDocument
 
         foreach (var (path, pathItem) in document.Paths)
         {
-            if (!path.StartsWith("/api/v1/properties", StringComparison.Ordinal) || pathItem?.Operations is null)
+            if (!path.StartsWith("/api/v1/landlord/properties", StringComparison.Ordinal) || pathItem?.Operations is null)
             {
                 continue;
             }

@@ -135,7 +135,7 @@ Authorization: Bearer <access_token>
 **Endpoint**
 
 ```http
-POST /api/v1/properties
+POST /api/v1/landlord/properties
 ```
 
 **Request Body**
@@ -174,7 +174,7 @@ POST /api/v1/properties
 **Endpoint**
 
 ```http
-GET /api/v1/properties/my
+GET /api/v1/landlord/properties/my
 ```
 
 **Authentication:** Required
@@ -213,7 +213,7 @@ GET /api/v1/properties/my
 **Endpoint**
 
 ```http
-PUT /api/v1/properties/{id}
+PUT /api/v1/landlord/properties/{id}
 ```
 
 **Authentication:** Required
@@ -588,9 +588,9 @@ PUT /api/v1/admin/properties/{id}/reject
 | 1 | `POST` | `/api/v1/auth/register` | Public |
 | 2 | `POST` | `/api/v1/auth/login` | Public |
 | 3 | `POST` | `/api/v1/auth/logout` | Authenticated |
-| 4 | `POST` | `/api/v1/properties` | Landlord |
-| 5 | `GET` | `/api/v1/properties/my` | Landlord |
-| 6 | `PUT` | `/api/v1/properties/{id}` | Landlord |
+| 4 | `POST` | `/api/v1/landlord/properties` | Landlord |
+| 5 | `GET` | `/api/v1/landlord/properties/my` | Landlord |
+| 6 | `PUT` | `/api/v1/landlord/properties/{id}` | Landlord |
 | 7 | `GET` | `/api/v1/properties` | Public/Tenant |
 | 8 | `GET` | `/api/v1/properties/{id}` | Public/Tenant |
 | 9 | `GET` | `/api/v1/admin/landlords/pending` | Admin |

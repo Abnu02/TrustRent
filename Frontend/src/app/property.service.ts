@@ -52,7 +52,7 @@ export interface DashboardSnapshot {
 @Injectable({ providedIn: 'root' })
 export class PropertyService {
   private readonly http = inject(HttpClient);
-  private readonly endpoint = '/api/v1/properties';
+  private readonly endpoint = '/api/v1/landlord/properties';
 
   getMy(query: PropertyQuery): Observable<PagedProperties> {
     let params = new HttpParams();

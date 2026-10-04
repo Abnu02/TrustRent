@@ -58,8 +58,8 @@ describe('AuthService and authInterceptor', () => {
     service.login({ email: landlordUser.email, password: 'TestPassword!9' }).subscribe();
     http.expectOne('/api/v1/auth/login').flush({ accessToken: token, user: landlordUser });
 
-    TestBed.inject(HttpClient).get('/api/v1/properties/my').subscribe();
-    const request = http.expectOne('/api/v1/properties/my');
+    TestBed.inject(HttpClient).get('/api/v1/landlord/properties/my').subscribe();
+    const request = http.expectOne('/api/v1/landlord/properties/my');
     expect(request.request.headers.get('Authorization')).toBe(`Bearer ${token}`);
     request.flush({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0 });
   });

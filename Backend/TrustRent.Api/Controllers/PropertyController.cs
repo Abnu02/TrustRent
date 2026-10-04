@@ -9,7 +9,7 @@ using TrustRent.Application.Properties.Services;
 namespace TrustRent.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/properties")]
+[Route("api/v1/landlord/properties")]
 [Authorize(Roles = "Landlord")]
 public sealed class PropertyController(
     IPropertyService propertyService,
