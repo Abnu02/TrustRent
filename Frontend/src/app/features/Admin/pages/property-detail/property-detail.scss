@@ -27,6 +27,9 @@ h1 { margin: .35rem 0; font-size: clamp(1.55rem, 3vw, 2rem); letter-spacing: -.0
 .meta-row strong { color: #30415a; font-size: .68rem; font-weight: 600; text-align: right; }
 .review-note { display: grid; gap: .35rem; margin-top: .6rem; padding: .7rem; border-radius: .55rem; background: #f7f9fc; color: #53627a; font-size: .72rem; line-height: 1.5; }
 .decision-panel { display: grid; gap: .55rem; }
+.review-note-input { display: grid; gap: .35rem; color: #778398; font-size: .68rem; }
+.review-note-input textarea { width: 100%; resize: vertical; padding: .6rem; border: 1px solid #e0e6ef; border-radius: .5rem; color: #30415a; font: inherit; line-height: 1.5; }
+.review-note-input textarea:focus-visible { outline: 2px solid #2875da; outline-offset: 1px; }
 .decision { display: flex; min-height: 2.4rem; align-items: center; justify-content: center; gap: .4rem; padding: 0 .7rem; border: 1px solid transparent; border-radius: .5rem; font: inherit; font-size: .72rem; font-weight: 700; cursor: pointer; }
 .decision:disabled { opacity: .55; cursor: wait; }
 .decision--approve { background: #168458; color: white; }
@@ -35,5 +38,6 @@ h1 { margin: .35rem 0; font-size: clamp(1.55rem, 3vw, 2rem); letter-spacing: -.0
 .message, .state-message { padding: .8rem; border-radius: .55rem; background: #e5f6ec; color: #18764f; font-size: .75rem; }
 .message--error, .state-message--error { background: #fff0ef; color: #ad4139; }
 .state-message { margin: 2rem 0; background: #fff; text-align: center; }
+.state-message button { display: block; margin: .75rem auto 0; padding: .45rem .75rem; border: 1px solid #e0e6ef; border-radius: .45rem; background: #fff; color: #30415a; font: inherit; font-weight: 700; cursor: pointer; }
 @media (max-width: 850px) { .detail-grid { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .page-heading { align-items: flex-start; flex-direction: column; } .facts { grid-template-columns: repeat(2, 1fr); } }

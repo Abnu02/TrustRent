@@ -9,7 +9,7 @@
   </a>
 </section>
 
-@if (!loading && !errorMessage) {
+@if (!loading() && !errorMessage()) {
   <section class="metrics" aria-label="Admin metrics">
     @for (metric of metrics; track metric.label) {
       <article class="metric-card">
@@ -17,7 +17,7 @@
           <span>{{ metric.label }}</span>
           <span class="metric-icon"><app-admin-icon [name]="metric.icon" /></span>
         </div>
-        <strong>{{ summary[metric.key] }}</strong>
+        <strong>{{ summary()[metric.key] }}</strong>
         <span class="metric-card__change">Total</span>
       </article>
     }
@@ -38,14 +38,14 @@
         <tr><th>Property</th><th>Submitted by</th><th>Received</th><th>Status</th><th></th></tr>
       </thead>
       <tbody>
-        @if (loading) {
+        @if (loading()) {
           <tr><td colspan="5">Loading property reviews…</td></tr>
-        } @else if (errorMessage) {
-          <tr><td class="error-message" colspan="5">{{ errorMessage }}</td></tr>
-        } @else if (queue.length === 0) {
+        } @else if (errorMessage(); as error) {
+          <tr><td class="error-message" colspan="5">{{ error }} <button type="button" (click)="load()">Try again</button></td></tr>
+        } @else if (queue().length === 0) {
           <tr><td colspan="5">No properties have been submitted yet.</td></tr>
         } @else {
-        @for (item of queue; track item.id) {
+        @for (item of queue(); track item.id) {
           <tr>
             <td class="strong">{{ item.address }}</td>
             <td>{{ item.ownerName }}</td>

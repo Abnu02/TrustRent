@@ -2,13 +2,18 @@ using Microsoft.EntityFrameworkCore;
 using TrustRent.Application.Interfaces;
 using TrustRent.Application.Properties;
 using TrustRent.Domain.Properties;
+using TrustRent.Domain.Entities;
+using TrustRent.Domain.Enums;
 using TrustRent.Infrastructure.Identity;
+using TrustRent.Infrastructure.Data;
 using TrustRent.Infrastructure.Persistence;
 using TrustRent.Domain.Users;
 
 namespace TrustRent.Infrastructure.Services;
 
-public sealed class PropertyReviewService(ApplicationDbContext dbContext) : IPropertyReviewService
+public sealed class PropertyReviewService(
+    ApplicationDbContext dbContext,
+    TrustRentDbContext propertyContext) : IPropertyReviewService
 {
     public async Task<IReadOnlyList<PropertyReviewResponse>> GetAllAsync(CancellationToken cancellationToken)
     {
@@ -19,7 +24,24 @@ public sealed class PropertyReviewService(ApplicationDbContext dbContext) : IPro
             .ThenBy(item => item.listing.SubmittedAt)
             .ToListAsync(cancellationToken);
 
-        return listings.Select(item => Map(item.listing, item.owner)).ToArray();
+        var legacyProperties = await propertyContext.Properties
+            .AsNoTracking()
+            .OrderBy(property => property.Status)
+            .ThenBy(property => property.SubmittedAt)
+            .ToListAsync(cancellationToken);
+        var ownerIds = legacyProperties.Select(property => property.LandlordId).Distinct().ToArray();
+        var owners = await dbContext.Users
+            .AsNoTracking()
+            .Where(owner => ownerIds.Contains(owner.Id))
+            .ToDictionaryAsync(owner => owner.Id, cancellationToken);
+
+        var legacyListings = legacyProperties.Select(property =>
+            MapLegacy(property, GetOwner(owners, property.LandlordId)));
+        return listings.Select(item => Map(item.listing, item.owner))
+            .Concat(legacyListings)
+            .OrderBy(listing => listing.ReviewStatus)
+            .ThenBy(listing => listing.SubmittedAt)
+            .ToArray();
     }
 
     public async Task<PropertyReviewResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -30,7 +52,24 @@ public sealed class PropertyReviewService(ApplicationDbContext dbContext) : IPro
             .Join(dbContext.Users, property => property.OwnerUserId, owner => owner.Id, (property, owner) => new { property, owner })
             .SingleOrDefaultAsync(cancellationToken);
 
-        return listing is null ? null : Map(listing.property, listing.owner);
+        if (listing is not null)
+        {
+            return Map(listing.property, listing.owner);
+        }
+
+        var legacyProperty = await propertyContext.Properties
+            .AsNoTracking()
+            .SingleOrDefaultAsync(property => property.Id == id, cancellationToken);
+        if (legacyProperty is null)
+        {
+            return null;
+        }
+
+        var owner = await dbContext.Users
+            .AsNoTracking()
+            .SingleOrDefaultAsync(user => user.Id == legacyProperty.LandlordId, cancellationToken)
+            ?? throw new InvalidOperationException($"Owner {legacyProperty.LandlordId} for property {id} was not found.");
+        return MapLegacy(legacyProperty, owner);
     }
 
     public async Task<PropertyReviewResponse> CreateAsync(
@@ -88,7 +127,40 @@ public sealed class PropertyReviewService(ApplicationDbContext dbContext) : IPro
 
         if (listing is null)
         {
-            return null;
+            var legacyProperty = await propertyContext.Properties
+                .SingleOrDefaultAsync(property => property.Id == id, cancellationToken);
+            if (legacyProperty is null)
+            {
+                return null;
+            }
+
+            var legacyOwner = await dbContext.Users
+                .AsNoTracking()
+                .SingleOrDefaultAsync(user => user.Id == legacyProperty.LandlordId, cancellationToken)
+                ?? throw new InvalidOperationException($"Owner {legacyProperty.LandlordId} for property {id} was not found.");
+            legacyProperty.Status = request.Status switch
+            {
+                PropertyReviewStatus.Pending => PropertyStatus.Pending,
+                PropertyReviewStatus.Approved => PropertyStatus.Approved,
+                PropertyReviewStatus.Rejected => PropertyStatus.Rejected,
+                PropertyReviewStatus.DocumentsRequested => PropertyStatus.DocumentsRequested,
+                _ => throw new ArgumentOutOfRangeException(nameof(request.Status), request.Status, "Unknown property review status.")
+            };
+            legacyProperty.IsVerified = request.Status == PropertyReviewStatus.Approved;
+            legacyProperty.ReviewNote = request.ReviewNote?.Trim();
+            legacyProperty.ReviewedByUserId = reviewerUserId;
+            legacyProperty.ReviewedAt = DateTimeOffset.UtcNow;
+            propertyContext.PropertyReviewEvents.Add(new LegacyPropertyReviewEvent
+            {
+                Id = Guid.NewGuid(),
+                PropertyId = legacyProperty.Id,
+                ActorUserId = reviewerUserId,
+                Status = legacyProperty.Status,
+                Note = legacyProperty.ReviewNote,
+                OccurredAt = legacyProperty.ReviewedAt.Value
+            });
+            await propertyContext.SaveChangesAsync(cancellationToken);
+            return MapLegacy(legacyProperty, legacyOwner);
         }
 
         var owner = await dbContext.Users
@@ -121,11 +193,17 @@ public sealed class PropertyReviewService(ApplicationDbContext dbContext) : IPro
             .Select(group => new { Status = group.Key, Count = group.Count() })
             .ToDictionaryAsync(group => group.Status, group => group.Count, cancellationToken);
 
+        var legacyCounts = await propertyContext.Properties
+            .AsNoTracking()
+            .GroupBy(property => property.Status)
+            .Select(group => new { Status = group.Key, Count = group.Count() })
+            .ToDictionaryAsync(group => group.Status, group => group.Count, cancellationToken);
+
         return new PropertyReviewSummaryResponse(
-            counts.GetValueOrDefault(PropertyReviewStatus.Pending),
-            counts.GetValueOrDefault(PropertyReviewStatus.Approved),
-            counts.GetValueOrDefault(PropertyReviewStatus.Rejected),
-            counts.GetValueOrDefault(PropertyReviewStatus.DocumentsRequested));
+            counts.GetValueOrDefault(PropertyReviewStatus.Pending) + legacyCounts.GetValueOrDefault(PropertyStatus.Pending),
+            counts.GetValueOrDefault(PropertyReviewStatus.Approved) + legacyCounts.GetValueOrDefault(PropertyStatus.Approved),
+            counts.GetValueOrDefault(PropertyReviewStatus.Rejected) + legacyCounts.GetValueOrDefault(PropertyStatus.Rejected),
+            counts.GetValueOrDefault(PropertyReviewStatus.DocumentsRequested) + legacyCounts.GetValueOrDefault(PropertyStatus.DocumentsRequested));
     }
 
     public async Task<IReadOnlyList<PropertyReviewEventResponse>> GetAuditLogAsync(CancellationToken cancellationToken)
@@ -149,6 +227,22 @@ public sealed class PropertyReviewService(ApplicationDbContext dbContext) : IPro
             .OrderByDescending(item => item.reviewEvent.OccurredAt)
             .Take(50)
             .ToListAsync(cancellationToken);
+
+        var legacyPropertyEvents = await propertyContext.PropertyReviewEvents
+            .AsNoTracking()
+            .Join(propertyContext.Properties, reviewEvent => reviewEvent.PropertyId, property => property.Id,
+                (reviewEvent, property) => new { reviewEvent, property })
+            .OrderByDescending(item => item.reviewEvent.OccurredAt)
+            .Take(50)
+            .ToListAsync(cancellationToken);
+        var legacyActorIds = legacyPropertyEvents
+            .Select(item => item.reviewEvent.ActorUserId)
+            .Distinct()
+            .ToArray();
+        var legacyActors = await dbContext.Users
+            .AsNoTracking()
+            .Where(actor => legacyActorIds.Contains(actor.Id))
+            .ToDictionaryAsync(actor => actor.Id, cancellationToken);
 
         var propertyEntries = propertyEvents.Select(item => new PropertyReviewEventResponse(
             item.reviewEvent.Id,
@@ -174,8 +268,26 @@ public sealed class PropertyReviewService(ApplicationDbContext dbContext) : IPro
             item.landlord.Id.ToString(),
             item.reviewEvent.Note,
             item.reviewEvent.OccurredAt));
+        var legacyPropertyEntries = legacyPropertyEvents.Select(item => new PropertyReviewEventResponse(
+            item.reviewEvent.Id,
+            item.reviewEvent.PropertyId,
+            GetAction(item.reviewEvent.Status switch
+            {
+                PropertyStatus.Pending => PropertyReviewStatus.Pending,
+                PropertyStatus.Approved => PropertyReviewStatus.Approved,
+                PropertyStatus.Rejected => PropertyReviewStatus.Rejected,
+                PropertyStatus.DocumentsRequested => PropertyReviewStatus.DocumentsRequested,
+                _ => throw new ArgumentOutOfRangeException(nameof(item.reviewEvent.Status), item.reviewEvent.Status, "Unknown property status.")
+            }),
+            item.property.Title,
+            GetOwner(legacyActors, item.reviewEvent.ActorUserId).FullName,
+            GetOwner(legacyActors, item.reviewEvent.ActorUserId).Email ?? string.Empty,
+            item.reviewEvent.Status.ToString(),
+            item.property.Id.ToString(),
+            item.reviewEvent.Note,
+            item.reviewEvent.OccurredAt));
 
-        return propertyEntries.Concat(landlordEntries)
+        return propertyEntries.Concat(legacyPropertyEntries).Concat(landlordEntries)
             .OrderByDescending(entry => entry.OccurredAt)
             .Take(50)
             .ToArray();
@@ -189,6 +301,49 @@ public sealed class PropertyReviewService(ApplicationDbContext dbContext) : IPro
         PropertyReviewStatus.DocumentsRequested => "Documents requested",
         _ => throw new ArgumentOutOfRangeException(nameof(status), status, "Unknown property review status.")
     };
+
+    private static ApplicationUser GetOwner(IReadOnlyDictionary<Guid, ApplicationUser> owners, Guid ownerId)
+    {
+        return owners.TryGetValue(ownerId, out var owner)
+            ? owner
+            : throw new InvalidOperationException($"Owner {ownerId} for a property listing was not found.");
+    }
+
+    private static PropertyReviewResponse MapLegacy(Property property, ApplicationUser owner)
+    {
+        var reviewStatus = property.Status switch
+        {
+            PropertyStatus.Pending => PropertyReviewStatus.Pending,
+            PropertyStatus.Approved => PropertyReviewStatus.Approved,
+            PropertyStatus.Rejected => PropertyReviewStatus.Rejected,
+            PropertyStatus.DocumentsRequested => PropertyReviewStatus.DocumentsRequested,
+            _ => throw new ArgumentOutOfRangeException(nameof(property.Status), property.Status, "Unknown property status.")
+        };
+
+        return new PropertyReviewResponse(
+            property.Id,
+            property.LandlordId,
+            owner.FullName,
+            owner.Email ?? string.Empty,
+            property.Title,
+            property.Location,
+            string.Empty,
+            string.Empty,
+            property.Bedrooms,
+            property.Bathrooms,
+            0,
+            property.Rent,
+            property.Description,
+            string.Empty,
+            owner.FullName,
+            string.Empty,
+            string.Empty,
+            [],
+            reviewStatus,
+            property.ReviewNote,
+            property.SubmittedAt,
+            property.ReviewedAt);
+    }
 
     private static PropertyReviewResponse Map(PropertyListing listing, ApplicationUser owner)
     {

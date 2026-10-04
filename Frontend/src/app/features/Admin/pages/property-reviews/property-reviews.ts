@@ -1,6 +1,6 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AdminIcon } from '../../components/admin-icon/admin-icon';
 import { PropertyReview, PropertyReviewApi } from '../../services/property-review-api';
@@ -14,38 +14,44 @@ import { PropertyReview, PropertyReviewApi } from '../../services/property-revie
 })
 export class PropertyReviews implements OnInit {
   private readonly api = inject(PropertyReviewApi);
-  properties: PropertyReview[] = [];
-  loading = true;
-  errorMessage = '';
-  searchQuery = '';
-  statusFilter = 'All';
-
-  async ngOnInit(): Promise<void> {
-    try {
-      this.properties = await this.api.getAll();
-    } catch (error) {
-      this.errorMessage = this.getErrorMessage(error);
-    } finally {
-      this.loading = false;
-    }
-  }
-
-  get filteredProperties(): PropertyReview[] {
-    const query = this.searchQuery.trim().toLocaleLowerCase();
-    return this.properties.filter((property) => {
+  readonly properties = signal<PropertyReview[]>([]);
+  readonly loading = signal(true);
+  readonly errorMessage = signal('');
+  readonly searchQuery = signal('');
+  readonly statusFilter = signal('All');
+  readonly filteredProperties = computed(() => {
+    const query = this.searchQuery().trim().toLocaleLowerCase();
+    const status = this.statusFilter();
+    return this.properties().filter((property) => {
       const matchesQuery = `${property.address} ${property.city} ${property.ownerName}`
         .toLocaleLowerCase()
         .includes(query);
-      return matchesQuery && (this.statusFilter === 'All' || property.reviewStatus === this.statusFilter);
+      return matchesQuery && (status === 'All' || property.reviewStatus === status);
     });
+  });
+
+  async ngOnInit(): Promise<void> {
+    await this.load();
+  }
+
+  async load(): Promise<void> {
+    this.loading.set(true);
+    this.errorMessage.set('');
+    try {
+      this.properties.set(await this.api.getAll());
+    } catch (error) {
+      this.errorMessage.set(this.getErrorMessage(error));
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   setSearchQuery(event: Event): void {
-    if (event.target instanceof HTMLInputElement) this.searchQuery = event.target.value;
+    if (event.target instanceof HTMLInputElement) this.searchQuery.set(event.target.value);
   }
 
   setStatusFilter(event: Event): void {
-    if (event.target instanceof HTMLSelectElement) this.statusFilter = event.target.value;
+    if (event.target instanceof HTMLSelectElement) this.statusFilter.set(event.target.value);
   }
 
   private getErrorMessage(error: unknown): string {

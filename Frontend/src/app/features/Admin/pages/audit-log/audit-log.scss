@@ -22,4 +22,5 @@ td:first-child { display: flex; align-items: center; gap: .55rem; }
 .actor-email { display: block; margin-top: .2rem; color: #8994a5; font-size: .65rem; }
 .feedback { margin: 0 0 1rem; padding: .75rem 1rem; border-radius: .55rem; font-size: .78rem; }
 .feedback--error { background: #fff0ef; color: #ad4139; }
+.feedback--error button { margin-left: .5rem; padding: .35rem .6rem; border: 1px solid #e8c9c6; border-radius: .4rem; background: #fff; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
 @media (max-width: 650px) { .page-heading, .panel__heading { align-items: flex-start; flex-direction: column; } }

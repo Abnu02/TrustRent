@@ -77,7 +77,7 @@ export class LandlordReviews implements OnInit {
     );
   }
 
-  private async load(): Promise<void> {
+  async load(): Promise<void> {
     this.loading.set(true);
     this.errorMessage.set('');
     try {

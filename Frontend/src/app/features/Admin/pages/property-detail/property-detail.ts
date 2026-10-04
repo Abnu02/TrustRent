@@ -1,6 +1,6 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AdminIcon } from '../../components/admin-icon/admin-icon';
 import { PropertyReview, PropertyReviewApi, PropertyReviewStatus } from '../../services/property-review-api';
@@ -15,41 +15,58 @@ import { PropertyReview, PropertyReviewApi, PropertyReviewStatus } from '../../s
 export class PropertyDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(PropertyReviewApi);
-  property: PropertyReview | null = null;
-  loading = true;
-  saving = false;
-  errorMessage = '';
-  decisionMessage = '';
+  readonly property = signal<PropertyReview | null>(null);
+  readonly loading = signal(true);
+  readonly saving = signal(false);
+  readonly savingStatus = signal<Exclude<PropertyReviewStatus, 'Pending'> | null>(null);
+  readonly errorMessage = signal('');
+  readonly decisionMessage = signal('');
+  readonly reviewNote = signal('');
 
   async ngOnInit(): Promise<void> {
+    await this.load();
+  }
+
+  async load(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
-      this.errorMessage = 'Property ID is missing.';
-      this.loading = false;
+      this.errorMessage.set('Property ID is missing.');
+      this.loading.set(false);
       return;
     }
 
+    this.loading.set(true);
+    this.errorMessage.set('');
     try {
-      this.property = await this.api.getById(id);
+      this.property.set(await this.api.getById(id));
     } catch (error) {
-      this.errorMessage = this.getErrorMessage(error);
+      this.errorMessage.set(this.getErrorMessage(error));
     } finally {
-      this.loading = false;
+      this.loading.set(false);
     }
   }
 
   async decide(status: Exclude<PropertyReviewStatus, 'Pending'>): Promise<void> {
-    if (!this.property || this.saving) return;
-    this.saving = true;
-    this.errorMessage = '';
+    const property = this.property();
+    if (!property || this.saving()) return;
+    this.saving.set(true);
+    this.savingStatus.set(status);
+    this.errorMessage.set('');
 
     try {
-      this.property = await this.api.review(this.property.id, status, '');
-      this.decisionMessage = `Property ${status.toLocaleLowerCase()}.`;
+      this.property.set(await this.api.review(property.id, status, this.reviewNote().trim()));
+      this.decisionMessage.set(`Property ${status === 'Approved' ? 'verified and approved' : status === 'Rejected' ? 'rejected' : 'marked for document review'}.`);
     } catch (error) {
-      this.errorMessage = this.getErrorMessage(error);
+      this.errorMessage.set(this.getErrorMessage(error));
     } finally {
-      this.saving = false;
+      this.saving.set(false);
+      this.savingStatus.set(null);
+    }
+  }
+
+  setReviewNote(event: Event): void {
+    if (event.target instanceof HTMLTextAreaElement) {
+      this.reviewNote.set(event.target.value);
     }
   }
 

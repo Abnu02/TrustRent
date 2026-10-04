@@ -5,7 +5,7 @@ import { PropertyStatus } from '../services/property.service';
   selector: 'app-property-state',
   standalone: true,
   template: `
-    <span class="state-badge" [class.pending]="status === 'Pending'" [class.approved]="status === 'Approved'" [class.rejected]="status === 'Rejected'">{{ status }}</span>
+    <span class="state-badge" [class.pending]="status === 'Pending' || status === 'DocumentsRequested'" [class.approved]="status === 'Approved'" [class.rejected]="status === 'Rejected'">{{ status === 'DocumentsRequested' ? 'Documents requested' : status }}</span>
     <span class="verification-badge" [class.verified]="isVerified">{{ isVerified ? 'Verified' : 'Not Verified' }}</span>
   `,
   styles: [`

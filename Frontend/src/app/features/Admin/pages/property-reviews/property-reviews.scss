@@ -24,4 +24,5 @@ td small { margin-top: .2rem; color: #8994a5; font-size: .66rem; }
 .row-link { display: grid; width: 1.8rem; height: 1.8rem; place-items: center; color: #667287; }
 .state-message { padding: 3rem 1rem; color: #667287; text-align: center; font-size: .82rem; }
 .state-message--error { color: #ad4139; }
+.state-message--error button { margin-left: .5rem; padding: .35rem .6rem; border: 1px solid #e8c9c6; border-radius: .4rem; background: #fff; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
 @media (max-width: 650px) { .page-heading, .toolbar { align-items: flex-start; flex-direction: column; } .toolbar { width: 100%; } .search { width: 100%; } .search input { width: 100%; } }

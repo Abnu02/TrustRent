@@ -4,5 +4,6 @@ public enum PropertyStatus
 {
     Pending,
     Approved,
-    Rejected
+    Rejected,
+    DocumentsRequested
 }

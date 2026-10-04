@@ -4,28 +4,28 @@
     <h1>Properties</h1>
     <p>Property listings and verification status.</p>
   </div>
-  <span class="queue-count"><app-admin-icon name="property" /> {{ properties.length }} properties</span>
+  <span class="queue-count"><app-admin-icon name="property" /> {{ properties().length }} properties</span>
 </section>
 
 <section class="panel">
   <div class="toolbar">
     <label class="search">
       <app-admin-icon name="search" />
-      <input type="search" placeholder="Search address or landlord" aria-label="Search properties" [value]="searchQuery" (input)="setSearchQuery($event)" />
+      <input type="search" placeholder="Search address or landlord" aria-label="Search properties" [value]="searchQuery()" (input)="setSearchQuery($event)" />
     </label>
     <label class="status-filter">
       <span>Status</span>
-      <select [value]="statusFilter" (change)="setStatusFilter($event)">
+      <select [value]="statusFilter()" (change)="setStatusFilter($event)">
         <option>All</option><option>Pending</option><option>Approved</option><option>Rejected</option><option value="DocumentsRequested">Documents requested</option>
       </select>
     </label>
   </div>
 
-  @if (loading) {
+  @if (loading()) {
     <div class="state-message">Loading properties…</div>
-  } @else if (errorMessage) {
-    <div class="state-message state-message--error" role="alert">{{ errorMessage }}</div>
-  } @else if (filteredProperties.length === 0) {
+  } @else if (errorMessage(); as error) {
+    <div class="state-message state-message--error" role="alert">{{ error }} <button type="button" (click)="load()">Try again</button></div>
+  } @else if (filteredProperties().length === 0) {
     <div class="state-message">No properties match this filter. Listings appear here after landlords submit them for review.</div>
   } @else {
     <div class="table-wrap">
@@ -34,12 +34,12 @@
           <tr><th>Property</th><th>Landlord</th><th>Bedrooms</th><th>Monthly rent</th><th>Submitted</th><th>Status</th><th></th></tr>
         </thead>
         <tbody>
-          @for (property of filteredProperties; track property.id) {
+          @for (property of filteredProperties(); track property.id) {
             <tr>
-              <td><strong>{{ property.address }}</strong><small>{{ property.city }}, {{ property.state }} {{ property.postalCode }}</small></td>
+              <td><strong>{{ property.address }}</strong><small>{{ property.state || property.postalCode ? property.city + ', ' + property.state + ' ' + property.postalCode : property.city }}</small></td>
               <td><strong>{{ property.ownerName }}</strong><small>{{ property.ownerEmail }}</small></td>
               <td>{{ property.bedrooms }} bed · {{ property.bathrooms }} bath</td>
-              <td>${{ property.monthlyRent | number: '1.0-0' }} / mo</td>
+              <td>ETB {{ property.monthlyRent | number: '1.0-0' }} / mo</td>
               <td>{{ property.submittedAt | date: 'mediumDate' }}</td>
               <td><span class="status" [class.status--pending]="property.reviewStatus === 'Pending'" [class.status--rejected]="property.reviewStatus === 'Rejected'">{{ property.reviewStatus === 'DocumentsRequested' ? 'Documents requested' : property.reviewStatus }}</span></td>
               <td><a class="row-link" [routerLink]="['/admin/properties', property.id]" [attr.aria-label]="'View ' + property.address"><app-admin-icon name="chevron" /></a></td>

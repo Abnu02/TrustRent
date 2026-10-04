@@ -4,11 +4,11 @@
     <h1>Audit log</h1>
     <p>Recent decisions and verification activity.</p>
   </div>
-  <span class="record-count"><app-admin-icon name="audit" /> {{ entries.length }} recent events</span>
+  <span class="record-count"><app-admin-icon name="audit" /> {{ entries().length }} recent events</span>
 </section>
 
-@if (errorMessage) {
-  <p class="feedback feedback--error" role="alert">{{ errorMessage }}</p>
+@if (errorMessage(); as error) {
+  <p class="feedback feedback--error" role="alert">{{ error }} <button type="button" (click)="load()">Try again</button></p>
 }
 
 <section class="panel">
@@ -20,14 +20,14 @@
     <table>
       <thead><tr><th>Activity</th><th>Subject</th><th>Actor</th><th>Time</th><th>Reference</th></tr></thead>
       <tbody>
-        @if (loading) {
+        @if (loading()) {
           <tr><td colspan="5">Loading audit history…</td></tr>
-        } @else if (errorMessage) {
+        } @else if (errorMessage()) {
           <tr><td colspan="5">Audit history could not be loaded.</td></tr>
-        } @else if (!entries.length) {
+        } @else if (!entries().length) {
           <tr><td colspan="5">No review activity has been recorded yet.</td></tr>
         }
-        @for (entry of entries; track entry.id) {
+        @for (entry of entries(); track entry.id) {
           <tr>
             <td><span class="event" [class.event--approved]="entry.status === 'Approved' || entry.status === 'Verified'" [class.event--flagged]="entry.status === 'Rejected'">
               <app-admin-icon [name]="entry.status === 'Approved' || entry.status === 'Verified' ? 'check' : entry.status === 'Rejected' ? 'close' : 'document'" />

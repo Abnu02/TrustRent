@@ -1,31 +1,31 @@
 <a class="back-link" routerLink="/admin/properties"><app-admin-icon name="arrow" /> Back to properties</a>
 
-@if (loading) {
+@if (loading()) {
   <div class="state-message">Loading property details…</div>
-} @else if (errorMessage && !property) {
-  <div class="state-message state-message--error" role="alert">{{ errorMessage }}</div>
-} @else if (property) {
+} @else if (errorMessage() && !property()) {
+  <div class="state-message state-message--error" role="alert">{{ errorMessage() }} <button type="button" (click)="load()">Try again</button></div>
+} @else if (property(); as property) {
   <section class="page-heading">
     <div>
-      <span class="eyebrow">Property review · {{ property.deedFileNumber }}</span>
+      <span class="eyebrow">Property review @if (property.deedFileNumber) { · {{ property.deedFileNumber }} }</span>
       <h1>{{ property.address }}</h1>
-      <p>{{ property.city }}, {{ property.state }} {{ property.postalCode }}</p>
+      <p>{{ property.state || property.postalCode ? property.city + ', ' + property.state + ' ' + property.postalCode : property.city }}</p>
     </div>
     <span class="status">{{ property.reviewStatus }}</span>
   </section>
 
-  @if (errorMessage) { <p class="message message--error" role="alert">{{ errorMessage }}</p> }
-  @if (decisionMessage) { <p class="message" role="status">{{ decisionMessage }}</p> }
+  @if (errorMessage()) { <p class="message message--error" role="alert">{{ errorMessage() }}</p> }
+  @if (decisionMessage()) { <p class="message" role="status">{{ decisionMessage() }}</p> }
 
   <div class="detail-grid">
     <div class="main-column">
       <section class="panel">
         <h2>Listing details</h2>
         <div class="facts">
-          <div><span>Monthly rent</span><strong>${{ property.monthlyRent | number: '1.0-0' }}</strong></div>
+          <div><span>Monthly rent</span><strong>ETB {{ property.monthlyRent | number: '1.0-0' }}</strong></div>
           <div><span>Bedrooms</span><strong>{{ property.bedrooms }}</strong></div>
           <div><span>Bathrooms</span><strong>{{ property.bathrooms }}</strong></div>
-          <div><span>Area</span><strong>{{ property.squareFeet | number }} sq ft</strong></div>
+          <div><span>Area</span><strong>{{ property.squareFeet ? (property.squareFeet | number) + ' sq ft' : 'Not provided' }}</strong></div>
         </div>
         <p class="description">{{ property.description || 'No description provided.' }}</p>
       </section>
@@ -33,9 +33,9 @@
       <section class="panel">
         <h2>Ownership verification</h2>
         <dl class="verification">
-          <div><dt>Recorded owner</dt><dd>{{ property.recordedOwner }}</dd></div>
-          <div><dt>Parcel ID</dt><dd>{{ property.parcelId }}</dd></div>
-          <div><dt>Deed file</dt><dd>{{ property.deedFileNumber }}</dd></div>
+          <div><dt>Recorded owner</dt><dd>{{ property.recordedOwner || 'Not provided' }}</dd></div>
+          <div><dt>Parcel ID</dt><dd>{{ property.parcelId || 'Not provided' }}</dd></div>
+          <div><dt>Deed file</dt><dd>{{ property.deedFileNumber || 'Not provided' }}</dd></div>
           <div><dt>Utility status</dt><dd>{{ property.utilityStatus || 'Not provided' }}</dd></div>
         </dl>
       </section>
@@ -66,14 +66,20 @@
 
       <section class="panel decision-panel">
         <h2>Review decision</h2>
-        @if (property.reviewStatus === 'Pending' || property.reviewStatus === 'DocumentsRequested') {
-          <button class="decision decision--approve" type="button" [disabled]="saving" (click)="decide('Approved')"><app-admin-icon name="check" /> Approve listing</button>
-          <button class="decision decision--request" type="button" [disabled]="saving" (click)="decide('DocumentsRequested')">Request documents</button>
-          <button class="decision decision--reject" type="button" [disabled]="saving" (click)="decide('Rejected')"><app-admin-icon name="close" /> Reject listing</button>
-        } @else {
-          <p class="muted">This listing has been {{ property.reviewStatus.toLocaleLowerCase() }}.</p>
-          <button class="decision decision--request" type="button" [disabled]="saving" (click)="decide('DocumentsRequested')">Reopen with document request</button>
-        }
+        <p class="muted">Record the verification decision and provide a note for the landlord.</p>
+        <label class="review-note-input">
+          <span>Review note</span>
+          <textarea maxlength="2000" rows="3" [value]="reviewNote()" (input)="setReviewNote($event)" [disabled]="saving()" placeholder="Explain your decision or requested documents"></textarea>
+        </label>
+        <button class="decision decision--approve" type="button" [disabled]="saving()" (click)="decide('Approved')">
+          <app-admin-icon name="check" />{{ savingStatus() === 'Approved' ? 'Verifying…' : 'Verify and approve' }}
+        </button>
+        <button class="decision decision--request" type="button" [disabled]="saving()" (click)="decide('DocumentsRequested')">
+          {{ savingStatus() === 'DocumentsRequested' ? 'Saving…' : 'Request documents' }}
+        </button>
+        <button class="decision decision--reject" type="button" [disabled]="saving()" (click)="decide('Rejected')">
+          <app-admin-icon name="close" />{{ savingStatus() === 'Rejected' ? 'Rejecting…' : 'Reject listing' }}
+        </button>
       </section>
     </aside>
   </div>

@@ -23,6 +23,7 @@ th { padding: .7rem 1.25rem; background: #f8f9fc; color: #8994a5; font-size: .65
 td { padding: .9rem 1.25rem; border-top: 1px solid #eff1f5; color: #667287; font-size: .77rem; }
 .strong { color: #1a2b44; font-weight: 600; }
 .error-message { color: #ad4139; }
+.error-message button { margin-left: .5rem; padding: .35rem .6rem; border: 1px solid #e8c9c6; border-radius: .4rem; background: #fff; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
 .status { display: inline-flex; align-items: center; padding: .28rem .55rem; border-radius: 999px; font-size: .68rem; font-weight: 600; }
 .status--pending { background: #fff3d9; color: #966617; }
 .row-link { display: grid; width: 1.8rem; height: 1.8rem; place-items: center; color: #7b8798; }

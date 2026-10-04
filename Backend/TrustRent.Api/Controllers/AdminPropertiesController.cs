@@ -56,7 +56,7 @@ public sealed class AdminPropertiesController(IPropertyReviewService propertyRev
             return ValidationProblem(ModelState);
         }
 
-        var reviewerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var reviewerId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
         if (!Guid.TryParse(reviewerId, out var reviewerUserId))
         {
             return Unauthorized();

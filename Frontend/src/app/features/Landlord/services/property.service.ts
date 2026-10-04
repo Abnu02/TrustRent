@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { EMPTY, Observable, expand, forkJoin, map, reduce } from 'rxjs';
 
-export type PropertyStatus = 'Pending' | 'Approved' | 'Rejected';
+export type PropertyStatus = 'Pending' | 'Approved' | 'Rejected' | 'DocumentsRequested';
 export type PropertyType = 'Apartment' | 'House' | 'Studio';
 
 export interface PropertyDraft {

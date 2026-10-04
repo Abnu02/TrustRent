@@ -16,4 +16,8 @@ public class Property
     public int Bathrooms { get; set; }
     public PropertyStatus Status { get; set; } = PropertyStatus.Pending;
     public bool IsVerified { get; set; }
+    public DateTimeOffset SubmittedAt { get; set; } = DateTimeOffset.UtcNow;
+    public string? ReviewNote { get; set; }
+    public Guid? ReviewedByUserId { get; set; }
+    public DateTimeOffset? ReviewedAt { get; set; }
 }

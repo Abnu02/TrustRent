@@ -5,7 +5,7 @@
 
 <form class="property-toolbar" [formGroup]="filters" aria-label="Search and filter properties">
   <label class="search-control"><span class="material-symbols-outlined" aria-hidden="true">search</span><input type="search" formControlName="search" maxlength="100" placeholder="Search properties" aria-label="Search properties"></label>
-  <label class="filter-control"><span>Status</span><select formControlName="status"><option value="">All</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option></select></label>
+  <label class="filter-control"><span>Status</span><select formControlName="status"><option value="">All</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option><option value="DocumentsRequested">Documents requested</option></select></label>
   <label class="filter-control"><span>Type</span><select formControlName="propertyType"><option value="">All</option><option value="Apartment">Apartment</option><option value="House">House</option><option value="Studio">Studio</option></select></label>
   <label class="filter-control sort-control"><span>Sort</span><select formControlName="sort"><option value="title-asc">Title A–Z</option><option value="title-desc">Title Z–A</option><option value="location-asc">Location A–Z</option><option value="location-desc">Location Z–A</option><option value="rent-asc">Rent: Low to High</option><option value="rent-desc">Rent: High to Low</option></select></label>
 </form>

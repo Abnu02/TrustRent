@@ -36,5 +36,6 @@ td { padding: .85rem 1rem; border-top: 1px solid #eff1f5; color: #667287; font-s
 .panel__footer { display: flex; justify-content: space-between; padding: .85rem 1rem; border-top: 1px solid #eff1f5; color: #778398; font-size: .7rem; }
 .feedback { margin: 0 0 1rem; padding: .75rem 1rem; border-radius: .55rem; font-size: .78rem; }
 .feedback--error { background: #fff0ef; color: #ad4139; }
+.feedback--error button { margin-left: .5rem; padding: .35rem .6rem; border: 1px solid #e8c9c6; border-radius: .4rem; background: #fff; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
 .feedback--success { background: #e5f6ec; color: #18764f; }
 @media (max-width: 650px) { .page-heading { align-items: flex-start; flex-direction: column; } .panel__heading { align-items: flex-start; flex-direction: column; } }

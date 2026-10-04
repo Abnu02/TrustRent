@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TrustRent.Infrastructure.Data;
@@ -11,9 +12,11 @@ using TrustRent.Infrastructure.Data;
 namespace TrustRent.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(TrustRentDbContext))]
-    partial class TrustRentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261004195417_AddLegacyPropertyReviewMetadata")]
+    partial class AddLegacyPropertyReviewMetadata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,37 +24,6 @@ namespace TrustRent.Infrastructure.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("TrustRent.Domain.Entities.LegacyPropertyReviewEvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ActorUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Note")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<DateTimeOffset>("OccurredAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("PropertyId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OccurredAt");
-
-                    b.HasIndex("PropertyId");
-
-                    b.ToTable("LegacyPropertyReviewEvents", (string)null);
-                });
 
             modelBuilder.Entity("TrustRent.Domain.Entities.Property", b =>
                 {
@@ -106,9 +78,8 @@ namespace TrustRent.Infrastructure.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTimeOffset>("SubmittedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -124,15 +95,6 @@ namespace TrustRent.Infrastructure.Data.Migrations
                     b.HasIndex("SubmittedAt");
 
                     b.ToTable("Properties", (string)null);
-                });
-
-            modelBuilder.Entity("TrustRent.Domain.Entities.LegacyPropertyReviewEvent", b =>
-                {
-                    b.HasOne("TrustRent.Domain.Entities.Property", null)
-                        .WithMany()
-                        .HasForeignKey("PropertyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -6,6 +6,7 @@ namespace TrustRent.Infrastructure.Data;
 public class TrustRentDbContext(DbContextOptions<TrustRentDbContext> options) : DbContext(options)
 {
     public DbSet<Property> Properties => Set<Property>();
+    public DbSet<LegacyPropertyReviewEvent> PropertyReviewEvents => Set<LegacyPropertyReviewEvent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,7 +22,21 @@ public class TrustRentDbContext(DbContextOptions<TrustRentDbContext> options) : 
         property.Property(entity => entity.Deposit).HasPrecision(12, 2);
         property.Property(entity => entity.PropertyType).HasConversion<int>().IsRequired();
         property.Property(entity => entity.Status).HasConversion<int>().IsRequired();
+        property.Property(entity => entity.ReviewNote).HasMaxLength(2000);
+        property.Property(entity => entity.SubmittedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         property.HasIndex(entity => entity.LandlordId);
         property.HasIndex(entity => entity.Status);
+        property.HasIndex(entity => entity.SubmittedAt);
+
+        var reviewEvent = modelBuilder.Entity<LegacyPropertyReviewEvent>();
+        reviewEvent.ToTable("LegacyPropertyReviewEvents");
+        reviewEvent.HasKey(entity => entity.Id);
+        reviewEvent.Property(entity => entity.Status).HasConversion<int>().IsRequired();
+        reviewEvent.Property(entity => entity.Note).HasMaxLength(2000);
+        reviewEvent.HasIndex(entity => entity.OccurredAt);
+        reviewEvent.HasOne<Property>()
+            .WithMany()
+            .HasForeignKey(entity => entity.PropertyId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
